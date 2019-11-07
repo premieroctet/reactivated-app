@@ -10,6 +10,7 @@ export class User {
   })
   @PrimaryGeneratedColumn()
   id: number;
+
   @ApiModelProperty()
   @Column({ length: 25 })
   username: string;
