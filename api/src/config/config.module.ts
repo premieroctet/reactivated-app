@@ -7,7 +7,7 @@ import { ConfigService } from './config.service';
     {
       provide: ConfigService,
       useValue: new ConfigService(
-        path.resolve(`./ormconfig.env.${process.env.NODE_ENV || 'dev'}`),
+        path.resolve(`./env.${process.env.NODE_ENV || 'dev'}`),
       ),
     },
   ],

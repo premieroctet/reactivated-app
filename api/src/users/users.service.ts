@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from './user-entity';
+import { User } from './user.entity';
 
 @Injectable()
 export class UsersService extends TypeOrmCrudService<User> {
@@ -18,7 +18,7 @@ export class UsersService extends TypeOrmCrudService<User> {
 
   async getUser(_id: number): Promise<User[]> {
     return await this.usersRepository.find({
-      select: ['userName'],
+      select: ['username'],
       where: [{ id: _id }],
     });
   }
