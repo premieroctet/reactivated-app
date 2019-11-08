@@ -16,11 +16,12 @@ export class UsersService extends TypeOrmCrudService<User> {
     return await this.usersRepository.find();
   }
 
-  async getUser(_id: number): Promise<User[]> {
-    return await this.usersRepository.find({
-      select: ['username'],
-      where: [{ id: _id }],
+  async getUser(username: string): Promise<User> {
+    const users = await this.usersRepository.find({
+      where: [{ username }],
     });
+
+    return users[0];
   }
 
   async updateUser(user: User) {
