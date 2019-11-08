@@ -18,7 +18,11 @@ export class GitHubStrategy extends PassportStrategy(Strategy) {
         const user = await userService.getUser(profile.username);
 
         if (!user) {
-          let newUser: User = { username: profile.username };
+          let newUser: User = {
+            username: profile.username,
+            githubId: profile.id,
+            githubToken: accessToken,
+          };
           newUser = await userService.createUser(newUser);
         }
 

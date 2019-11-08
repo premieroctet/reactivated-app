@@ -14,4 +14,12 @@ export class User {
   @ApiModelProperty()
   @Column({ length: 25 })
   username: string;
+
+  @ApiModelProperty()
+  @Column()
+  githubId: string;
+
+  @ApiModelProperty()
+  @Column()
+  githubToken: string;
 }
