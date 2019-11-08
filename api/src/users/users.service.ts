@@ -27,8 +27,8 @@ export class UsersService extends TypeOrmCrudService<User> {
     this.usersRepository.save(user);
   }
 
-  async createUser(user: User) {
-    this.usersRepository.save(user);
+  async createUser(user: User): Promise<User> {
+    return await this.usersRepository.save(user);
   }
 
   async deleteUser(user: User) {

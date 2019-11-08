@@ -9,7 +9,7 @@ export class User {
     required: false,
   })
   @PrimaryGeneratedColumn()
-  id: number;
+  id?: number;
 
   @ApiModelProperty()
   @Column({ length: 25 })

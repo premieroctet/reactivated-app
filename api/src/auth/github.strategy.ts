@@ -2,10 +2,12 @@ import { Strategy } from 'passport-github';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from 'src/config/config.service';
+import { UsersService } from 'src/users/users.service';
+import { User } from 'src/users/user.entity';
 
 @Injectable()
 export class GitHubStrategy extends PassportStrategy(Strategy) {
-  constructor(config: ConfigService) {
+  constructor(config: ConfigService, userService: UsersService, User: User) {
     super(
       {
         clientID: config.get('CLIENT_ID'),
@@ -14,14 +16,12 @@ export class GitHubStrategy extends PassportStrategy(Strategy) {
         scope: ['login', 'emails'],
       },
       async (accessToken, tokenSecret, profile, done) => {
-        const user: any = {};
-        user.displayName = profile.displayName;
-        user.username = profile.username;
+        let user = userService.getUser(profile.id);
 
-        user.githubAccount = {
-          githubId: profile.id,
-          githubToken: accessToken,
-        };
+        if (!user) {
+          const newUser: User = { username: profile.username };
+          user = userService.createUser(newUser);
+        }
 
         return done(null, user);
       },
