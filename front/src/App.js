@@ -19,8 +19,7 @@ export default class App extends React.Component {
             .get("https://api.github.com/user/installations", {
               headers: {
                 Authorization: "token " + res.data.githubToken,
-                Accept:
-                  "application / vnd.github.machine - man - preview + json"
+                Accept: "application/vnd.github.machine-man-preview+json"
               }
             })
             .then(res => {
