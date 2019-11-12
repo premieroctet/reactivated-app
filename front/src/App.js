@@ -6,15 +6,19 @@ const queryString = require("query-string");
 
 export default class App extends React.Component {
   state = {
-    isConnected: false
+    isConnected: false,
+    selectedRepo: ""
   };
   componentDidMount() {
     const parsed = queryString.parse(window.location.search);
+    let token = "";
+
     if (parsed.code) {
       axios
         .get(`http://localhost:3000/auth/github/callback?code=${parsed.code}`)
         .then(res => {
           console.log(res.data.githubToken);
+          token = res.data.githubToken;
           axios
             .get("https://api.github.com/user/installations", {
               headers: {
@@ -23,7 +27,23 @@ export default class App extends React.Component {
               }
             })
             .then(res => {
-              console.log(res.data);
+              console.log(res.data.installations[0].id);
+              axios
+                .get(
+                  `https://api.github.com/user/installations/${res.data.installations[0].id}/repositories`,
+                  {
+                    headers: {
+                      Authorization: "token " + token,
+                      Accept: "application/vnd.github.machine-man-preview+json"
+                    }
+                  }
+                )
+                .then(res => {
+                  console.log(res.data.repositories);
+                  this.setState({
+                    selectedRepo: res.data.repositories[0].name
+                  });
+                });
             });
         });
       this.setState({ isConnected: true });
@@ -57,6 +77,8 @@ export default class App extends React.Component {
               Add a repo
             </a>
           )}
+
+          {this.state.isConnected && <p>{this.state.selectedRepo}</p>}
         </header>
       </div>
     );
