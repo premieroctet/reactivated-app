@@ -9,9 +9,17 @@ export class User {
     required: false,
   })
   @PrimaryGeneratedColumn()
-  id: number;
+  id?: number;
 
   @ApiModelProperty()
   @Column({ length: 25 })
   username: string;
+
+  @ApiModelProperty()
+  @Column()
+  githubId: string;
+
+  @ApiModelProperty()
+  @Column()
+  githubToken: string;
 }

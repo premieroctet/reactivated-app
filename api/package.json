@@ -17,11 +17,14 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "dev": "ts-node-dev --ignore-watch node_modules ./src/main.ts"
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@nestjs/common": "^6.7.2",
     "@nestjs/core": "^6.7.2",
+    "@nestjs/passport": "^6.1.0",
     "@nestjs/platform-express": "^6.7.2",
     "@nestjs/swagger": "^3.1.0",
     "@nestjs/typeorm": "^6.2.0",
@@ -30,10 +33,14 @@
     "class-transformer": "^0.2.3",
     "class-validator": "^0.11.0",
     "mysql": "^2.17.1",
+    "passport": "^0.4.0",
+    "passport-github": "^1.1.0",
+    "passport-local": "^1.0.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.0",
     "rxjs": "^6.5.3",
     "swagger-ui-express": "^4.1.2",
+    "ts-node-dev": "^1.0.0-pre.44",
     "typeorm": "^0.2.20"
   },
   "devDependencies": {
