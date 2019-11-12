@@ -1,19 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import Login from "./containers/Login/Login";
 import Layout from "./containers/Layout/Layout";
+
 import "./App.css";
+import { useAuth } from "./contexts/auth-context";
 
 function App() {
-  const [isConnected, setIsConnected] = useState(false);
-  return (
-    <div className="app">
-      {isConnected ? (
-        <Layout />
-      ) : (
-        <Login isConnected={isConnected} setIsConnected={setIsConnected} />
-      )}
-    </div>
-  );
+  const { token } = useAuth();
+  return <div className="app">{token ? <Layout /> : <Login />}</div>;
 }
 
 export default App;

@@ -8,7 +8,7 @@ function Layout() {
   return (
     <BrowserRouter>
       <Switch>
-        <Route path="/" component={Home} />
+        <Route path="/" exact component={Home} />
       </Switch>
     </BrowserRouter>
   );
