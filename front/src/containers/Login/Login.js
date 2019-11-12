@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../contexts/auth-context";
-import axios from "axios";
+import apiClient from "../../clients/api";
 import { Button } from "antd";
 import "antd/dist/antd.css";
 import "./Login.css";
@@ -14,14 +14,15 @@ function Login() {
   const authUser = async code => {
     try {
       setLoading(true);
-      const response = await axios.get(
-        `http://localhost:3000/auth/github/callback?code=${code}`
+      const response = await apiClient.get(
+        `/auth/github/callback?code=${code}`
       );
       console.log(response.data.githubToken);
 
       setToken(response.data.githubToken);
     } finally {
       setLoading(false);
+      window.history.pushState(null, "/", "/");
     }
   };
 
@@ -47,7 +48,7 @@ function Login() {
 
         <a
           style={{ color: "white", marginTop: 20 }}
-          href="http://localhost:3000/auth/github"
+          href={`${process.env.REACT_APP_API_HOST}/auth/github`}
         >
           <Button type="primary" size="large" icon="github" loading={loading}>
             Sign in with Github

@@ -1,42 +1,47 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../contexts/auth-context";
-import { Layout, Menu, Breadcrumb, Button } from "antd";
+import { Layout, Menu, Breadcrumb, Button, List } from "antd";
 import { deleteFromStorage } from "@rehooks/local-storage";
+import githubClient from "../../clients/github";
 import axios from "axios";
-import "./Home.scss";
+import "./Home.css";
 
 const { Header, Content, Footer } = Layout;
 
 function Home() {
-  const [selectedRepo, setSelectedRepo] = useState("");
+  const [repositories, setRepositories] = useState([]);
   const { token } = useAuth();
+  const headers = {
+    Authorization: "token " + token,
+    Accept: "application/vnd.github.machine-man-preview+json"
+  };
+
+  const loadRepository = async () => {
+    const response = await githubClient.get("/user/installations", {
+      headers
+    });
+    const promises = response.data.installations.map(installation => {
+      return githubClient.get(
+        `/user/installations/${installation.id}/repositories`,
+        {
+          headers
+        }
+      );
+    });
+
+    const responses = await axios.all(promises);
+    let data = [];
+
+    responses.forEach(item => {
+      data = [...data, ...item.data.repositories];
+    });
+    setRepositories(data);
+  };
 
   useEffect(() => {
-    axios
-      .get("https://api.github.com/user/installations", {
-        headers: {
-          Authorization: "token " + token,
-          Accept: "application/vnd.github.machine-man-preview+json"
-        }
-      })
-      .then(res => {
-        console.log(res.data.installations[0].id);
-        axios
-          .get(
-            `https://api.github.com/user/installations/${res.data.installations[0].id}/repositories`,
-            {
-              headers: {
-                Authorization: "token " + token,
-                Accept: "application/vnd.github.machine-man-preview+json"
-              }
-            }
-          )
-          .then(res => {
-            console.log(res.data.repositories);
-            setSelectedRepo(res.data.repositories[0].name);
-          });
-      });
-  });
+    loadRepository();
+    // eslint-disable-next-line
+  }, []);
 
   const logOut = () => {
     deleteFromStorage("token"); // Deletes the item
@@ -68,15 +73,24 @@ function Home() {
             height: "85vh"
           }}
         >
-          <a href="https://github.com/apps/dev-reactivated-app/installations/new">
-            <Button size="large" icon="github" type="primary">
-              Add a new repo
-            </Button>{" "}
-            <Button onClick={logOut} size="large" icon="logout" type="primary">
-              Logout
-            </Button>{" "}
-          </a>
-          <p className="repo-list">{selectedRepo}</p>
+          <Button
+            href="https://github.com/apps/dev-reactivated-app/installations/new"
+            size="large"
+            icon="github"
+            type="primary"
+          >
+            Add a new repo
+          </Button>{" "}
+          <Button onClick={logOut} size="large" icon="logout" type="primary">
+            Logout
+          </Button>{" "}
+          <List
+            style={{ marginTop: "50px" }}
+            size="large"
+            bordered
+            dataSource={repositories}
+            renderItem={repository => <List.Item>{repository.name}</List.Item>}
+          />
         </div>
       </Content>
       <Footer style={{ textAlign: "center" }}>
