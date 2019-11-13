@@ -1,0 +1,25 @@
+.list-container {
+  margin: 0 auto;
+  margin-top: 50px;
+  width: 30%;
+  cursor: pointer;
+  .ant-list-item {
+    display: block;
+  }
+  li:hover {
+    background-color: #40a9ff;
+    color: white;
+  }
+  .repo-name {
+    display: block;
+    width: 100%;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 0;
+  }
+  .repo-author {
+    width: 100%;
+    font-size: 15px;
+    margin-bottom: 0;
+  }
+}

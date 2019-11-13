@@ -1,10 +1,8 @@
 import React from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import Home from "../Home/Home";
+import Home from "../../containers/Home/Home";
 
-import "./Layout.css";
-
-function Layout() {
+function Router() {
   return (
     <BrowserRouter>
       <Switch>
@@ -14,4 +12,4 @@ function Layout() {
   );
 }
 
-export default Layout;
+export default Router;

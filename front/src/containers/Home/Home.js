@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../contexts/auth-context";
-import { Layout, Menu, Breadcrumb, Button, List } from "antd";
+import { Layout, Breadcrumb, Button, List } from "antd";
 import { deleteFromStorage } from "@rehooks/local-storage";
 import githubClient from "../../clients/github";
+import { formatDistance, subDays } from "date-fns";
 import axios from "axios";
-import "./Home.css";
+import "./Home.scss";
 
-const { Header, Content, Footer } = Layout;
+const { Content } = Layout;
 
 function Home() {
   const [repositories, setRepositories] = useState([]);
@@ -36,6 +37,7 @@ function Home() {
       data = [...data, ...item.data.repositories];
     });
     setRepositories(data);
+    console.log(data);
   };
 
   useEffect(() => {
@@ -44,59 +46,60 @@ function Home() {
   }, []);
 
   const logOut = () => {
-    deleteFromStorage("token"); // Deletes the item
+    deleteFromStorage("token");
   };
 
   return (
-    <Layout className="layout">
-      <Header>
-        <div className="logo" />
-        <Menu
-          theme="dark"
-          mode="horizontal"
-          defaultSelectedKeys={["1"]}
-          style={{ lineHeight: "64px" }}
+    <Content style={{ padding: "0 50px" }}>
+      <Breadcrumb style={{ margin: "16px 0" }}>
+        <Breadcrumb.Item>Home</Breadcrumb.Item>
+      </Breadcrumb>
+      <div
+        style={{
+          background: "#fff",
+          padding: 24,
+          minHeight: "86vh",
+          textAlign: "center"
+        }}
+      >
+        <Button
+          href="https://github.com/apps/dev-reactivated-app/installations/new"
+          size="large"
+          icon="github"
+          type="primary"
         >
-          <Menu.Item key="1">Home</Menu.Item>
-        </Menu>
-      </Header>
-      <Content style={{ padding: "0 50px" }}>
-        <Breadcrumb style={{ margin: "16px 0" }}>
-          <Breadcrumb.Item>Home</Breadcrumb.Item>
-        </Breadcrumb>
-        <div
-          style={{
-            background: "#fff",
-            padding: 24,
-            minHeight: 280,
-            textAlign: "center",
-            height: "85vh"
-          }}
-        >
-          <Button
-            href="https://github.com/apps/dev-reactivated-app/installations/new"
-            size="large"
-            icon="github"
-            type="primary"
-          >
-            Add a new repo
-          </Button>{" "}
-          <Button onClick={logOut} size="large" icon="logout" type="primary">
-            Logout
-          </Button>{" "}
-          <List
-            style={{ marginTop: "50px" }}
-            size="large"
-            bordered
-            dataSource={repositories}
-            renderItem={repository => <List.Item>{repository.name}</List.Item>}
-          />
-        </div>
-      </Content>
-      <Footer style={{ textAlign: "center" }}>
-        Reactivated App ©2019 Created by Premier Octet
-      </Footer>
-    </Layout>
+          Add a new repo
+        </Button>{" "}
+        <Button onClick={logOut} size="large" icon="logout" type="primary">
+          Logout
+        </Button>{" "}
+        <List
+          className="list-container"
+          size="large"
+          bordered
+          dataSource={repositories}
+          renderItem={repository => (
+            <a
+              href={repository.html_url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <List.Item>
+                <p className="repo-name">{repository.name}</p>
+                <p className="repo-author">
+                  create by {repository.owner.login}{" "}
+                  {formatDistance(
+                    subDays(new Date(repository.created_at), 3),
+                    new Date()
+                  )}{" "}
+                  ago
+                </p>
+              </List.Item>
+            </a>
+          )}
+        />
+      </div>
+    </Content>
   );
 }
 

@@ -6,6 +6,8 @@
     "@rehooks/local-storage": "^1.7.0",
     "antd": "^3.25.1",
     "axios": "^0.19.0",
+    "date-fns": "^2.7.0",
+    "node-sass": "^4.13.0",
     "query-string": "^6.8.3",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
