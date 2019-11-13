@@ -3,7 +3,6 @@ import { useAuth } from "../../contexts/auth-context";
 import apiClient from "../../clients/api";
 import { Button } from "antd";
 import "antd/dist/antd.css";
-import "./Login.css";
 
 const queryString = require("query-string");
 
@@ -37,28 +36,26 @@ function Login() {
   }, []);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <div style={{ fontSize: 40 }}>
-          reactivated.app{" "}
-          <span
-            style={{ verticalAlign: "middle" }}
-            role="img"
-            aria-label="light"
-          >
-            ⚡️
-          </span>
-        </div>
+    <div
+      style={{
+        textAlign: "center",
+        paddingTop: "25%",
+        backgroundColor: "#282c34",
+        height: "100vh"
+      }}
+    >
+      <div style={{ fontSize: 40, marginBottom: 30, color: "white" }}>
+        reactivated.app{" "}
+        <span style={{ verticalAlign: "middle" }} role="img" aria-label="light">
+          ⚡️
+        </span>
+      </div>
 
-        <a
-          style={{ color: "white", marginTop: 20 }}
-          href={`${process.env.REACT_APP_API_HOST}/auth/github`}
-        >
-          <Button type="primary" size="large" icon="github" loading={loading}>
-            Sign in with Github
-          </Button>
-        </a>
-      </header>
+      <a href={`${process.env.REACT_APP_API_HOST}/auth/github`}>
+        <Button type="primary" size="large" icon="github" loading={loading}>
+          Sign in with Github
+        </Button>
+      </a>
     </div>
   );
 }
