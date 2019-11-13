@@ -41,7 +41,11 @@ function Login() {
       <header className="App-header">
         <div style={{ fontSize: 40 }}>
           reactivated.app{" "}
-          <span role="img" aria-label="light">
+          <span
+            style={{ verticalAlign: "middle" }}
+            role="img"
+            aria-label="light"
+          >
             ⚡️
           </span>
         </div>

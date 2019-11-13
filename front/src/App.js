@@ -1,9 +1,9 @@
 import React from "react";
 import Login from "./containers/Login/Login";
 import Template from "./containers/Template/Template";
+import { useAuth } from "./contexts/auth-context";
 
 import "./App.css";
-import { useAuth } from "./contexts/auth-context";
 
 function App() {
   const { token } = useAuth();

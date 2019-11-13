@@ -23,7 +23,14 @@ function Template() {
       <Router />
 
       <Footer style={{ textAlign: "center" }}>
-        Reactivated App ©2019 Created by Premier Octet
+        <b>Reactivated App ©2019 </b> created by{" "}
+        <a
+          href="https://www.premieroctet.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Premier Octet
+        </a>
       </Footer>
     </Layout>
   );

@@ -85,6 +85,11 @@ function Home() {
               rel="noopener noreferrer"
             >
               <List.Item>
+                <img
+                  className="repo-icon"
+                  src={repository.owner.avatar_url}
+                  alt="repo-icon"
+                />
                 <p className="repo-name">{repository.name}</p>
                 <p className="repo-author">
                   create by {repository.owner.login}{" "}
