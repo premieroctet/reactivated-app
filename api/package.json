@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "NODE_ENV=prod nest build",
+    "build": "NODE_ENV=prod yarn prebuild && tsc -p tsconfig.build.json",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "NODE_ENV=dev nest start --watch",
@@ -18,8 +18,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "dev": "ts-node-dev --ignore-watch node_modules ./src/main.ts"
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "dev": "ts-node-dev --ignore-watch node_modules ./src/main.ts",
+    "postinstall": "yarn build"
   },
   "dependencies": {
     "@nestjs/common": "^6.7.2",

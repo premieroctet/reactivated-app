@@ -15,7 +15,7 @@ export class GitHubStrategy extends PassportStrategy(Strategy) {
         callbackURL: config.get('CALLBACK_URL'),
       },
       async (accessToken, tokenSecret, profile, done) => {
-        const user = await userService.getUser(profile.username);
+        let user = await userService.getUser(profile.username);
 
         if (!user) {
           let newUser: User = {
@@ -23,7 +23,7 @@ export class GitHubStrategy extends PassportStrategy(Strategy) {
             githubId: profile.id,
             githubToken: accessToken,
           };
-          newUser = await userService.createUser(newUser);
+          user = await userService.createUser(newUser);
         }
 
         return done(null, user);
