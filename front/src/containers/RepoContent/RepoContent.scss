@@ -2,9 +2,16 @@
   width: 100%;
   text-align: center;
   padding: 30px;
+  .repo-icon {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+  }
   .repo-title {
     color: var(--main-color);
     font-weight: bold;
     font-size: 25px;
+    margin: 0;
   }
 }

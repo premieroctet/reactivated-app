@@ -5,7 +5,7 @@ import "./RepoContent.scss";
 
 function RepoContent(props) {
   const [data, setData] = useState({});
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const {
     match: { params }
@@ -26,17 +26,37 @@ function RepoContent(props) {
     // eslint-disable-next-line
   }, []);
   console.log(data);
-  console.log(data.updated_at);
+
   return (
     <div className="repo-content">
       {loading ? (
         <p className="repo-title">Loading...</p>
       ) : (
         <>
-          <p className="repo-title">{data.name}</p>
+          <img
+            className="repo-icon"
+            src={data.owner.avatar_url}
+            alt="repo-icon"
+          />
           <p className="repo-title">
-            {data.updated_at}{" "}
-            {/*formatDistance(subDays(new Date(data.updated_at), 3), new Date())*/}
+            <a href={data.html_url} target="_blank" rel="noopener noreferrer">
+              {data.name}
+            </a>
+          </p>
+          <p className="repo-updated">
+            last updated{" "}
+            {formatDistance(subDays(new Date(data.updated_at), 3), new Date())}{" "}
+            ago
+          </p>
+          <p className="repo-author">
+            by{" "}
+            <a
+              href={data.owner.html_url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {data.owner.login}
+            </a>
           </p>
         </>
       )}
