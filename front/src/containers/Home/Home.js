@@ -27,7 +27,6 @@ function Home() {
       data = [...data, ...item.data.repositories];
     });
     setRepositories(data);
-    console.log(data);
   };
 
   useEffect(() => {
@@ -53,7 +52,7 @@ function Home() {
         }}
       >
         <Button
-          href="https://github.com/apps/dev-reactivated-app/installations/new"
+          href={`https://github.com/apps/${process.env.REACT_APP_NAME}/installations/new`}
           size="large"
           icon="github"
           type="primary"

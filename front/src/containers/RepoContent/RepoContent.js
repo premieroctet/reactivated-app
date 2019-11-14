@@ -58,6 +58,11 @@ function RepoContent(props) {
               {data.owner.login}
             </a>
           </p>
+          {data.language && (
+            <p className="repo-author">
+              made with <b>{data.language}</b>
+            </p>
+          )}
         </>
       )}
     </div>
