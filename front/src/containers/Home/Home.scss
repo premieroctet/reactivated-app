@@ -16,11 +16,10 @@
     height: 90px;
   }
   li:hover {
-    background-color: #40a9ff;
+    background-color: var(--main-color);
     color: white;
     .repo-author {
       color: white;
-      font-weight: bold;
     }
   }
   .repo-name {

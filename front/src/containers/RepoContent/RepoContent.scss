@@ -1,0 +1,10 @@
+.repo-content {
+  width: 100%;
+  text-align: center;
+  padding: 30px;
+  .repo-title {
+    color: var(--main-color);
+    font-weight: bold;
+    font-size: 25px;
+  }
+}

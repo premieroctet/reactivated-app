@@ -1,32 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../../contexts/auth-context";
 import { Layout, Breadcrumb, Button, List } from "antd";
 import { deleteFromStorage } from "@rehooks/local-storage";
 import githubClient from "../../clients/github";
 import { formatDistance, subDays } from "date-fns";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import "./Home.scss";
 
 const { Content } = Layout;
 
 function Home() {
   const [repositories, setRepositories] = useState([]);
-  const { token } = useAuth();
-  const headers = {
-    Authorization: "token " + token,
-    Accept: "application/vnd.github.machine-man-preview+json"
-  };
 
   const loadRepository = async () => {
-    const response = await githubClient.get("/user/installations", {
-      headers
-    });
+    const response = await githubClient.get("/user/installations");
     const promises = response.data.installations.map(installation => {
       return githubClient.get(
-        `/user/installations/${installation.id}/repositories`,
-        {
-          headers
-        }
+        `/user/installations/${installation.id}/repositories`
       );
     });
 
@@ -79,11 +69,7 @@ function Home() {
           bordered
           dataSource={repositories}
           renderItem={repository => (
-            <a
-              href={repository.html_url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <Link to={`/repo/${repository.owner.login}/${repository.name}`}>
               <List.Item>
                 <img
                   className="repo-icon"
@@ -100,7 +86,7 @@ function Home() {
                   ago
                 </p>
               </List.Item>
-            </a>
+            </Link>
           )}
         />
       </div>
