@@ -52,7 +52,7 @@ function Home() {
         }}
       >
         <Button
-          href={`https://github.com/apps/${process.env.REACT_APP_NAME}/installations/new`}
+          href={`https://github.com/apps/${process.env.REACT_GITHUB_APP_NAME}/installations/new`}
           size="large"
           icon="github"
           type="primary"
