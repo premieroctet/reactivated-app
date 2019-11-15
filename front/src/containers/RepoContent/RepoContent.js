@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import githubClient from "../../clients/github";
+import { Button } from "antd";
 import { formatDistance, subDays } from "date-fns";
 import { Link } from "react-router-dom";
+<<<<<<< HEAD
 import { motion } from "framer-motion";
 import { Button } from "antd";
+=======
+>>>>>>> add responsive & design
 import "./RepoContent.scss";
 
 function RepoContent(props) {
