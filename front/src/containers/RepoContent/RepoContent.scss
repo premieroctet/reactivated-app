@@ -5,8 +5,11 @@
   .repo-icon {
     width: 70px;
     height: 70px;
-    margin-bottom: 20px;
     border-radius: 10px;
+    display: block;
+    margin: 0 auto;
+    margin-top: 20px;
+    margin-bottom: 15px;
   }
   .repo-title {
     color: var(--main-color);
