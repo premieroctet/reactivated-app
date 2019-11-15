@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import githubClient from "../../clients/github";
+import { Button } from "antd";
 import { formatDistance, subDays } from "date-fns";
+import { Link } from "react-router-dom";
 import "./RepoContent.scss";
 
 function RepoContent(props) {
@@ -33,6 +35,11 @@ function RepoContent(props) {
         <p className="repo-title">Loading...</p>
       ) : (
         <>
+          <Link to="/">
+            <Button size="large" icon="github" type="primary">
+              Return to repo list
+            </Button>
+          </Link>
           <img
             className="repo-icon"
             src={data.owner.avatar_url}
