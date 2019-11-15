@@ -1,7 +1,6 @@
 .list-container {
   margin: 0 auto;
   margin-top: 50px;
-  width: 35%;
   cursor: pointer;
   .repo-icon {
     width: 50px;
@@ -12,8 +11,6 @@
   }
   .ant-list-item {
     display: block;
-    text-align: left;
-    height: 90px;
   }
   li:hover {
     background-color: var(--main-color);
@@ -23,20 +20,13 @@
     }
   }
   .repo-name {
-    width: 77%;
     display: inline-block;
     font-size: 18px;
-    font-weight: bold;
     margin-bottom: 0;
-    vertical-align: super;
   }
   .repo-author {
-    width: 77%;
     font-size: 13px;
     margin-bottom: 0;
     color: grey;
-    position: relative;
-    left: 62px;
-    bottom: 22px;
   }
 }
