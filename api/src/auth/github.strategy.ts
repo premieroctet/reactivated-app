@@ -14,6 +14,7 @@ export class GitHubStrategy extends PassportStrategy(Strategy) {
         clientSecret: config.get('CLIENT_SECRET'),
         callbackURL: config.get('CALLBACK_URL'),
       },
+
       async (accessToken, tokenSecret, profile, done) => {
         let user = await userService.getUser(profile.username);
 
