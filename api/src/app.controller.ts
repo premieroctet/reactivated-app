@@ -1,4 +1,4 @@
-import { Controller, Get, Post, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, UseGuards, Request } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth/auth.service';
 
@@ -12,19 +12,14 @@ export class AppController {
     return {};
   }
 
-  @UseGuards(AuthGuard('jwt'))
-  @Get('/test')
-  async test(@Request() req) {
-    return { hello: 'world' };
-  }
-
   @UseGuards(AuthGuard('github'))
   @Get('/auth/github/callback')
   async redirect(@Request() req) {
+    const { githubToken, username, githubId } = req.user;
     const jwt = this.authService.createToken({
-      githubToken: req.user.githubToken,
-      userName: req.user.username,
-      githubId: req.user.githubId,
+      githubToken: githubToken,
+      userName: username,
+      githubId: githubId,
     });
     return jwt;
   }

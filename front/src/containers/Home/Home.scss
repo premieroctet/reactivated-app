@@ -3,11 +3,11 @@
   margin-top: 50px;
   cursor: pointer;
   .repo-icon {
-    width: 50px;
-    height: 50px;
+    width: 30px;
+    height: 30px;
     border-radius: 5px;
     display: inline-block;
-    margin: 3px 10px 0 0;
+    margin: 7px 10px 0 0;
   }
   .ant-list-item {
     display: block;
@@ -23,11 +23,13 @@
     display: inline-block;
     font-size: 18px;
     margin-bottom: 0;
+    font-weight: 600;
   }
   .repo-author {
     font-size: 13px;
     margin-bottom: 0;
     color: grey;
+    font-weight: 300;
   }
 }
 
