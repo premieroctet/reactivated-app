@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { formatDistance, subDays } from "date-fns";
+import { motion } from "framer-motion";
 import githubClient from "../../clients/github";
 import { Button, List, Row, Col } from "antd";
 import { Link } from "react-router-dom";
@@ -55,11 +56,16 @@ function Home() {
                   <List.Item>
                     <Row>
                       <Col xs={24} sm={4} md={4} lg={4} xl={4}>
-                        <img
-                          className="repo-icon"
-                          src={repository.owner.avatar_url}
-                          alt="repo-icon"
-                        />
+                        <motion.div
+                          animate={{ scale: 1.5 }}
+                          transition={{ duration: 0.5 }}
+                        >
+                          <img
+                            className="repo-icon"
+                            src={repository.owner.avatar_url}
+                            alt="repo-icon"
+                          />
+                        </motion.div>
                       </Col>
                       <Col>
                         <p className="repo-name">{repository.name}</p>
