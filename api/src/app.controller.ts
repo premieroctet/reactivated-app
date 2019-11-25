@@ -12,12 +12,6 @@ export class AppController {
     return {};
   }
 
-  @UseGuards(AuthGuard('jwt'))
-  @Get('/test')
-  async test(@Request() req) {
-    return { hello: 'world' };
-  }
-
   @UseGuards(AuthGuard('github'))
   @Get('/auth/github/callback')
   async redirect(@Request() req) {
