@@ -20,7 +20,6 @@ export class UsersService extends TypeOrmCrudService<User> {
     const users = await this.usersRepository.find({
       where: [{ username }],
     });
-
     return users[0];
   }
 

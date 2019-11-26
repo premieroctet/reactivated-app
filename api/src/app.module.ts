@@ -3,13 +3,16 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
+import { RepositoryModule } from './repository/repository.module';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
 import { AuthModule } from './auth/auth.module';
+import { WebhooksModule } from './webhooks/webhooks.module';
 
 @Module({
   imports: [
     UsersModule,
+    RepositoryModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -26,6 +29,7 @@ import { AuthModule } from './auth/auth.module';
     }),
     ConfigModule,
     AuthModule,
+    WebhooksModule,
   ],
   controllers: [AppController],
   providers: [AppService],
