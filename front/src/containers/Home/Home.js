@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Button, List, Row, Col } from "antd";
-import githubClient from "../../clients/github";
 import { formatDistance, subDays } from "date-fns";
-import axios from "axios";
+import { motion } from "framer-motion";
+import githubClient from "../../clients/github";
+import { Button, List, Row, Col } from "antd";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import "./Home.scss";
 
 function Home() {
@@ -44,40 +45,49 @@ function Home() {
 
       <Row type="flex" justify="center">
         <Col sm={24} md={14} lg={16}>
-          <List
-            className="list-container"
-            size="large"
-            bordered
-            dataSource={repositories}
-            renderItem={repository => (
-              <Link to={`/repo/${repository.owner.login}/${repository.name}`}>
-                <List.Item>
-                  <Row>
-                    <Col xs={24} sm={4} md={4} lg={4} xl={4}>
-                      <img
-                        className="repo-icon"
-                        src={repository.owner.avatar_url}
-                        alt="repo-icon"
-                      />
-                    </Col>
-                    <Col>
-                      <p className="repo-name">{repository.name}</p>
-                    </Col>
-                    <Col>
-                      <p className="repo-author">
-                        create by {repository.owner.login}{" "}
-                        {formatDistance(
-                          subDays(new Date(repository.created_at), 3),
-                          new Date()
-                        )}{" "}
-                        ago
-                      </p>
-                    </Col>
-                  </Row>
-                </List.Item>
-              </Link>
-            )}
-          />
+          {repositories.length !== 0 ? (
+            <List
+              className="list-container"
+              size="large"
+              bordered
+              dataSource={repositories}
+              renderItem={repository => (
+                <Link to={`/repo/${repository.owner.login}/${repository.name}`}>
+                  <List.Item>
+                    <Row>
+                      <Col xs={24} sm={4} md={4} lg={4} xl={4}>
+                        <motion.div
+                          animate={{ scale: 1.5 }}
+                          transition={{ duration: 0.5 }}
+                        >
+                          <img
+                            className="repo-icon"
+                            src={repository.owner.avatar_url}
+                            alt="repo-icon"
+                          />
+                        </motion.div>
+                      </Col>
+                      <Col>
+                        <p className="repo-name">{repository.name}</p>
+                      </Col>
+                      <Col>
+                        <p className="repo-author">
+                          create by {repository.owner.login}{" "}
+                          {formatDistance(
+                            subDays(new Date(repository.created_at), 3),
+                            new Date()
+                          )}{" "}
+                          ago
+                        </p>
+                      </Col>
+                    </Row>
+                  </List.Item>
+                </Link>
+              )}
+            />
+          ) : (
+            <p className="loading-message">Loading</p>
+          )}
         </Col>
       </Row>
     </>

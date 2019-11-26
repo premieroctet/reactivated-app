@@ -13,7 +13,6 @@ function AuthProvider(props) {
 
 function useAuth() {
   const context = useContext(AuthContext);
-
   return context;
 }
 
