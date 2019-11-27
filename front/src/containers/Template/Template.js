@@ -31,9 +31,7 @@ function Template() {
           </Button>
         </Menu>
       </Header>
-
       <Router />
-
       <Footer style={{ textAlign: "center" }}>
         <b>
           Reactivated App{" "}

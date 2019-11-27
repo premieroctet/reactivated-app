@@ -42,7 +42,7 @@ function Home() {
         style={{
           background: "#fff",
           padding: 24,
-          minHeight: "86vh",
+          minHeight: "100vh",
           textAlign: "center"
         }}
       >
@@ -69,6 +69,11 @@ function Home() {
                   alt="repo-icon"
                 />
                 <p className="repo-name">{repository.name}</p>
+                <img
+                  className="arrow-icon"
+                  src={require(`../../assets/img/next.png`)}
+                  alt="repo-icon"
+                />
                 <p className="repo-author">
                   create by {repository.owner.login}{" "}
                   {formatDistance(

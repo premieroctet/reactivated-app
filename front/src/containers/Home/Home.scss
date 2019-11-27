@@ -3,6 +3,10 @@
   margin-top: 30px;
   width: 35%;
   cursor: pointer;
+  animation-name: floating;
+  animation-duration: 3s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
   .repo-icon {
     width: 50px;
     height: 50px;
@@ -27,9 +31,10 @@
     font-weight: bold;
     margin-bottom: 0;
     vertical-align: super;
+    width: 30%;
   }
   .repo-author {
-    width: 77%;
+    width: 70%;
     font-size: 13px;
     margin-bottom: 0;
     color: grey;
@@ -37,7 +42,21 @@
     left: 62px;
     bottom: 22px;
   }
+  .arrow-icon {
+    width: 27px;
+    height: 27px;
+    position: relative;
+    left: 50%;
+  }
 }
+
+.title {
+  font-size: 27px;
+  font-weight: 600;
+  margin-top: 20px;
+  color: var(--main-color);
+}
+
 @media screen and (max-width: 1100px) {
   .list-container {
     width: 50%;
@@ -73,6 +92,9 @@
       width: 100%;
     }
   }
+  .title {
+    font-size: 14px;
+  }
 }
 
 @media screen and (max-width: 600px) {
@@ -84,9 +106,14 @@
   }
 }
 
-.title {
-  font-size: 27px;
-  font-weight: 600;
-  margin-top: 20px;
-  color: var(--main-color);
+@keyframes floating {
+  from {
+    transform: translate(0, 0px);
+  }
+  50% {
+    transform: translate(0, 30px);
+  }
+  to {
+    transform: translate(0, -0px);
+  }
 }
