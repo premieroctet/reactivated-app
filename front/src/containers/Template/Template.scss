@@ -1,0 +1,17 @@
+.layout {
+  height: 100vh;
+  .logout-button {
+    margin-left: 78%;
+  }
+
+  @media screen and (max-width: 650px) {
+    .logout-button {
+      margin-left: 45%;
+    }
+  }
+  @media screen and (max-width: 350px) {
+    .logout-button {
+      margin-left: 35%;
+    }
+  }
+}

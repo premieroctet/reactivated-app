@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Layout, Breadcrumb, Button, List } from "antd";
-import { deleteFromStorage } from "@rehooks/local-storage";
 import githubClient from "../../clients/github";
 import { formatDistance, subDays } from "date-fns";
 import axios from "axios";
@@ -34,10 +33,6 @@ function Home() {
     // eslint-disable-next-line
   }, []);
 
-  const logOut = () => {
-    deleteFromStorage("token");
-  };
-
   return (
     <Content style={{ padding: "0 50px" }}>
       <Breadcrumb style={{ margin: "16px 0" }}>
@@ -57,17 +52,9 @@ function Home() {
           icon="github"
           type="primary"
         >
-          Add a new repo
+          Add repo
         </Button>{" "}
-        <Button
-          className="logout-button"
-          onClick={logOut}
-          size="large"
-          icon="logout"
-          type="primary"
-        >
-          Logout
-        </Button>
+        <p className="title">Repositories Availables</p>
         <List
           className="list-container"
           size="large"

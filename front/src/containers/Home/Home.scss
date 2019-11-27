@@ -1,6 +1,6 @@
 .list-container {
   margin: 0 auto;
-  margin-top: 50px;
+  margin-top: 30px;
   width: 35%;
   cursor: pointer;
   .repo-icon {
@@ -82,7 +82,11 @@
       font-size: 10px;
     }
   }
-  .logout-button {
-    margin-top: 15px;
-  }
+}
+
+.title {
+  font-size: 27px;
+  font-weight: 600;
+  margin-top: 20px;
+  color: var(--main-color);
 }
