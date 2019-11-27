@@ -15,21 +15,28 @@ export class WebhooksController {
     @Body() body: any,
   ) {
     if (['installation_repositories', 'installation'].includes(xGitHubEvent)) {
-      if (body.repositories_added[0]) {
-        const repoAdd = body.repositories_added[0];
-        const user = await this.userService.getUser(body.sender.login);
-        const newRepo = {
-          name: repoAdd.name,
-          full_name: repoAdd.full_name,
-          githubId: repoAdd.id,
-          installationId: body.installation.id,
-          user,
-        };
-        await this.repositoryService.addRepo(newRepo);
+      for (var i = 0; i < body.repositories_added.length; i++) {
+        if (body.repositories_added[i]) {
+          const repoAdd = body.repositories_added[i];
+          const user = await this.userService.getUser(body.sender.login);
+          const newRepo = {
+            name: repoAdd.name,
+            full_name: repoAdd.full_name,
+            githubId: repoAdd.id,
+            installationId: body.installation.id,
+            user,
+          };
+          await this.repositoryService.addRepo(newRepo);
+          console.log('Repo add :' + newRepo);
+        }
       }
-      if (body.repositories_removed[0]) {
-        const repoDelete = body.repositories_removed[0];
-        await this.repositoryService.deleteRepo({ githubId: repoDelete.id });
+
+      for (var i = 0; i < body.repositories_removed.length; i++) {
+        if (body.repositories_removed[i]) {
+          const repoDelete = body.repositories_removed[i];
+          await this.repositoryService.deleteRepo({ githubId: repoDelete.id });
+          console.log('Repo delete :' + repoDelete);
+        }
       }
       return {};
     }
