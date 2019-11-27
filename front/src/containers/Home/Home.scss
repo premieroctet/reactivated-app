@@ -1,19 +1,16 @@
 .list-container {
   margin: 0 auto;
   margin-top: 50px;
-  width: 35%;
   cursor: pointer;
   .repo-icon {
-    width: 50px;
-    height: 50px;
+    width: 30px;
+    height: 30px;
     border-radius: 5px;
     display: inline-block;
-    margin: 3px 10px 0 0;
+    margin: 7px 10px 0 0;
   }
   .ant-list-item {
     display: block;
-    text-align: left;
-    height: 90px;
   }
   li:hover {
     background-color: var(--main-color);
@@ -23,20 +20,21 @@
     }
   }
   .repo-name {
-    width: 77%;
     display: inline-block;
     font-size: 18px;
-    font-weight: bold;
     margin-bottom: 0;
-    vertical-align: super;
+    font-weight: 600;
   }
   .repo-author {
-    width: 77%;
     font-size: 13px;
     margin-bottom: 0;
     color: grey;
-    position: relative;
-    left: 62px;
-    bottom: 22px;
+    font-weight: 300;
   }
+}
+
+.loading-message {
+  font-size: 20px;
+  color: var(--main-color);
+  margin-top: 50px;
 }

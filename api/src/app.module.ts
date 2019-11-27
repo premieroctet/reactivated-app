@@ -14,7 +14,7 @@ import { AuthModule } from './auth/auth.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        type: 'mysql' as 'mysql',
+        type: configService.get('TYPEORM_CONNECTION') as 'postgres',
         host: configService.get('TYPEORM_HOST'),
         port: Number(configService.get('TYPEORM_PORT')),
         username: configService.get('TYPEORM_USERNAME'),

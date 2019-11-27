@@ -1,15 +1,10 @@
-import { Controller, Get, Post, UseGuards, Request } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Controller, Get, UseGuards, Request } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { AuthService } from './auth/auth.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
-
-  @Get()
-  async getHello(): Promise<string> {
-    return this.appService.getHello();
-  }
+  constructor(private readonly authService: AuthService) {}
 
   @UseGuards(AuthGuard('github'))
   @Get('/auth/github')
@@ -20,6 +15,12 @@ export class AppController {
   @UseGuards(AuthGuard('github'))
   @Get('/auth/github/callback')
   async redirect(@Request() req) {
-    return req.user;
+    const { githubToken, username, githubId } = req.user;
+    const jwt = this.authService.createToken({
+      githubToken: githubToken,
+      userName: username,
+      githubId: githubId,
+    });
+    return jwt;
   }
 }
