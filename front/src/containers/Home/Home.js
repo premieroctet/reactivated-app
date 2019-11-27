@@ -59,9 +59,15 @@ function Home() {
         >
           Add a new repo
         </Button>{" "}
-        <Button onClick={logOut} size="large" icon="logout" type="primary">
+        <Button
+          className="logout-button"
+          onClick={logOut}
+          size="large"
+          icon="logout"
+          type="primary"
+        >
           Logout
-        </Button>{" "}
+        </Button>
         <List
           className="list-container"
           size="large"

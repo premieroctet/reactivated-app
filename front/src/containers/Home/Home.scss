@@ -13,7 +13,6 @@
   .ant-list-item {
     display: block;
     text-align: left;
-    height: 90px;
   }
   li:hover {
     background-color: var(--main-color);
@@ -37,5 +36,53 @@
     position: relative;
     left: 62px;
     bottom: 22px;
+  }
+}
+@media screen and (max-width: 1100px) {
+  .list-container {
+    width: 50%;
+  }
+}
+
+@media screen and (max-width: 850px) {
+  .list-container {
+    width: 70%;
+  }
+}
+
+@media screen and (max-width: 650px) {
+  .list-container {
+    width: 80%;
+    text-align: center;
+    .ant-list-item {
+      text-align: center;
+      padding: 10px;
+    }
+    .repo-icon {
+      width: 35px;
+      height: 35px;
+      margin: 0 auto;
+    }
+    .repo-name {
+      font-size: 14px;
+      width: 100%;
+    }
+    .repo-author {
+      bottom: 0;
+      left: 0;
+      width: 100%;
+    }
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .list-container {
+    width: 95%;
+    .repo-author {
+      font-size: 10px;
+    }
+  }
+  .logout-button {
+    margin-top: 15px;
   }
 }

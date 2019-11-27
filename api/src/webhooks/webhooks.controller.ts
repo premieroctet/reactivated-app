@@ -19,7 +19,7 @@ export class WebhooksController {
       body.repositories_added.forEach(async repoAdd => {
         const newRepo = {
           name: repoAdd.name,
-          full_name: repoAdd.full_name,
+          fullName: repoAdd.full_name,
           githubId: repoAdd.id,
           installationId: body.installation.id,
           user,

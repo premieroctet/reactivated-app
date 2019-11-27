@@ -18,7 +18,7 @@ export class RepositoryEntity {
 
   @ApiModelProperty()
   @Column()
-  full_name: string;
+  fullName: string;
 
   @ApiModelProperty()
   @Column()

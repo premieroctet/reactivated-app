@@ -13,7 +13,7 @@ export class RepositoryService extends TypeOrmCrudService<RepositoryEntity> {
     super(repositoryContent);
   }
 
-  async getAllUsers(): Promise<RepositoryEntity[]> {
+  async getAllRepositories(): Promise<RepositoryEntity[]> {
     return await this.repositoryContent.find();
   }
 
