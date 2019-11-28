@@ -1,7 +1,8 @@
 import React from "react";
-import { Layout, Menu, Row, Col, Breadcrumb } from "antd";
-import { deleteFromStorage } from "@rehooks/local-storage";
+import { Layout, Menu, Button } from "antd";
 import Router from "../Router";
+import { deleteFromStorage } from "@rehooks/local-storage";
+import "./Template.scss";
 
 const { Header, Footer } = Layout;
 
@@ -12,39 +13,38 @@ function Template() {
   return (
     <Layout>
       <Header>
-        <Row type="flex" justify="center">
-          <Menu
-            theme="dark"
-            mode="horizontal"
-            defaultSelectedKeys={["1"]}
-            style={{ lineHeight: "64px" }}
+        <Menu
+          theme="dark"
+          mode="horizontal"
+          defaultSelectedKeys={["1"]}
+          style={{ lineHeight: "64px" }}
+        >
+          <Menu.Item key="1">Home</Menu.Item>
+          <Button
+            onClick={logOut}
+            size="large"
+            icon="logout"
+            type="primary"
+            className="logout-button"
           >
-            <Menu.Item key="1">Home</Menu.Item>
-            <Menu.Item onClick={logOut} key="2">
-              Logout
-            </Menu.Item>
-          </Menu>
-        </Row>
+            Logout
+          </Button>
+        </Menu>
       </Header>
-
-      <Row type="flex" justify="center">
-        <Col xs={22} lg={18}>
-          <Breadcrumb style={{ margin: "16px 0" }}></Breadcrumb>
-          <div
-            style={{
-              background: "#fff",
-              padding: 24,
-              minHeight: "86vh",
-              textAlign: "center"
-            }}
-          >
-            <Router />
-          </div>
-        </Col>
-      </Row>
-
+      <Router />
       <Footer style={{ textAlign: "center" }}>
-        <b>Reactivated App ©2019 </b> created by{" "}
+        <b>
+          Reactivated App{" "}
+          <span
+            style={{ verticalAlign: "middle" }}
+            role="img"
+            aria-label="light"
+          >
+            🚀
+          </span>{" "}
+          ©2019{" "}
+        </b>{" "}
+        by{" "}
         <a
           href="https://www.premieroctet.com/"
           target="_blank"

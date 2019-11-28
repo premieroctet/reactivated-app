@@ -1,7 +1,12 @@
 .list-container {
   margin: 0 auto;
-  margin-top: 50px;
+  margin-top: 30px;
+  width: 35%;
   cursor: pointer;
+  animation-name: floating;
+  animation-duration: 3s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
   .repo-icon {
     width: 30px;
     height: 30px;
@@ -11,7 +16,13 @@
   }
   .ant-list-item {
     display: block;
+    text-align: left;
+    padding-top: 30px;
   }
+  .ant-list-item:last-child {
+    border-bottom: 1px solid rgb(223, 223, 223);
+  }
+
   li:hover {
     background-color: var(--main-color);
     color: white;
@@ -23,13 +34,98 @@
     display: inline-block;
     font-size: 18px;
     margin-bottom: 0;
-    font-weight: 600;
+    vertical-align: super;
+    width: 70%;
   }
   .repo-author {
+    width: 70%;
     font-size: 13px;
     margin-bottom: 0;
     color: grey;
     font-weight: 300;
+  }
+  .arrow-icon {
+    width: 27px;
+    height: 27px;
+    position: relative;
+    left: 8%;
+  }
+}
+
+.title {
+  font-size: 27px;
+  font-weight: 600;
+  margin-top: 20px;
+  color: var(--main-color);
+}
+
+@media screen and (max-width: 1200px) {
+  .list-container {
+    width: 50%;
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  .list-container {
+    width: 60%;
+  }
+}
+
+@media screen and (max-width: 850px) {
+  .list-container {
+    width: 70%;
+  }
+}
+
+@media screen and (max-width: 650px) {
+  .list-container {
+    width: 80%;
+    text-align: center;
+    .ant-list-item {
+      text-align: center;
+      padding: 10px;
+    }
+    .repo-icon {
+      width: 35px;
+      height: 35px;
+      margin: 0 auto;
+    }
+    .repo-name {
+      font-size: 14px;
+      width: 100%;
+    }
+    .repo-author {
+      bottom: 0;
+      left: 0;
+      width: 100%;
+    }
+    .arrow-icon {
+      display: none;
+    }
+  }
+  .title {
+    font-size: 14px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .list-container {
+    width: 95%;
+    .repo-author {
+      font-size: 10px;
+    }
+  }
+}
+
+@keyframes floating {
+  from {
+    transform: translate(0, 0px);
+  }
+  50% {
+    transform: translate(0, 30px);
+  }
+  to {
+    transform: translate(0, -0px);
   }
 }
 

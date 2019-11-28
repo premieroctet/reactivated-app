@@ -5,19 +5,29 @@
   .repo-icon {
     width: 70px;
     height: 70px;
+    margin-bottom: 50px;
     border-radius: 10px;
-    display: block;
-    margin: 0 auto;
-    margin-top: 20px;
-    margin-bottom: 15px;
-  }
-  .repo-updated {
-    margin-top: 20px;
+    animation-name: floating;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
   }
   .repo-title {
     color: var(--main-color);
     font-weight: bold;
     font-size: 15px;
     margin: 0;
+  }
+}
+
+@keyframes floating {
+  from {
+    transform: translate(0, 0px);
+  }
+  50% {
+    transform: translate(0, 10px);
+  }
+  to {
+    transform: translate(0, -0px);
   }
 }
