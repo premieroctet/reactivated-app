@@ -17,7 +17,12 @@
   .ant-list-item {
     display: block;
     text-align: left;
+    padding-top: 30px;
   }
+  .ant-list-item:last-child {
+    border-bottom: 1px solid rgb(223, 223, 223);
+  }
+
   li:hover {
     background-color: var(--main-color);
     color: white;
@@ -31,7 +36,7 @@
     font-weight: bold;
     margin-bottom: 0;
     vertical-align: super;
-    width: 30%;
+    width: 70%;
   }
   .repo-author {
     width: 70%;
@@ -46,7 +51,7 @@
     width: 27px;
     height: 27px;
     position: relative;
-    left: 50%;
+    left: 8%;
   }
 }
 
@@ -57,9 +62,15 @@
   color: var(--main-color);
 }
 
-@media screen and (max-width: 1100px) {
+@media screen and (max-width: 1200px) {
   .list-container {
     width: 50%;
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  .list-container {
+    width: 60%;
   }
 }
 
@@ -90,6 +101,9 @@
       bottom: 0;
       left: 0;
       width: 100%;
+    }
+    .arrow-icon {
+      display: none;
     }
   }
   .title {
