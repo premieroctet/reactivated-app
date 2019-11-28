@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Breadcrumb, Button, List } from "antd";
+import { Breadcrumb, Button, List, Layout } from "antd";
 import githubClient from "../../clients/github";
 import { formatDistance, subDays } from "date-fns";
-import githubClient from "../../clients/github";
-import { Button, List } from "antd";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import "./Home.scss";
+
+const { Content } = Layout;
 
 function Home() {
   const [repositories, setRepositories] = useState([]);

@@ -8,8 +8,8 @@
   animation-iteration-count: infinite;
   animation-timing-function: ease-in-out;
   .repo-icon {
-    width: 30px;
-    height: 30px;
+    width: 35px;
+    height: 35px;
     border-radius: 5px;
     display: inline-block;
     margin: 7px 10px 0 0;
@@ -34,8 +34,10 @@
     display: inline-block;
     font-size: 18px;
     margin-bottom: 0;
-    vertical-align: super;
+    font-weight: bold;
+    margin-left: 20px;
     width: 70%;
+    vertical-align: super;
   }
   .repo-author {
     width: 70%;
@@ -43,6 +45,9 @@
     margin-bottom: 0;
     color: grey;
     font-weight: 300;
+    position: relative;
+    left: 65px;
+    bottom: 15px;
   }
   .arrow-icon {
     width: 27px;
@@ -93,6 +98,7 @@
     .repo-name {
       font-size: 14px;
       width: 100%;
+      margin-left: 0;
     }
     .repo-author {
       bottom: 0;
