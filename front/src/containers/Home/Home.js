@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Breadcrumb, Button, List, Layout } from "antd";
-import githubClient from "../../clients/github";
-import { formatDistance, subDays } from "date-fns";
+import apiClient from "../../clients/api";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import "./Home.scss";
 
 const { Content } = Layout;
@@ -12,20 +10,9 @@ function Home() {
   const [repositories, setRepositories] = useState([]);
 
   const loadRepository = async () => {
-    const response = await githubClient.get("/user/installations");
-    const promises = response.data.installations.map(installation => {
-      return githubClient.get(
-        `/user/installations/${installation.id}/repositories`
-      );
-    });
-
-    const responses = await axios.all(promises);
-    let data = [];
-
-    responses.forEach(item => {
-      data = [...data, ...item.data.repositories];
-    });
-    setRepositories(data);
+    const responseApi = await apiClient.get("/repos/repo");
+    const repoList = responseApi.data.repoList;
+    setRepositories(repoList);
   };
 
   useEffect(() => {
@@ -61,11 +48,11 @@ function Home() {
           bordered
           dataSource={repositories}
           renderItem={repository => (
-            <Link to={`/repo/${repository.owner.login}/${repository.name}`}>
+            <Link to={`/repo/${repository.author}/${repository.name}`}>
               <List.Item>
                 <img
                   className="repo-icon"
-                  src={repository.owner.avatar_url}
+                  src={repository.repo_img}
                   alt="repo-icon"
                 />
                 <p className="repo-name">{repository.name}</p>
@@ -75,12 +62,7 @@ function Home() {
                   alt="repo-icon"
                 />
                 <p className="repo-author">
-                  create by {repository.owner.login}{" "}
-                  {formatDistance(
-                    subDays(new Date(repository.created_at), 3),
-                    new Date()
-                  )}{" "}
-                  ago
+                  created by <b>{repository.author}</b>
                 </p>
               </List.Item>
             </Link>

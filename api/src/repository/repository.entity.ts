@@ -28,6 +28,14 @@ export class RepositoryEntity {
   @Column()
   installationId: string;
 
+  @ApiModelProperty()
+  @Column()
+  author: string;
+
+  @ApiModelProperty()
+  @Column()
+  repo_img: string;
+
   @ManyToOne(user => User)
   user: User;
 }

@@ -17,9 +17,7 @@ function Login() {
       const response = await apiClient.get(
         `/auth/github/callback?code=${code}`
       );
-      console.log(response.data);
       var tokenDecoded = jwt_decode(response.data);
-      console.log(tokenDecoded);
       setToken(tokenDecoded.githubToken);
     } finally {
       setLoading(false);
