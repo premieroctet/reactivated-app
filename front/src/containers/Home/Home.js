@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Breadcrumb, Button, List, Layout } from "antd";
 import apiClient from "../../clients/api";
+import { useAuth } from "../../contexts/auth-context";
+import jwt_decode from "jwt-decode";
 import { Link } from "react-router-dom";
 import "./Home.scss";
 
@@ -8,10 +10,13 @@ const { Content } = Layout;
 
 function Home() {
   const [repositories, setRepositories] = useState([]);
+  const { token } = useAuth();
+  const code = jwt_decode(token);
+  const { userId } = code;
+
   const loadRepository = async () => {
-    const responseApi = await apiClient.get(`/users/:userId/repositories`);
-    const repoList = responseApi.data.repoList;
-    setRepositories(repoList);
+    const responseApi = await apiClient.get(`/users/${userId}/repositories`);
+    setRepositories(responseApi.data);
   };
 
   useEffect(() => {
@@ -51,7 +56,7 @@ function Home() {
               <List.Item>
                 <img
                   className="repo-icon"
-                  src={repository.repo_img}
+                  src={repository.repoImg}
                   alt="repo-icon"
                 />
                 <p className="repo-name">{repository.name}</p>

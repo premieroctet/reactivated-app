@@ -22,6 +22,6 @@ export class AppController {
       githubId: githubId,
       userId: id,
     });
-    return jwt;
+    return { token: jwt };
   }
 }

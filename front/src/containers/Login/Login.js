@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../contexts/auth-context";
-import jwt_decode from "jwt-decode";
 import apiClient from "../../clients/api";
 import { Button } from "antd";
 import "antd/dist/antd.css";
@@ -17,9 +16,8 @@ function Login() {
       const response = await apiClient.get(
         `/auth/github/callback?code=${code}`
       );
-      var tokenDecoded = jwt_decode(response.data);
-      setToken(tokenDecoded.githubToken);
-      console.log(tokenDecoded);
+      var responses = response.data.token;
+      setToken(responses);
     } finally {
       setLoading(false);
       window.history.pushState(null, "/", "/");
