@@ -15,11 +15,12 @@ export class AppController {
   @UseGuards(AuthGuard('github'))
   @Get('/auth/github/callback')
   async redirect(@Request() req) {
-    const { githubToken, username, githubId } = req.user;
+    const { githubToken, username, githubId, id } = req.user;
     const jwt = this.authService.createToken({
       githubToken: githubToken,
       userName: username,
       githubId: githubId,
+      userId: id,
     });
     return jwt;
   }

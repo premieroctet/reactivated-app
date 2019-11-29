@@ -34,7 +34,7 @@ export class RepositoryEntity {
 
   @ApiModelProperty()
   @Column()
-  repo_img: string;
+  repoImg: string;
 
   @ManyToOne(user => User)
   user: User;

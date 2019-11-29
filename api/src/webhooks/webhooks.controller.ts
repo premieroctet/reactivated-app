@@ -23,7 +23,7 @@ export class WebhooksController {
           githubId: repoAdd.id,
           installationId: body.installation.id,
           author: body.installation.account.login,
-          repo_img: body.installation.account.avatar_url,
+          repoImg: body.installation.account.avatar_url,
           user,
         };
         await this.repositoryService.addRepo(newRepo);

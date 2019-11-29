@@ -19,6 +19,7 @@ function Login() {
       );
       var tokenDecoded = jwt_decode(response.data);
       setToken(tokenDecoded.githubToken);
+      console.log(tokenDecoded);
     } finally {
       setLoading(false);
       window.history.pushState(null, "/", "/");

@@ -8,9 +8,8 @@ const { Content } = Layout;
 
 function Home() {
   const [repositories, setRepositories] = useState([]);
-
   const loadRepository = async () => {
-    const responseApi = await apiClient.get("/repos/repo");
+    const responseApi = await apiClient.get(`/users/:userId/repositories`);
     const repoList = responseApi.data.repoList;
     setRepositories(repoList);
   };
