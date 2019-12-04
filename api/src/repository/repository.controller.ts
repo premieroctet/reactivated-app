@@ -2,12 +2,12 @@ import { Controller, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RepositoryService } from './repository.service';
 import { Crud } from '@nestjsx/crud';
-import { RepositoryEntity } from './repository.entity';
+import { Repository } from './repository.entity';
 import { ApiUseTags } from '@nestjs/swagger';
 
 @Crud({
   model: {
-    type: RepositoryEntity,
+    type: Repository,
   },
   params: {
     userId: {

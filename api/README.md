@@ -21,6 +21,12 @@ $ npm run start:prod
 [http://localhost:3000](http://localhost:3000)
 [http://localhost:3000/swagger](http://localhost:3000/swagger)
 
+## Hooks
+
+```bash
+smee --url https://smee.io/BVk7Sqmgj7fXXcV --path /webhooks/consume --port 3000
+```
+
 ## Test
 
 ```bash

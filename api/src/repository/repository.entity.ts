@@ -3,7 +3,7 @@ import { ApiModelProperty } from '@nestjs/swagger';
 import { User } from '../users/user.entity';
 
 @Entity()
-export class RepositoryEntity {
+export class Repository {
   @ApiModelProperty({
     description: 'Id of the object',
     readOnly: true,
