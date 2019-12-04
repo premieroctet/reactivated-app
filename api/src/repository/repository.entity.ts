@@ -38,4 +38,12 @@ export class Repository {
 
   @ManyToOne(user => User)
   user: User;
+
+  @ApiModelProperty()
+  @Column('simple-json', { nullable: true })
+  dependencies?: any;
+
+  @ApiModelProperty()
+  @Column('simple-json', { nullable: true })
+  devDependencies?: any;
 }

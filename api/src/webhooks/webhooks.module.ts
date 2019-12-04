@@ -1,14 +1,20 @@
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { Module, HttpModule } from '@nestjs/common';
 import { WebhooksController } from './webhooks.controller';
-import { RepositoryService } from '../repository/repository.service';
-import { Repository } from '../repository/repository.entity';
 import { UsersModule } from '../users/users.module';
+import { RepositoryModule } from '../repository/repository.module';
+import { ConfigModule } from '../config/config.module';
+import { DependenciesQueue } from '../queue/dependencies.queue';
+import { QueueModule } from '../queue/queue.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Repository]), UsersModule],
+  imports: [
+    HttpModule,
+    RepositoryModule,
+    UsersModule,
+    ConfigModule,
+    QueueModule,
+  ],
   controllers: [WebhooksController],
-  providers: [RepositoryService],
-  exports: [RepositoryService],
+  providers: [DependenciesQueue],
 })
 export class WebhooksModule {}

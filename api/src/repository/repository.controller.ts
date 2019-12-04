@@ -16,17 +16,6 @@ import { ApiUseTags } from '@nestjs/swagger';
     },
   },
 })
-/*@Controller('repos')
-export class RepositoryController {
-  constructor(public service: RepositoryService) {}
-
-  @Get('/repo')
-  async loadRepoList(@Request() req) {
-    const repoList = await this.service.getAllRepositories();
-    return { repoList };
-  }
-}*/
-
 @UseGuards(AuthGuard('jwt'))
 @ApiUseTags('repositories')
 @Controller(`/users/:userId/repositories`)
