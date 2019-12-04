@@ -1,23 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { RepositoryEntity } from './repository.entity';
-import { Repository } from 'typeorm';
+import { Repository } from './repository.entity';
+import { Repository as RepositoryContent } from 'typeorm';
 
 @Injectable()
-export class RepositoryService extends TypeOrmCrudService<RepositoryEntity> {
+export class RepositoryService extends TypeOrmCrudService<Repository> {
   constructor(
-    @InjectRepository(RepositoryEntity)
-    private repositoryContent: Repository<RepositoryEntity>,
+    @InjectRepository(Repository)
+    private repositoryContent: RepositoryContent<Repository>,
   ) {
     super(repositoryContent);
   }
 
-  async getAllRepositories(): Promise<RepositoryEntity[]> {
+  async getAllRepositories(): Promise<Repository[]> {
     return await this.repositoryContent.find();
   }
 
-  async addRepo(repo: RepositoryEntity): Promise<RepositoryEntity> {
+  async addRepo(repo: Repository): Promise<Repository> {
     return await this.repositoryContent.save(repo);
   }
 

@@ -1,6 +1,5 @@
 .list-container {
   margin: 0 auto;
-  margin-top: 30px;
   width: 35%;
   cursor: pointer;
   animation-name: floating;
@@ -43,11 +42,10 @@
     width: 70%;
     font-size: 13px;
     margin-bottom: 0;
-    color: grey;
-    font-weight: 300;
+    color: rgb(114, 114, 114);
     position: relative;
     left: 65px;
-    bottom: 15px;
+    bottom: 17px;
   }
   .arrow-icon {
     width: 27px;
@@ -60,7 +58,8 @@
 .title {
   font-size: 27px;
   font-weight: 600;
-  margin-top: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
   color: var(--main-color);
 }
 

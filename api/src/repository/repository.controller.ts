@@ -1,14 +1,24 @@
-import { Controller, Get, UseGuards, Request } from '@nestjs/common';
+import { Controller, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { RepositoryService } from './repository.service';
 import { Crud } from '@nestjsx/crud';
-import { RepositoryEntity } from './repository.entity';
+import { Repository } from './repository.entity';
+import { ApiUseTags } from '@nestjs/swagger';
 
 @Crud({
   model: {
-    type: RepositoryEntity,
+    type: Repository,
+  },
+  params: {
+    userId: {
+      field: 'user',
+      type: 'number',
+    },
   },
 })
-@Controller('repos')
+@UseGuards(AuthGuard('jwt'))
+@ApiUseTags('repositories')
+@Controller(`/users/:userId/repositories`)
 export class RepositoryController {
   constructor(public service: RepositoryService) {}
 }

@@ -2,11 +2,10 @@
   width: 100%;
   text-align: center;
   padding: 30px;
-  min-height: 89.5vh;
   .repo-icon {
     width: 70px;
     height: 70px;
-    margin-bottom: 50px;
+    margin: 20px 0 20px 0;
     border-radius: 10px;
     animation-name: floating;
     animation-duration: 3s;
@@ -16,9 +15,23 @@
   .repo-title {
     color: var(--main-color);
     font-weight: bold;
-    font-size: 15px;
-    margin: 0;
+    font-size: 25px;
+    margin: 0 auto;
     margin-bottom: 10px;
+    margin-top: 30px;
+    background-color: white;
+    border-radius: 3px;
+    width: 250px;
+    padding: 5px;
+    border: 1px solid var(--main-color);
+  }
+
+  .repo-author {
+    font-size: 17px;
+  }
+  .repo-updated {
+    font-size: 15px;
+    color: rgb(114, 114, 114);
   }
 }
 
@@ -27,7 +40,7 @@
     transform: translate(0, 0px);
   }
   50% {
-    transform: translate(0, 10px);
+    transform: translate(0, 35px);
   }
   to {
     transform: translate(0, -0px);

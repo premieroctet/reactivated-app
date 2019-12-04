@@ -3,7 +3,7 @@ import { ApiModelProperty } from '@nestjs/swagger';
 import { User } from '../users/user.entity';
 
 @Entity()
-export class RepositoryEntity {
+export class Repository {
   @ApiModelProperty({
     description: 'Id of the object',
     readOnly: true,
@@ -28,6 +28,22 @@ export class RepositoryEntity {
   @Column()
   installationId: string;
 
+  @ApiModelProperty()
+  @Column()
+  author: string;
+
+  @ApiModelProperty()
+  @Column()
+  repoImg: string;
+
   @ManyToOne(user => User)
   user: User;
+
+  @ApiModelProperty()
+  @Column('simple-json', { nullable: true })
+  dependencies?: any;
+
+  @ApiModelProperty()
+  @Column('simple-json', { nullable: true })
+  devDependencies?: any;
 }

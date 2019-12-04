@@ -11,7 +11,7 @@ function Template() {
     deleteFromStorage("token");
   };
   return (
-    <Layout>
+    <Layout className="layout">
       <Header>
         <Menu
           theme="dark"
