@@ -6,10 +6,7 @@ import { ConfigModule } from '../config/config.module';
 const redisOptions = (configService: ConfigService) => {
   const config: BullModuleOptions = {
     options: {
-      redis: {
-        port: configService.get('REDIS_PORT') as any,
-        host: configService.get('REDIS_HOST'),
-      },
+      redis: configService.get('REDIS_URL'),
     },
   };
 
