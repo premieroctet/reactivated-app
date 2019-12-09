@@ -15,12 +15,13 @@ function RepoContent(props) {
   const { token } = useAuth();
   const code = jwt_decode(token);
   const { userId } = code;
+  const { id } = props.match.params;
 
   const loadRepository = async () => {
     setLoading(true);
-    const response = await apiClient.get(`/users/${userId}/repositories`);
-    setData(response.data[3]);
-    setDate(fromUnixTime(response.data[0].createdAt));
+    const response = await apiClient.get(`/users/${userId}/repositories/${id}`);
+    setData(response.data);
+    setDate(fromUnixTime(response.data.createdAt));
     setLoading(false);
   };
 

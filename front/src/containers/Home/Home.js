@@ -52,7 +52,7 @@ function Home() {
           bordered
           dataSource={repositories}
           renderItem={repository => (
-            <Link to={`/repo/${repository.author}/${repository.name}`}>
+            <Link to={`/repo/${repository.id}`}>
               <List.Item>
                 <img
                   className="repo-icon"

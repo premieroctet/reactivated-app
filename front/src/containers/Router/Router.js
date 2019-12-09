@@ -9,7 +9,7 @@ function Router() {
       <BrowserRouter>
         <Switch>
           <Route path="/" exact component={Home} />
-          <Route path="/repo/:owner/:repo" exact component={RepoContent} />
+          <Route path="/repo/:id" exact component={RepoContent} />
         </Switch>
       </BrowserRouter>
     </Suspense>
