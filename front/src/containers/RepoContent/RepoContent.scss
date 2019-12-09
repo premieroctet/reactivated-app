@@ -12,26 +12,55 @@
     animation-iteration-count: infinite;
     animation-timing-function: ease-in-out;
   }
+
   .repo-title {
     color: var(--main-color);
     font-weight: bold;
-    font-size: 25px;
+    font-size: 20px;
     margin: 0 auto;
     margin-bottom: 10px;
     margin-top: 30px;
     background-color: white;
     border-radius: 3px;
-    width: 250px;
+    width: 300px;
     padding: 5px;
     border: 1px solid var(--main-color);
   }
 
   .repo-author {
     font-size: 17px;
+    width: 30%;
+    margin: 0 auto;
   }
   .repo-updated {
     font-size: 15px;
+    width: 30%;
+    margin: 0 auto;
+    margin-top: 20px;
     color: rgb(114, 114, 114);
+  }
+  .package-list {
+    width: 50%;
+    display: block;
+    margin: 0 auto;
+    margin-top: 20px;
+    .package-title {
+      font-size: 20px;
+      color: var(--main-color);
+    }
+    .package-name {
+      border: 1px solid grey;
+      display: inline-block;
+      font-size: 15px;
+      margin: 5px;
+      padding: 10px;
+      cursor: pointer;
+      &:hover {
+        background-color: var(--main-color);
+        color: white;
+        border-color: white;
+      }
+    }
   }
 }
 

@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
-import githubClient from "../../clients/github";
+import apiClient from "../../clients/api";
+import { useAuth } from "../../contexts/auth-context";
+import jwt_decode from "jwt-decode";
 import { formatDistance, subDays } from "date-fns";
+import fromUnixTime from "date-fns/fromUnixTime";
 import { Link } from "react-router-dom";
 import { Button } from "antd";
 import "./RepoContent.scss";
@@ -8,17 +11,16 @@ import "./RepoContent.scss";
 function RepoContent(props) {
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
-
-  const {
-    match: { params }
-  } = props;
+  const [createdAt, setDate] = useState("");
+  const { token } = useAuth();
+  const code = jwt_decode(token);
+  const { userId } = code;
 
   const loadRepository = async () => {
     setLoading(true);
-    const response = await githubClient.get(
-      `/repos/${params.owner}/${params.repo}`
-    );
-    setData(response.data);
+    const response = await apiClient.get(`/users/${userId}/repositories`);
+    setData(response.data[3]);
+    setDate(fromUnixTime(response.data[0].createdAt));
     setLoading(false);
   };
 
@@ -38,46 +40,37 @@ function RepoContent(props) {
               Return to repo list
             </Button>
           </Link>
+
           <div>
-            <img
-              className="repo-icon"
-              src={data.owner.avatar_url}
-              alt="repo-icon"
-            />
-            <p className="repo-title">
-              {" "}
-              <a href={data.html_url} target="_blank" rel="noopener noreferrer">
-                {data.name}
-              </a>
+            <a href={data.repoUrl}>
+              <img className="repo-icon" src={data.repoImg} alt="repo-icon" />
+            </a>
+            <p className="repo-title">{data.name}</p>
+
+            <p className="repo-author">by {data.author}</p>
+            <p className="repo-updated">
+              <span
+                style={{ verticalAlign: "middle" }}
+                role="img"
+                aria-label="light"
+              >
+                ⏱
+              </span>{" "}
+              {formatDistance(subDays(new Date(createdAt), 3), new Date())} ago
             </p>
           </div>
-          <p className="repo-author">
-            by{" "}
-            <a
-              href={data.owner.html_url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {data.owner.login}
-            </a>
-          </p>
-          <p className="repo-updated">
-            <span
-              style={{ verticalAlign: "middle" }}
-              role="img"
-              aria-label="light"
-            >
-              ⏱
-            </span>{" "}
-            created{" "}
-            {formatDistance(subDays(new Date(data.created_at), 3), new Date())}{" "}
-            ago
-          </p>
-          {data.language && (
-            <p className="repo-desc">
-              made with <b>{data.language}</b>
-            </p>
-          )}
+
+          <div className="package-list">
+            <p className="package-title">Packagers List :</p>
+            {data.dependencies &&
+              Object.keys(data.dependencies).map(key => {
+                return (
+                  <p className="package-name" key={key}>
+                    {key}
+                  </p>
+                );
+              })}
+          </div>
         </>
       )}
     </div>
