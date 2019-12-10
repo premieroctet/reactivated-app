@@ -40,7 +40,7 @@
     color: rgb(114, 114, 114);
   }
   .package-list {
-    width: 50%;
+    width: 70%;
     display: block;
     margin: 0 auto;
     margin-top: 20px;
@@ -51,15 +51,20 @@
     .package-name {
       border: 1px solid grey;
       display: inline-block;
-      font-size: 15px;
+      font-size: 12px;
       margin: 5px;
-      padding: 10px;
+      padding: 6px;
       cursor: pointer;
       &:hover {
         background-color: var(--main-color);
         color: white;
-        border-color: white;
+        border-color: var(--main-color);
       }
+    }
+  }
+  @media screen and (max-width: 700px) {
+    .package-list {
+      width: 100%;
     }
   }
 }
@@ -69,7 +74,7 @@
     transform: translate(0, 0px);
   }
   50% {
-    transform: translate(0, 35px);
+    transform: translate(0, 25px);
   }
   to {
     transform: translate(0, -0px);

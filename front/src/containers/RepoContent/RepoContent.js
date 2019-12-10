@@ -11,7 +11,7 @@ import "./RepoContent.scss";
 function RepoContent(props) {
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
-  const [createdAt, setDate] = useState("");
+  const [createdAt, setCreatedAt] = useState("");
   const { token } = useAuth();
   const code = jwt_decode(token);
   const { userId } = code;
@@ -21,8 +21,9 @@ function RepoContent(props) {
     setLoading(true);
     const response = await apiClient.get(`/users/${userId}/repositories/${id}`);
     setData(response.data);
-    setDate(fromUnixTime(response.data.createdAt));
+    setCreatedAt(fromUnixTime(response.data.createdAt));
     setLoading(false);
+    console.log(response.data.dependencies);
   };
 
   useEffect(() => {
@@ -48,7 +49,9 @@ function RepoContent(props) {
             </a>
             <p className="repo-title">{data.name}</p>
 
-            <p className="repo-author">by {data.author}</p>
+            <p className="repo-author">
+              by <b>{data.author}</b>
+            </p>
             <p className="repo-updated">
               <span
                 style={{ verticalAlign: "middle" }}
