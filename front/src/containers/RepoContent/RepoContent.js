@@ -66,16 +66,14 @@ function RepoContent(props) {
               ago
             </p>
           </div>
-
-          <div className="package-list">
-            <p className="name-content">Dependency</p>
-            <p className="required-content">Required</p>
-            <p className="stable-content">Stable</p>
-            <p className="latest-content">Latest</p>
-            <p className="status-content">Status</p>
-
-            {data.dependencies &&
-              Object.keys(data.dependencies).map(key => {
+          {data.dependencies && (
+            <div className="package-list">
+              <p className="name-content">Dependency</p>
+              <p className="required-content">Required</p>
+              <p className="stable-content">Stable</p>
+              <p className="latest-content">Latest</p>
+              <p className="status-content">Status</p>
+              {Object.keys(data.dependencies).map(key => {
                 return (
                   <div className="package-item" key={key}>
                     <p className="package-name">{key}</p>
@@ -92,7 +90,8 @@ function RepoContent(props) {
                   </div>
                 );
               })}
-          </div>
+            </div>
+          )}
         </>
       )}
     </div>
