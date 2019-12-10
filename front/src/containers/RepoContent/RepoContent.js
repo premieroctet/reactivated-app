@@ -11,7 +11,6 @@ import "./RepoContent.scss";
 function RepoContent(props) {
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
-  const [createdAt, setCreatedAt] = useState("");
   const { token } = useAuth();
   const code = jwt_decode(token);
   const { userId } = code;
@@ -21,7 +20,6 @@ function RepoContent(props) {
     setLoading(true);
     const response = await apiClient.get(`/users/${userId}/repositories/${id}`);
     setData(response.data);
-    setCreatedAt(fromUnixTime(response.data.createdAt));
     setLoading(false);
     console.log(response.data.dependencies);
   };
@@ -60,7 +58,11 @@ function RepoContent(props) {
               >
                 ⏱
               </span>{" "}
-              {formatDistance(subDays(new Date(createdAt), 3), new Date())} ago
+              {formatDistance(
+                subDays(new Date(fromUnixTime(data.createdAt)), 3),
+                new Date()
+              )}{" "}
+              ago
             </p>
           </div>
 
@@ -69,9 +71,9 @@ function RepoContent(props) {
             {data.dependencies &&
               Object.keys(data.dependencies).map(key => {
                 return (
-                  <p className="package-name" key={key}>
-                    {key}
-                  </p>
+                  <div className="package-name" key={key}>
+                    <p>{key}</p>
+                  </div>
                 );
               })}
           </div>

@@ -52,8 +52,9 @@
       border: 1px solid grey;
       display: inline-block;
       font-size: 12px;
+      height: 32px;
       margin: 5px;
-      padding: 6px;
+      padding: 5px;
       cursor: pointer;
       &:hover {
         background-color: var(--main-color);
