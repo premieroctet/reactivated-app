@@ -11,6 +11,8 @@ import "./RepoContent.scss";
 function RepoContent(props) {
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState("green");
+
   const { token } = useAuth();
   const code = jwt_decode(token);
   const { userId } = code;
@@ -86,7 +88,7 @@ function RepoContent(props) {
                     <p className="package-latest">
                       {data.dependencies[key].latest}
                     </p>
-                    <p className="package-status">Status</p>
+                    <div className={`package-status ${status}`}></div>
                   </div>
                 );
               })}

@@ -49,25 +49,25 @@
       display: inline-block;
       font-size: 15px;
       color: var(--main-color);
-      width: 21%;
+      width: 26%;
     }
     .required-content {
       display: inline-block;
       font-size: 15px;
       color: var(--main-color);
-      width: 19%;
+      width: 16%;
     }
     .stable-content {
       display: inline-block;
       font-size: 15px;
       color: var(--main-color);
-      width: 15%;
+      width: 20%;
     }
     .latest-content {
       display: inline-block;
       font-size: 15px;
       color: var(--main-color);
-      width: 28.5%;
+      width: 27%;
     }
     .status-content {
       display: inline-block;
@@ -89,7 +89,7 @@
       }
       .package-required {
         font-size: 15px;
-        width: 20%;
+        width: 21%;
         display: inline-block;
       }
       .package-stable {
@@ -99,13 +99,25 @@
       }
       .package-latest {
         font-size: 15px;
-        width: 30%;
+        width: 35%;
         display: inline-block;
       }
       .package-status {
-        font-size: 15px;
-        width: 10%;
+        width: 20px;
+        height: 20px;
+        border-radius: 3px;
         display: inline-block;
+        vertical-align: middle;
+        border: 2px solid var(--main-color);
+      }
+      .green {
+        background-color: #36de2b;
+      }
+      .orange {
+        background-color: #ff9343;
+      }
+      .red {
+        background-color: #ff584a;
       }
     }
   }
