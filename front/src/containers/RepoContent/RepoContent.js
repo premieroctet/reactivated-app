@@ -21,7 +21,6 @@ function RepoContent(props) {
     const response = await apiClient.get(`/users/${userId}/repositories/${id}`);
     setData(response.data);
     setLoading(false);
-    console.log(response.data.dependencies);
   };
 
   useEffect(() => {
@@ -67,12 +66,27 @@ function RepoContent(props) {
           </div>
 
           <div className="package-list">
-            <p className="package-title">Packagers List :</p>
+            <p className="name-content">Dependency</p>
+            <p className="required-content">Required</p>
+            <p className="stable-content">Stable</p>
+            <p className="latest-content">Latest</p>
+            <p className="status-content">Status</p>
+
             {data.dependencies &&
               Object.keys(data.dependencies).map(key => {
                 return (
-                  <div className="package-name" key={key}>
-                    <p>{key}</p>
+                  <div className="package-item" key={key}>
+                    <p className="package-name">{key}</p>
+                    <p className="package-required">
+                      {data.dependencies[key].required}
+                    </p>
+                    <p className="package-stable">
+                      {data.dependencies[key].stable}
+                    </p>
+                    <p className="package-latest">
+                      {data.dependencies[key].latest}
+                    </p>
+                    <p className="package-status">Status</p>
                   </div>
                 );
               })}
