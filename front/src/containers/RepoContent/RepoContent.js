@@ -88,48 +88,52 @@ function RepoContent(props) {
             </p>
           </div>
 
-          <div className="list-header">
-            <p className="package-list-type">
-              {typeList === "devDependencies"
-                ? "Dependencies"
-                : "Dev Dependencies"}
-            </p>
-            <Switch defaultChecked onChange={updateList} />
-          </div>
-          {data.dependencies.deps && (
-            <div className="package-list">
-              <p className="name-content">Dependency</p>
-              <p className="required-content">Required</p>
-              <p className="stable-content">Stable</p>
-              <p className="latest-content">Latest</p>
-              <p className="status-content">Status</p>
-              {Object.keys(data.dependencies.deps)
-                .filter(key => data.dependencies.deps[key][4] === typeList)
-                .map(key => {
-                  if (
-                    data.dependencies.deps[key][4] === typeList
-                      ? "devDependencies"
-                      : "dependencies"
-                  )
-                    return (
-                      <div className="package-item" key={key}>
-                        <p className="package-name">
-                          {data.dependencies.deps[key][0]}
-                        </p>
-                        <p className="package-required">
-                          {data.dependencies.deps[key][1]}
-                        </p>
-                        <p className="package-stable">
-                          {data.dependencies.deps[key][2]}
-                        </p>
-                        <p className="package-latest">
-                          {data.dependencies.deps[key][3]}
-                        </p>
-                        <div className={`package-status ${loadStatus(key)}`} />
-                      </div>
-                    );
-                })}
-            </div>
+          {data.dependencies && data.dependencies.deps && (
+            <>
+              <div className="list-header">
+                <p className="package-list-type">
+                  {typeList === "devDependencies"
+                    ? "Dependencies"
+                    : "Dev Dependencies"}
+                </p>
+                <Switch defaultChecked onChange={updateList} />
+              </div>
+              <div className="package-list">
+                <p className="name-content">Dependency</p>
+                <p className="required-content">Required</p>
+                <p className="stable-content">Stable</p>
+                <p className="latest-content">Latest</p>
+                <p className="status-content">Status</p>
+                {Object.keys(data.dependencies.deps)
+                  .filter(key => data.dependencies.deps[key][4] === typeList)
+                  .map(key => {
+                    if (
+                      data.dependencies.deps[key][4] === typeList
+                        ? "devDependencies"
+                        : "dependencies"
+                    )
+                      return (
+                        <div className="package-item" key={key}>
+                          <p className="package-name">
+                            {data.dependencies.deps[key][0]}
+                          </p>
+                          <p className="package-required">
+                            {data.dependencies.deps[key][1]}
+                          </p>
+                          <p className="package-stable">
+                            {data.dependencies.deps[key][2]}
+                          </p>
+                          <p className="package-latest">
+                            {data.dependencies.deps[key][3]}
+                          </p>
+                          <div
+                            className={`package-status ${loadStatus(key)}`}
+                          />
+                        </div>
+                      );
+                  })}
+              </div>
+            </>
           )}
         </>
       )}
