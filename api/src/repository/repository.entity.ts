@@ -36,6 +36,14 @@ export class Repository {
   @Column()
   repoImg: string;
 
+  @ApiModelProperty()
+  @Column()
+  createdAt: string;
+
+  @ApiModelProperty()
+  @Column()
+  repoUrl: string;
+
   @ManyToOne(user => User)
   user: User;
 

@@ -6,32 +6,135 @@
     width: 70px;
     height: 70px;
     margin: 20px 0 20px 0;
-    border-radius: 10px;
+    border-radius: 5px;
     animation-name: floating;
     animation-duration: 3s;
     animation-iteration-count: infinite;
     animation-timing-function: ease-in-out;
   }
+
   .repo-title {
     color: var(--main-color);
     font-weight: bold;
-    font-size: 25px;
+    font-size: 20px;
     margin: 0 auto;
     margin-bottom: 10px;
     margin-top: 30px;
     background-color: white;
     border-radius: 3px;
-    width: 250px;
+    width: 300px;
     padding: 5px;
     border: 1px solid var(--main-color);
   }
 
   .repo-author {
     font-size: 17px;
+    width: 30%;
+    margin: 0 auto;
   }
   .repo-updated {
     font-size: 15px;
+    width: 30%;
+    margin: 0 auto;
+    margin-top: 20px;
     color: rgb(114, 114, 114);
+  }
+  .list-header {
+    margin-top: 30px;
+    .package-list-type {
+      font-size: 25px;
+      color: var(--main-color);
+    }
+    .ant-switch {
+      margin-left: 65%;
+    }
+  }
+  .package-list {
+    width: 75%;
+    display: block;
+    margin: 0 auto;
+    margin-top: 80px;
+
+    .name-content {
+      display: inline-block;
+      font-size: 15px;
+      color: var(--main-color);
+      width: 26%;
+    }
+    .required-content {
+      display: inline-block;
+      font-size: 15px;
+      color: var(--main-color);
+      width: 16%;
+    }
+    .stable-content {
+      display: inline-block;
+      font-size: 15px;
+      color: var(--main-color);
+      width: 20%;
+    }
+    .latest-content {
+      display: inline-block;
+      font-size: 15px;
+      color: var(--main-color);
+      width: 27%;
+    }
+    .status-content {
+      display: inline-block;
+      font-size: 15px;
+      color: var(--main-color);
+      width: 10%;
+    }
+    .package-item {
+      border-top: 1px solid var(--main-color);
+      width: 100%;
+      height: 60px;
+      padding: 15px;
+      .package-name {
+        text-align: left;
+        margin-left: 10px;
+        font-size: 15px;
+        display: inline-block;
+        width: 20%;
+      }
+      .package-required {
+        font-size: 15px;
+        width: 21%;
+        display: inline-block;
+      }
+      .package-stable {
+        font-size: 15px;
+        width: 15%;
+        display: inline-block;
+      }
+      .package-latest {
+        font-size: 15px;
+        width: 35%;
+        display: inline-block;
+      }
+      .package-status {
+        width: 20px;
+        height: 20px;
+        border-radius: 3px;
+        display: inline-block;
+        vertical-align: middle;
+        border: 2px solid var(--main-color);
+      }
+      .green {
+        background-color: #36de2b;
+      }
+      .orange {
+        background-color: #ff9343;
+      }
+      .red {
+        background-color: #ff584a;
+      }
+    }
+  }
+  @media screen and (max-width: 700px) {
+    .package-list {
+      width: 100%;
+    }
   }
 }
 
@@ -40,7 +143,7 @@
     transform: translate(0, 0px);
   }
   50% {
-    transform: translate(0, 35px);
+    transform: translate(0, 25px);
   }
   to {
     transform: translate(0, -0px);

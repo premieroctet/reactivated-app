@@ -58,8 +58,7 @@
 .title {
   font-size: 27px;
   font-weight: 600;
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin: 20px 0 20px 0;
   color: var(--main-color);
 }
 
@@ -127,7 +126,7 @@
     transform: translate(0, 0px);
   }
   50% {
-    transform: translate(0, 30px);
+    transform: translate(0, 25px);
   }
   to {
     transform: translate(0, -0px);
