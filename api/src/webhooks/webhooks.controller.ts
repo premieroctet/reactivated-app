@@ -40,7 +40,7 @@ export class WebhooksController {
           user,
         };
         await this.repositoryService.addRepo(newRepo);
-        await this.queue.add('compute_dependencies', {
+        await this.queue.add('compute_yarn_dependencies', {
           repositoryFullName: repoAdd.full_name,
           repositoryId: repoAdd.id,
           githubToken: user.githubToken,
