@@ -80,11 +80,7 @@ function RepoContent(props) {
               >
                 ⏱
               </span>{" "}
-              {formatDistance(
-                subDays(new Date(fromUnixTime(data.createdAt)), 3),
-                new Date()
-              )}{" "}
-              ago
+              {formatDistance(new Date(data.createdAt), new Date())} ago
             </p>
           </div>
 

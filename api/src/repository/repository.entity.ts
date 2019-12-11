@@ -38,7 +38,7 @@ export class Repository {
 
   @ApiModelProperty()
   @Column()
-  createdAt: string;
+  createdAt: Date;
 
   @ApiModelProperty()
   @Column()
