@@ -5,13 +5,15 @@ import jwt_decode from "jwt-decode";
 import { formatDistance, subDays } from "date-fns";
 import fromUnixTime from "date-fns/fromUnixTime";
 import { Link } from "react-router-dom";
-import { Button } from "antd";
+import { Button, Switch } from "antd";
 import "./RepoContent.scss";
+
+const semver = require("semver");
 
 function RepoContent(props) {
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
-  const [status, setStatus] = useState("green");
+  const [typeList, setTypeList] = useState("dependencies");
 
   const { token } = useAuth();
   const code = jwt_decode(token);
@@ -23,6 +25,25 @@ function RepoContent(props) {
     const response = await apiClient.get(`/users/${userId}/repositories/${id}`);
     setData(response.data);
     setLoading(false);
+  };
+
+  const loadStatus = key => {
+    if (
+      semver.satisfies(
+        data.dependencies.deps[key][2],
+        data.dependencies.deps[key][3]
+      )
+    ) {
+      return "green";
+    } else {
+      return "orange";
+    }
+  };
+
+  const updateList = () => {
+    setTypeList(
+      typeList === "devDependencies" ? "dependencies" : "devDependencies"
+    );
   };
 
   useEffect(() => {
@@ -66,30 +87,48 @@ function RepoContent(props) {
               ago
             </p>
           </div>
-          {data.dependencies && (
+
+          <div className="list-header">
+            <p className="package-list-type">
+              {typeList === "devDependencies"
+                ? "Dependencies"
+                : "Dev Dependencies"}
+            </p>
+            <Switch defaultChecked onChange={updateList} />
+          </div>
+          {data.dependencies.deps && (
             <div className="package-list">
               <p className="name-content">Dependency</p>
               <p className="required-content">Required</p>
               <p className="stable-content">Stable</p>
               <p className="latest-content">Latest</p>
               <p className="status-content">Status</p>
-              {Object.keys(data.dependencies).map(key => {
-                return (
-                  <div className="package-item" key={key}>
-                    <p className="package-name">{key}</p>
-                    <p className="package-required">
-                      {data.dependencies[key].required}
-                    </p>
-                    <p className="package-stable">
-                      {data.dependencies[key].stable}
-                    </p>
-                    <p className="package-latest">
-                      {data.dependencies[key].latest}
-                    </p>
-                    <div className={`package-status ${status}`}></div>
-                  </div>
-                );
-              })}
+              {Object.keys(data.dependencies.deps)
+                .filter(key => data.dependencies.deps[key][4] === typeList)
+                .map(key => {
+                  if (
+                    data.dependencies.deps[key][4] === typeList
+                      ? "devDependencies"
+                      : "dependencies"
+                  )
+                    return (
+                      <div className="package-item" key={key}>
+                        <p className="package-name">
+                          {data.dependencies.deps[key][0]}
+                        </p>
+                        <p className="package-required">
+                          {data.dependencies.deps[key][1]}
+                        </p>
+                        <p className="package-stable">
+                          {data.dependencies.deps[key][2]}
+                        </p>
+                        <p className="package-latest">
+                          {data.dependencies.deps[key][3]}
+                        </p>
+                        <div className={`package-status ${loadStatus(key)}`} />
+                      </div>
+                    );
+                })}
             </div>
           )}
         </>

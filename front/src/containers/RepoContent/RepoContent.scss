@@ -39,6 +39,16 @@
     margin-top: 20px;
     color: rgb(114, 114, 114);
   }
+  .list-header {
+    margin-top: 30px;
+    .package-list-type {
+      font-size: 25px;
+      color: var(--main-color);
+    }
+    .ant-switch {
+      margin-left: 65%;
+    }
+  }
   .package-list {
     width: 75%;
     display: block;
