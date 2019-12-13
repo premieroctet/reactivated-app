@@ -1,20 +1,20 @@
 import { Controller, Get, UseGuards, Request } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth/auth.service';
-import { ApiUseTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller()
 export class AppController {
   constructor(private readonly authService: AuthService) {}
 
-  @ApiUseTags('auth')
+  @ApiTags('auth')
   @UseGuards(AuthGuard('github'))
   @Get('/auth/github')
   async login(@Request() req) {
     return {};
   }
 
-  @ApiUseTags('auth')
+  @ApiTags('auth')
   @UseGuards(AuthGuard('github'))
   @Get('/auth/github/callback')
   async redirect(@Request() req) {

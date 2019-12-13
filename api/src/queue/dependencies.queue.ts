@@ -1,7 +1,6 @@
 import { BullQueueEvents, OnQueueEvent, Processor, Process } from 'nest-bull';
 import { Job } from 'bull';
 import { Logger, HttpService } from '@nestjs/common';
-import * as david from 'david';
 import { RepositoryService } from '../repository/repository.service';
 
 const { exec } = require('child_process');
@@ -15,39 +14,6 @@ export class DependenciesQueue {
     private repositoriesService: RepositoryService,
     private readonly httpService: HttpService,
   ) {}
-
-  @Process({ name: 'compute_dependencies' })
-  async computeDependencies(job: Job) {
-    const response = await this.httpService
-      .get(
-        `https://api.github.com/repos/${job.data.repositoryFullName}/contents/package.json`,
-        {
-          headers: {
-            Authorization: `token ${job.data.githubToken}`,
-            Accept: 'application/vnd.github.machine-man-preview+json',
-          },
-        },
-      )
-      .toPromise();
-
-    const buffer = Buffer.from(response.data.content, 'base64');
-    const manifest = JSON.parse(buffer.toString('utf-8'));
-
-    const repository = await this.repositoriesService.findOne({
-      githubId: job.data.repositoryId,
-      user: job.data.userId,
-    });
-
-    david.getDependencies(manifest, async (er, deps) => {
-      repository.dependencies = deps;
-
-      david.getDependencies(manifest, { dev: true }, async (er, devDeps) => {
-        repository.devDependencies = devDeps;
-
-        await this.repositoriesService.addRepo(repository);
-      });
-    });
-  }
 
   @Process({ name: 'compute_yarn_dependencies' })
   async computeYarnDependencies(job: Job) {
@@ -97,8 +63,7 @@ export class DependenciesQueue {
 
     exec(`cd ${path} && yarn outdated --json`, async (err, stdout, stderr) => {
       const manifest = JSON.parse(stdout.split('\n')[1]);
-
-      repository.devDependencies = { deps: manifest.data.body };
+      repository.dependencies = { deps: manifest.data.body };
       await this.repositoriesService.addRepo(repository);
     });
   }

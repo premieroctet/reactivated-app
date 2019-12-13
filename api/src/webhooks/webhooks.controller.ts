@@ -7,12 +7,12 @@ import {
 } from '@nestjs/common';
 import { RepositoryService } from '../repository/repository.service';
 import { UsersService } from '../users/users.service';
-import { ApiUseTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { WebhookInterceptor } from './webhooks.interceptor';
 import { Queue } from 'bull';
 import { InjectQueue } from 'nest-bull';
 
-@ApiUseTags('webhooks')
+@ApiTags('webhooks')
 @Controller('webhooks')
 export class WebhooksController {
   constructor(
