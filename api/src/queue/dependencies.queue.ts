@@ -51,10 +51,10 @@ export class DependenciesQueue {
       'base64',
     );
 
-    fs.writeFile(`${path}/package.json`, bufferPackage.toString('utf-8'));
+    fs.writeFile(`${path}/package.json`, bufferPackage.toString('utf-8'), () => {});
     const bufferLock = Buffer.from(responseYarnLock.data.content, 'base64');
 
-    fs.writeFile(`${path}/yarn.lock`, bufferLock.toString('utf-8'));
+    fs.writeFile(`${path}/yarn.lock`, bufferLock.toString('utf-8'), () => {});
 
     const repository = await this.repositoriesService.findOne({
       githubId: job.data.repositoryId,

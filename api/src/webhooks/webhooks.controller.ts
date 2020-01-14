@@ -37,7 +37,7 @@ export class WebhooksController {
           installationId: body.installation.id,
           author: body.installation.account.login,
           repoImg: body.installation.account.avatar_url,
-          createdAt: new Date(body.installation.created_at * 1000),
+          createdAt: new Date(),
           repoUrl: body.installation.account.html_url,
           user,
         };
