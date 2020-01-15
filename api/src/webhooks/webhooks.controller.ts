@@ -29,30 +29,35 @@ export class WebhooksController {
   ) {
     if (['installation_repositories', 'installation'].includes(xGitHubEvent)) {
       const user = await this.userService.getUser(body.sender.login);
-      body.repositories_added.forEach(async repoAdd => {
-        const newRepo = {
-          name: repoAdd.name,
-          fullName: repoAdd.full_name,
-          githubId: repoAdd.id,
-          installationId: body.installation.id,
-          author: body.installation.account.login,
-          repoImg: body.installation.account.avatar_url,
-          createdAt: new Date(),
-          repoUrl: body.installation.account.html_url,
-          user,
-        };
-        await this.repositoryService.addRepo(newRepo);
-        await this.queue.add('compute_yarn_dependencies', {
-          repositoryFullName: repoAdd.full_name,
-          repositoryId: repoAdd.id,
-          githubToken: user.githubToken,
-          userId: user.id,
+      if (body.action === 'created') {
+        body.repositories.forEach(async repoAdd => {
+          const newRepo = {
+            name: repoAdd.name,
+            fullName: repoAdd.full_name,
+            githubId: repoAdd.id,
+            installationId: body.installation.id,
+            author: body.installation.account.login,
+            repoImg: body.installation.account.avatar_url,
+            createdAt: new Date(),
+            repoUrl: body.installation.account.html_url,
+            user,
+          };
+          await this.repositoryService.addRepo(newRepo);
+          await this.queue.add('compute_yarn_dependencies', {
+            repositoryFullName: repoAdd.full_name,
+            repositoryId: repoAdd.id,
+            githubToken: user.githubToken,
+            userId: user.id,
+          });
         });
-      });
+      }
 
-      body.repositories_removed.forEach(async repoAdd => {
-        await this.repositoryService.deleteRepo({ githubId: repoAdd.id });
-      });
+      if (body.action === 'deleted') {
+        // body.repositories.forEach(async repoAdd => {
+        //   await this.repositoryService.deleteRepo({ githubId: repoAdd.id });
+        // });
+        // TODO: Delete repos from db
+      }
       return {};
     }
   }

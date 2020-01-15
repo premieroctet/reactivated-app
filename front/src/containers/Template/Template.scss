@@ -1,8 +1,6 @@
 .layout {
-  min-height: 100vh;
-  .logout-button {
-    margin-left: 78%;
-  }
+  min-height: 100vh !important;
+  justify-content: space-between;
 
   @media screen and (max-width: 650px) {
     .logout-button {
@@ -13,5 +11,17 @@
     .logout-button {
       margin-left: 35%;
     }
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
   }
 }
