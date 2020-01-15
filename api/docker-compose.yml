@@ -1,0 +1,41 @@
+version: "3.6"
+
+services:
+  mysql:
+    image: mysql:5.7.10
+    restart: always
+    environment:
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: reactivated
+    ports:
+      - 3306:3306
+    volumes:
+      - reactivated-db:/var/lib/mysql
+  
+  redis:
+    image: redis:5-alpine
+    ports:
+      - 6379:6379
+    volumes: 
+      - reactivated-redis:/data
+  
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on: 
+      - mysql
+    ports:
+      - 3000:3000
+      - 3006:3006
+    expose:
+      - 3000
+    links:
+      - mysql:mysql
+  
+volumes:
+  reactivated-db:
+  reactivated-redis:
+
