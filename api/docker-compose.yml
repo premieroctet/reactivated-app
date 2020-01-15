@@ -28,13 +28,10 @@ services:
     volumes:
       - ./:/usr/src/app
       - /usr/src/app/node_modules
-      - /usr/src/app/.next
     depends_on:
       - mysql
     ports:
       - 3000:3000
-    expose:
-      - 3000
     links:
       - mysql:mysql
 
