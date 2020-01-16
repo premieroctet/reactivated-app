@@ -1,40 +1,39 @@
-import React, { useState, useEffect } from "react";
-import { Breadcrumb, Button, List, Layout } from "antd";
-import apiClient from "../../clients/api";
-import { useAuth } from "../../contexts/auth-context";
-import jwt_decode from "jwt-decode";
-import { Link } from "react-router-dom";
-import "./Home.scss";
+import React, { useState, useEffect } from 'react'
+import { Breadcrumb, Button, List, Layout } from 'antd'
+import { useAuth } from '../../contexts/AuthContext'
+import { Link } from 'react-router-dom'
+import RepositoriesAPI from '@api/repositories'
+import nextImg from '@assets/img/next.png'
+import './Home.scss'
 
-const { Content } = Layout;
+const { Content } = Layout
 
 function Home() {
-  const [repositories, setRepositories] = useState([]);
-  const { token } = useAuth();
-  const code = jwt_decode(token);
-  const { userId } = code;
+  const [repositories, setRepositories] = useState<Repository[]>([])
+  const { jwTokenData } = useAuth()
+  const { userId } = jwTokenData!
 
   const loadRepository = async () => {
-    const responseApi = await apiClient.get(`/users/${userId}/repositories`);
-    setRepositories(responseApi.data);
-  };
+    const responseApi = await RepositoriesAPI.getRepositories(userId)
+    setRepositories(responseApi.data)
+  }
 
   useEffect(() => {
-    loadRepository();
+    loadRepository()
     // eslint-disable-next-line
-  }, []);
+  }, [])
 
   return (
-    <Content style={{ padding: "0 50px" }}>
-      <Breadcrumb style={{ margin: "16px 0" }}>
+    <Content style={{ padding: '0 50px' }}>
+      <Breadcrumb style={{ margin: '16px 0' }}>
         <Breadcrumb.Item>Home</Breadcrumb.Item>
       </Breadcrumb>
       <div
         style={{
-          background: "#fff",
+          background: '#fff',
           padding: 24,
-          minHeight: "100vh",
-          textAlign: "center"
+          minHeight: '100vh',
+          textAlign: 'center',
         }}
       >
         <Button
@@ -44,14 +43,14 @@ function Home() {
           type="primary"
         >
           Add repo
-        </Button>{" "}
+        </Button>{' '}
         <p className="title">Repositories Availables</p>
         <List
           className="list-container"
           size="large"
           bordered
           dataSource={repositories}
-          renderItem={repository => (
+          renderItem={(repository) => (
             <Link to={`/repo/${repository.id}`}>
               <List.Item>
                 <img
@@ -60,11 +59,7 @@ function Home() {
                   alt="repo-icon"
                 />
                 <p className="repo-name">{repository.name}</p>
-                <img
-                  className="arrow-icon"
-                  src={require(`../../assets/img/next.png`)}
-                  alt="repo-icon"
-                />
+                <img className="arrow-icon" src={nextImg} alt="repo-icon" />
                 <p className="repo-author">
                   created by <b>{repository.author}</b>
                 </p>
@@ -74,7 +69,7 @@ function Home() {
         />
       </div>
     </Content>
-  );
+  )
 }
 
-export default Home;
+export default Home

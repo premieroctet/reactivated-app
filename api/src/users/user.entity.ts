@@ -10,12 +10,15 @@ export class User {
   @PrimaryGeneratedColumn()
   id?: number;
 
+  @ApiProperty()
   @Column({ length: 25 })
   username: string;
 
+  @ApiProperty({ readOnly: true })
   @Column()
   githubId: string;
 
+  @ApiProperty()
   @Column()
   githubToken: string;
 }

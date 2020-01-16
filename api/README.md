@@ -4,7 +4,13 @@
 $ npm install
 ```
 
+```bash
+cp .env.dist .env.dev
+```
+
 ## Running the app
+
+### Without docker
 
 ```bash
 # development
@@ -15,7 +21,24 @@ $ npm run start:dev
 
 # production mode
 $ npm run start:prod
+```
 
+### With Docker
+
+Update your `.env` file for the following keys:
+
+```
+TYPEORM_HOST=mysql
+TYPEORM_USERNAME=admin
+TYPEORM_PASSWORD=password
+TYPEORM_DATABASE=reactivated
+```
+
+Then
+
+```bash
+# Run with --build for the first run
+docker-compose up --build
 ```
 
 [http://localhost:3000](http://localhost:3000)

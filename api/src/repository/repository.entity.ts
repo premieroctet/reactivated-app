@@ -11,33 +11,69 @@ export class Repository {
   @PrimaryGeneratedColumn()
   id?: number;
 
+  @ApiProperty({
+    description: 'Name of the repo',
+    readOnly: true,
+  })
   @Column()
   name: string;
 
+  @ApiProperty({
+    readOnly: true,
+  })
   @Column()
   fullName: string;
 
+  @ApiProperty({
+    readOnly: true,
+  })
   @Column()
   githubId: string;
 
+  @ApiProperty({
+    readOnly: true,
+  })
   @Column()
   installationId: string;
 
+  @ApiProperty({
+    description: 'Author of the repo',
+    readOnly: true,
+  })
   @Column()
   author: string;
 
+  @ApiProperty({
+    description: 'Image of the repo',
+    readOnly: true,
+  })
   @Column()
   repoImg: string;
 
+  @ApiProperty({
+    description: 'Create date of the repo',
+    readOnly: true,
+  })
   @Column()
   createdAt: Date;
 
+  @ApiProperty({
+    description: 'URL of the repo',
+    readOnly: true,
+  })
   @Column()
   repoUrl: string;
 
+  @ApiProperty({
+    readOnly: true,
+  })
   @ManyToOne(user => User)
   user: User;
 
+  @ApiProperty({
+    description: 'Dependencies of the repo',
+    readOnly: true,
+  })
   @Column('simple-json', { nullable: true })
   dependencies?: any;
 }

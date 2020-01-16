@@ -1,23 +1,24 @@
-import React from "react";
-import { Layout, Menu, Button } from "antd";
-import Router from "../Router";
-import { deleteFromStorage } from "@rehooks/local-storage";
-import "./Template.scss";
+import React from 'react'
+import { Layout, Menu, Button } from 'antd'
+import Router from '../Router'
+import { deleteFromStorage } from '@rehooks/local-storage'
+import './Template.scss'
 
-const { Header, Footer } = Layout;
+const { Header, Footer } = Layout
 
 function Template() {
   const logOut = () => {
-    deleteFromStorage("token");
-  };
+    deleteFromStorage('token')
+  }
+
   return (
     <Layout className="layout">
-      <Header>
+      <Header className="header">
         <Menu
           theme="dark"
           mode="horizontal"
-          defaultSelectedKeys={["1"]}
-          style={{ lineHeight: "64px" }}
+          defaultSelectedKeys={['1']}
+          style={{ lineHeight: '64px' }}
         >
           <Menu.Item key="1">Home</Menu.Item>
           <Button
@@ -31,20 +32,22 @@ function Template() {
           </Button>
         </Menu>
       </Header>
-      <Router />
-      <Footer style={{ textAlign: "center" }}>
+      <div className="content">
+        <Router />
+      </div>
+      <Footer style={{ textAlign: 'center' }}>
         <b>
-          Reactivated App{" "}
+          Reactivated App{' '}
           <span
-            style={{ verticalAlign: "middle" }}
+            style={{ verticalAlign: 'middle' }}
             role="img"
             aria-label="light"
           >
             🚀
-          </span>{" "}
-          ©2019{" "}
-        </b>{" "}
-        by{" "}
+          </span>{' '}
+          ©2019{' '}
+        </b>{' '}
+        by{' '}
         <a
           href="https://www.premieroctet.com/"
           target="_blank"
@@ -54,7 +57,7 @@ function Template() {
         </a>
       </Footer>
     </Layout>
-  );
+  )
 }
 
-export default Template;
+export default Template
