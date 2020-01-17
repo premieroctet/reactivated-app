@@ -1,62 +1,55 @@
 import React from 'react'
-import { Layout, Menu, Button } from 'antd'
-import Router from '../Router'
+import { Text, Link, Button } from '@chakra-ui/core'
+import Router from '@containers/Router'
 import { deleteFromStorage } from '@rehooks/local-storage'
-import './Template.scss'
-
-const { Header, Footer } = Layout
+import Header from '@components/Header'
+import { Column, Row } from '@components/Flex'
+import { FaPowerOff } from 'react-icons/fa'
 
 function Template() {
   const logOut = () => {
     deleteFromStorage('token')
   }
 
+  const renderRight = () => {
+    return (
+      <Button
+        cursor="pointer"
+        leftIcon={FaPowerOff}
+        variantColor="teal"
+        onClick={logOut}
+      >
+        Logout
+      </Button>
+    )
+  }
+
   return (
-    <Layout className="layout">
-      <Header className="header">
-        <Menu
-          theme="dark"
-          mode="horizontal"
-          defaultSelectedKeys={['1']}
-          style={{ lineHeight: '64px' }}
-        >
-          <Menu.Item key="1">Home</Menu.Item>
-          <Button
-            onClick={logOut}
-            size="large"
-            icon="logout"
-            type="primary"
-            className="logout-button"
-          >
-            Logout
-          </Button>
-        </Menu>
-      </Header>
-      <div className="content">
+    <Column minH="100vh" bg="gray.50">
+      <Header renderRight={renderRight} />
+      <Column flex={1} justify="flex-start" px={[0, 32]}>
         <Router />
-      </div>
-      <Footer style={{ textAlign: 'center' }}>
-        <b>
-          Reactivated App{' '}
-          <span
-            style={{ verticalAlign: 'middle' }}
-            role="img"
-            aria-label="light"
+      </Column>
+      <Row justify="center" align="center" py={4}>
+        <Text as="span">
+          <Text as="span" fontWeight="bold">
+            Reactivated App{' '}
+            <Text as="span" role="img" aria-label="light">
+              🚀
+            </Text>
+            {' ©2019 '}
+          </Text>
+          {' by '}
+          <Link
+            href="https://www.premieroctet.com/"
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            🚀
-          </span>{' '}
-          ©2019{' '}
-        </b>{' '}
-        by{' '}
-        <a
-          href="https://www.premieroctet.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Premier Octet
-        </a>
-      </Footer>
-    </Layout>
+            Premier Octet
+          </Link>
+        </Text>
+      </Row>
+    </Column>
   )
 }
 

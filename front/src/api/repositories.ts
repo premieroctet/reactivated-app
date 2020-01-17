@@ -4,4 +4,8 @@ const getRepositories = (userId: string) => {
   return API.get<Repository[]>(`/users/${userId}/repositories`)
 }
 
-export default { getRepositories }
+const getRepository = (userId: string, repositoryId: string) => {
+  return API.get<Repository>(`/users/${userId}/repositories/${repositoryId}`)
+}
+
+export default { getRepositories, getRepository }

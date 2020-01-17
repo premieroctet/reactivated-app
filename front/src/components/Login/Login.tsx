@@ -1,5 +1,7 @@
 import React from 'react'
-import Button from 'antd/lib/button'
+import { Button, Text, Box, Link } from '@chakra-ui/core'
+import { Column } from '@components/Flex'
+import { FaGithub } from 'react-icons/fa'
 
 interface Props {
   loading?: boolean
@@ -7,27 +9,32 @@ interface Props {
 
 const Login = ({ loading = false }: Props) => {
   return (
-    <div
-      style={{
-        textAlign: 'center',
-        paddingTop: '25%',
-        backgroundColor: '#282c34',
-        height: '100vh',
-      }}
-    >
-      <div style={{ fontSize: 40, marginBottom: 30, color: 'white' }}>
-        reactivated.app{' '}
-        <span style={{ verticalAlign: 'middle' }} role="img" aria-label="light">
-          ⚡️
-        </span>
-      </div>
+    <Column justify="center" align="center" bg="#282c34" h="100vh">
+      <Box>
+        <Text fontSize={35} mb={10} color="white">
+          reactivated.app{' '}
+          <Text as="span" role="img" aria-label="light">
+            ⚡️
+          </Text>
+        </Text>
+      </Box>
 
-      <a href={`${process.env.REACT_APP_API_HOST}/auth/github`}>
-        <Button type="primary" size="large" icon="github" loading={loading}>
+      <Link
+        textDecoration="none !important"
+        href={`${process.env.REACT_APP_API_HOST}/auth/github`}
+      >
+        <Button
+          variantColor="teal"
+          size="lg"
+          isLoading={loading}
+          cursor="pointer"
+          border="none"
+          leftIcon={FaGithub}
+        >
           Sign in with Github
         </Button>
-      </a>
-    </div>
+      </Link>
+    </Column>
   )
 }
 

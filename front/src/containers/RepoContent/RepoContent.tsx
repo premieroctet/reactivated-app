@@ -1,17 +1,28 @@
 import React, { useEffect, useState } from 'react'
-import apiClient from '../../api/api'
-import { useAuth } from '../../contexts/AuthContext'
+import { useAuth } from '@contexts/AuthContext'
 import { formatDistance } from 'date-fns'
 import { Link, useRouteMatch } from 'react-router-dom'
-import { Button, Switch } from 'antd'
-import semver from 'semver'
-import './RepoContent.scss'
 import DependenciesList from '@components/DependenciesList'
+import {
+  Button,
+  Box,
+  Heading,
+  Link as ChakraLink,
+  Image,
+  Text,
+  Tab,
+  Tabs,
+  TabPanels,
+  TabPanel,
+  TabList,
+} from '@chakra-ui/core'
+import { FaGithub } from 'react-icons/fa'
+import RepositoriesAPI from '@api/repositories'
+import { Column } from '@components/Flex'
 
 function RepoContent() {
   const [data, setData] = useState<Repository | null>(null)
   const [loading, setLoading] = useState(true)
-  const [typeList, setTypeList] = useState('dependencies')
   const {
     params: { id },
   } = useRouteMatch<{ id: string }>()
@@ -21,19 +32,11 @@ function RepoContent() {
   const loadRepository = async () => {
     setLoading(true)
     try {
-      const response = await apiClient.get(
-        `/users/${userId}/repositories/${id}`,
-      )
-      setData(response.data)
+      const { data } = await RepositoriesAPI.getRepository(userId, id)
+      setData(data)
     } finally {
       setLoading(false)
     }
-  }
-
-  const updateList = () => {
-    setTypeList(
-      typeList === 'devDependencies' ? 'dependencies' : 'devDependencies',
-    )
   }
 
   useEffect(() => {
@@ -42,56 +45,85 @@ function RepoContent() {
   }, [])
 
   return (
-    <div className="repo-content">
+    <Column align="center" px={[4, 0]}>
       {loading ? (
-        <p className="repo-title">Loading...</p>
+        <Box color="teal.400" fontWeight="bold" fontSize={20}>
+          <Heading>Chargement...</Heading>
+        </Box>
       ) : (
         !!data && (
           <>
             <Link to="/">
-              <Button size="large" icon="github" type="primary">
+              <Button size="lg" leftIcon={FaGithub} variantColor="teal">
                 Return to repo list
               </Button>
             </Link>
 
-            <div>
-              <a href={data.repoUrl}>
-                <img className="repo-icon" src={data.repoImg} alt="repo-icon" />
-              </a>
-              <p className="repo-title">{data.name}</p>
+            <Column mt={2} align="center">
+              <ChakraLink href={data.repoUrl}>
+                <Image
+                  rounded="md"
+                  src={data.repoImg}
+                  alt="repo-icon"
+                  size={[16, 24]}
+                  mt={4}
+                />
+              </ChakraLink>
+              <Box
+                mt={4}
+                border="1px solid"
+                borderColor="teal.300"
+                px={20}
+                py={2}
+              >
+                <Heading fontSize={20}>{data.name}</Heading>
+              </Box>
 
-              <p className="repo-author">
+              <Text fontSize={17} mt={2}>
                 by <b>{data.author}</b>
-              </p>
-              <p className="repo-updated">
-                <span
-                  style={{ verticalAlign: 'middle' }}
-                  role="img"
-                  aria-label="light"
-                >
+              </Text>
+              <Text mt={2}>
+                <Text as="span" role="img" aria-label="light">
                   ⏱
-                </span>{' '}
+                </Text>{' '}
                 {formatDistance(new Date(data.createdAt), new Date())} ago
-              </p>
-            </div>
+              </Text>
+            </Column>
 
             {data.dependencies && data.dependencies.deps && (
-              <>
-                <div className="list-header">
-                  <p className="package-list-type">
-                    {typeList === 'devDependencies'
-                      ? 'Dependencies'
-                      : 'Dev Dependencies'}
-                  </p>
-                  <Switch defaultChecked onChange={updateList} />
-                </div>
-                <DependenciesList dependencies={data.dependencies} />
-              </>
+              <Box w={['100%', 'unset']} minW={['100%', '40%']} mt={6}>
+                <Tabs isFitted variant="soft-rounded">
+                  <TabList>
+                    <Tab _selected={{ bg: 'teal.500', color: 'white' }}>
+                      Dependencies
+                    </Tab>
+                    <Tab _selected={{ bg: 'teal.500', color: 'white' }}>
+                      Dev Dependencies
+                    </Tab>
+                  </TabList>
+                  <TabPanels>
+                    <TabPanel>
+                      <DependenciesList
+                        dependencies={data.dependencies.deps.filter(
+                          (dep) => dep[4] === 'dependencies',
+                        )}
+                      />
+                    </TabPanel>
+                    <TabPanel>
+                      <DependenciesList
+                        dependencies={data.dependencies.deps.filter(
+                          (dep) => dep[4] === 'devDependencies',
+                        )}
+                      />
+                    </TabPanel>
+                  </TabPanels>
+                </Tabs>
+              </Box>
             )}
           </>
         )
       )}
-    </div>
+    </Column>
   )
 }
 
