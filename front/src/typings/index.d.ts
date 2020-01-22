@@ -1,6 +1,6 @@
 interface JwTokenData {
   githubToken: string
-  userId: string
+  userId: User['id']
 }
 
 interface User {
@@ -27,5 +27,30 @@ interface Repository {
   user: User
   dependencies: {
     deps: Dependency[]
-  }
+  } | null
+  branch: string
+  path?: string
+}
+
+interface GithubAccount {
+  login: string
+  avatarUrl: string
+  id: string
+}
+
+interface GithubInstallationRepository {
+  id: number
+  name: string
+  fullName: string
+  private: boolean
+}
+
+interface GithubInstallation {
+  id: number
+  owner: GithubAccount
+  repositories: GithubInstallationRepository[]
+}
+
+interface GithubBranch {
+  name: string
 }

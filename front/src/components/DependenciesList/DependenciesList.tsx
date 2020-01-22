@@ -1,25 +1,48 @@
 import React from 'react'
+import { BoxProps, Box } from '@chakra-ui/core'
 import DependencyItem from './DependencyItem'
-import './DependencyList.scss'
 
 interface Props {
-  dependencies: {
-    deps: Dependency[]
-  }
+  dependencies: Dependency[]
 }
+
+const TableHeader = (props: BoxProps) => (
+  <Box as="td" fontSize="md" textAlign="center" {...props} />
+)
 
 const DependenciesList = ({ dependencies }: Props) => {
   return (
-    <div className="package-list">
-      <p className="name-content">Dependency</p>
-      <p className="required-content">Required</p>
-      <p className="stable-content">Stable</p>
-      <p className="latest-content">Latest</p>
-      <p className="status-content">Status</p>
-      {dependencies.deps.map((key, index) => (
-        <DependencyItem key={index} dependency={key} />
-      ))}
-    </div>
+    <Box overflowX="auto" whiteSpace="nowrap">
+      <Box as="table" w="100%" mt={6}>
+        <thead>
+          <Box
+            as="tr"
+            color="teal.400"
+            borderBottom="1px"
+            borderBottomColor="teal"
+          >
+            <TableHeader>Dependency</TableHeader>
+            <TableHeader>Required</TableHeader>
+            <TableHeader>Stable</TableHeader>
+            <TableHeader>Latest</TableHeader>
+            <TableHeader>Status</TableHeader>
+          </Box>
+        </thead>
+        <tbody>
+          {dependencies.map((key, index) => (
+            <Box
+              as="tr"
+              h={10}
+              key={key[0]}
+              borderBottom={index < dependencies.length - 1 ? '1px' : undefined}
+              borderBottomColor="black"
+            >
+              <DependencyItem dependency={key} />
+            </Box>
+          ))}
+        </tbody>
+      </Box>
+    </Box>
   )
 }
 

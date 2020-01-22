@@ -21,6 +21,20 @@ export class RepositoryService extends TypeOrmCrudService<Repository> {
     return await this.repositoryContent.save(repo);
   }
 
+  async updateRepo(userId: number, repoId: number, repo: Repository) {
+    const repository = await this.repositoryContent.findOne({
+      id: repoId,
+      user: { id: userId },
+    });
+
+    const repoUpdated = {
+      ...repository,
+      ...repo,
+    };
+
+    return this.repositoryContent.save(repoUpdated);
+  }
+
   async deleteRepo(params) {
     return await this.repositoryContent.delete(params);
   }

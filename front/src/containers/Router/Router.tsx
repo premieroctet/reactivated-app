@@ -4,6 +4,7 @@ import PrivateRoute from '@components/PrivateRoute'
 
 const Home = lazy(() => import('../Home/Home'))
 const RepoContent = lazy(() => import('../RepoContent/RepoContent'))
+const AddRepository = lazy(() => import('../AddRepository/AddRepository'))
 
 function Router() {
   return (
@@ -11,6 +12,7 @@ function Router() {
       <Switch>
         <Route path="/" exact component={Home} />
         <PrivateRoute path="/repo/:id" exact component={RepoContent} />
+        <PrivateRoute path="/add_repository" exact component={AddRepository} />
       </Switch>
     </Suspense>
   )

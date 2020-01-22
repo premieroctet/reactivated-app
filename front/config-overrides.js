@@ -1,5 +1,5 @@
 const path = require('path')
-const { addWebpackAlias, override } = require('customize-cra')
+const { addWebpackAlias, override, useBabelRc } = require('customize-cra')
 const { addReactRefresh } = require('customize-cra-react-refresh')
 
 module.exports = override(
@@ -9,6 +9,8 @@ module.exports = override(
     '@components': path.resolve('src', 'components'),
     '@containers': path.resolve('src', 'containers'),
     '@contexts': path.resolve('src', 'contexts'),
+    '@hooks': path.resolve('src', 'hooks'),
   }),
   addReactRefresh({ disableRefreshCheck: true }),
+  useBabelRc(),
 )
