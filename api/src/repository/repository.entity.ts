@@ -76,4 +76,16 @@ export class Repository {
   })
   @Column('simple-json', { nullable: true })
   dependencies?: any;
+
+  @ApiProperty()
+  @Column({
+    default: 'master',
+  })
+  branch?: string;
+
+  @ApiProperty()
+  @Column({
+    default: '/',
+  })
+  path?: string;
 }

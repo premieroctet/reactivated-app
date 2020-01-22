@@ -9,8 +9,6 @@ import { RepositoryService } from '../repository/repository.service';
 import { UsersService } from '../users/users.service';
 import { ApiTags } from '@nestjs/swagger';
 import { WebhookInterceptor } from './webhooks.interceptor';
-import { Queue } from 'bull';
-import { InjectQueue } from 'nest-bull';
 
 @ApiTags('webhooks')
 @Controller('webhooks')
@@ -18,7 +16,6 @@ export class WebhooksController {
   constructor(
     private readonly repositoryService: RepositoryService,
     private readonly userService: UsersService,
-    @InjectQueue('dependencies') private readonly queue: Queue,
   ) {}
 
   @UseInterceptors(WebhookInterceptor)
@@ -52,12 +49,6 @@ export class WebhooksController {
           user,
         };
         await this.repositoryService.addRepo(newRepo);
-        await this.queue.add('compute_yarn_dependencies', {
-          repositoryFullName: repoAdd.full_name,
-          repositoryId: repoAdd.id,
-          githubToken: user.githubToken,
-          userId: user.id,
-        });
       });
 
       repositoriesRemoved.forEach(async repoAdd => {

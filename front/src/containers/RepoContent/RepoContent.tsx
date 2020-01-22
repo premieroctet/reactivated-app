@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { useAuth } from '@contexts/AuthContext'
 import { formatDistance } from 'date-fns'
 import { Link, useRouteMatch } from 'react-router-dom'
@@ -15,6 +15,10 @@ import {
   TabPanels,
   TabPanel,
   TabList,
+  Stack,
+  Alert,
+  AlertIcon,
+  AlertDescription,
 } from '@chakra-ui/core'
 import { FaGithub } from 'react-icons/fa'
 import RepositoriesAPI from '@api/repositories'
@@ -28,6 +32,19 @@ function RepoContent() {
   } = useRouteMatch<{ id: string }>()
   const { jwTokenData } = useAuth()
   const { userId } = jwTokenData!
+  const dependencies = useMemo(() => {
+    if (!data) {
+      return []
+    }
+    return data.dependencies.deps.filter((dep) => dep[4] === 'dependencies')
+  }, [data])
+
+  const devDependencies = useMemo(() => {
+    if (!data) {
+      return []
+    }
+    return data.dependencies.deps.filter((dep) => dep[4] === 'devDependencies')
+  }, [data])
 
   const loadRepository = async () => {
     setLoading(true)
@@ -37,6 +54,10 @@ function RepoContent() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const recomputeDeps = async () => {
+    await RepositoriesAPI.recomputeDeps(userId, parseInt(id, 10))
   }
 
   useEffect(() => {
@@ -53,72 +74,86 @@ function RepoContent() {
       ) : (
         !!data && (
           <>
-            <Link to="/">
-              <Button size="lg" leftIcon={FaGithub} variantColor="teal">
-                Return to repo list
-              </Button>
-            </Link>
+            <Stack mt={2} align="center" spacing={4}>
+              <Link to="/">
+                <Button
+                  size="lg"
+                  leftIcon={FaGithub}
+                  variantColor="teal"
+                  mb={4}
+                >
+                  Return to repo list
+                </Button>
+              </Link>
 
-            <Column mt={2} align="center">
               <ChakraLink href={data.repoUrl}>
                 <Image
                   rounded="md"
                   src={data.repoImg}
                   alt="repo-icon"
                   size={[16, 24]}
-                  mt={4}
                 />
               </ChakraLink>
-              <Box
-                mt={4}
-                border="1px solid"
-                borderColor="teal.300"
-                px={20}
-                py={2}
-              >
+              <Box border="1px solid" borderColor="teal.300" px={20} py={2}>
                 <Heading fontSize={20}>{data.name}</Heading>
               </Box>
 
-              <Text fontSize={17} mt={2}>
+              <Text fontSize={17}>
                 by <b>{data.author}</b>
               </Text>
-              <Text mt={2}>
+              <Text>
                 <Text as="span" role="img" aria-label="light">
                   ⏱
                 </Text>{' '}
                 {formatDistance(new Date(data.createdAt), new Date())} ago
               </Text>
-            </Column>
+            </Stack>
 
             {data.dependencies && data.dependencies.deps && (
-              <Box w={['100%', 'unset']} minW={['100%', '40%']} mt={6}>
-                <Tabs isFitted variant="soft-rounded">
+              <Box w={['100%', 'unset']} minW={['100%']} mt={6}>
+                <Tabs
+                  defaultIndex={dependencies.length === 0 ? 1 : 0}
+                  isFitted
+                  variant="soft-rounded"
+                >
                   <TabList>
-                    <Tab _selected={{ bg: 'teal.500', color: 'white' }}>
+                    <Tab
+                      _selected={{ bg: 'teal.500', color: 'white' }}
+                      disabled={dependencies.length === 0}
+                    >
                       Dependencies
                     </Tab>
-                    <Tab _selected={{ bg: 'teal.500', color: 'white' }}>
+                    <Tab
+                      _selected={{ bg: 'teal.500', color: 'white' }}
+                      disabled={devDependencies.length === 0}
+                    >
                       Dev Dependencies
                     </Tab>
                   </TabList>
                   <TabPanels>
                     <TabPanel>
-                      <DependenciesList
-                        dependencies={data.dependencies.deps.filter(
-                          (dep) => dep[4] === 'dependencies',
-                        )}
-                      />
+                      <DependenciesList dependencies={dependencies} />
                     </TabPanel>
                     <TabPanel>
-                      <DependenciesList
-                        dependencies={data.dependencies.deps.filter(
-                          (dep) => dep[4] === 'devDependencies',
-                        )}
-                      />
+                      <DependenciesList dependencies={devDependencies} />
                     </TabPanel>
                   </TabPanels>
                 </Tabs>
               </Box>
+            )}
+            {!data.dependencies && (
+              <Alert status="error" mt={6}>
+                <AlertIcon />
+                <Stack align="flex-start">
+                  <AlertDescription>
+                    It looks like your dependencies were not computed. This
+                    might be due to an unexpected server error.
+                  </AlertDescription>
+                  <Button variantColor="red" onClick={recomputeDeps}>
+                    Retry
+                  </Button>
+                </Stack>
+              </Alert>
             )}
           </>
         )

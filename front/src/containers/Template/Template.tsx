@@ -27,7 +27,13 @@ function Template() {
   return (
     <Column minH="100vh" bg="gray.50">
       <Header renderRight={renderRight} />
-      <Column flex={1} justify="flex-start" px={[0, 32]}>
+      <Column
+        flex={1}
+        justify="flex-start"
+        px={[4, 0]}
+        w={['100%', 'xl', '2xl', '3xl']}
+        m="0 auto"
+      >
         <Router />
       </Column>
       <Row justify="center" align="center" py={4}>

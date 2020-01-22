@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Link as ChakraLink, Text } from '@chakra-ui/core'
+import { Button, Text } from '@chakra-ui/core'
 import { useAuth } from '@contexts/AuthContext'
 import RepositoriesAPI from '@api/repositories'
 import RepositoriesList from '@components/RepositoriesList'
 import { Column } from '@components/Flex'
 import { FaGithub } from 'react-icons/fa'
+import { Link } from 'react-router-dom'
 
 function Home() {
   const [repositories, setRepositories] = useState<Repository[]>([])
@@ -24,10 +25,7 @@ function Home() {
   return (
     <Column flex="1">
       <Column px={2} flex="1" py={16} align="center">
-        <ChakraLink
-          textDecoration="none !important"
-          href={`https://github.com/apps/${process.env.REACT_APP_GITHUB_APP_NAME}/installations/new`}
-        >
+        <Link to="/add_repository">
           <Button
             cursor="pointer"
             size="lg"
@@ -37,7 +35,7 @@ function Home() {
           >
             Add repository
           </Button>
-        </ChakraLink>
+        </Link>
         <Text fontSize={['sm', 'lg', '2xl', '3xl']} fontWeight="bold" my={8}>
           Repositories Available
         </Text>

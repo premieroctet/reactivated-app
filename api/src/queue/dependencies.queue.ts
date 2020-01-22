@@ -22,7 +22,7 @@ export class DependenciesQueue {
   async computeYarnDependencies(job: Job) {
     const responsePackageJson = await this.httpService
       .get(
-        `https://api.github.com/repos/${job.data.repositoryFullName}/contents/package.json`,
+        `https://api.github.com/repos/${job.data.repositoryFullName}/contents/${job.data.path}package.json?ref=${job.data.branch}`,
         {
           headers: {
             Authorization: `token ${job.data.githubToken}`,
@@ -34,7 +34,7 @@ export class DependenciesQueue {
 
     const responseYarnLock = await this.httpService
       .get(
-        `https://api.github.com/repos/${job.data.repositoryFullName}/contents/yarn.lock`,
+        `https://api.github.com/repos/${job.data.repositoryFullName}/contents/${job.data.path}yarn.lock?ref=${job.data.branch}`,
         {
           headers: {
             Authorization: `token ${job.data.githubToken}`,
@@ -68,15 +68,18 @@ export class DependenciesQueue {
       user: job.data.userId,
     });
 
-    exec(`cd ${path} && yarn outdated --json`, async (err, stdout) => {
-      const manifest = JSON.parse(stdout.split('\n')[1]);
-      repository.dependencies = { deps: manifest.data.body };
-      await this.repositoriesService.addRepo(repository);
-    });
+    exec(
+      `cd ${path} && yarn outdated --json && cd .. && rm -rf ./${job.data.repositoryId}`,
+      async (err, stdout) => {
+        const manifest = JSON.parse(stdout.split('\n')[1]);
+        repository.dependencies = { deps: manifest.data.body };
+        await this.repositoriesService.addRepo(repository);
+      },
+    );
   }
 
   @OnQueueEvent(BullQueueEvents.COMPLETED)
-  onCompleted(job: Job) {
+  async onCompleted(job: Job) {
     this.logger.log(`Completed job ${job.id} of type ${job.name} with result`);
   }
 

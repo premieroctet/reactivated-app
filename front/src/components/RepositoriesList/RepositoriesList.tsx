@@ -12,7 +12,7 @@ const RepositoriesList = ({ repositories }: Props) => {
     <List
       my="0"
       mx="auto"
-      width={['100%', '80%', '60%', '50%', '35%']}
+      width={['100%', '80%']}
       cursor="pointer"
       boxShadow="md"
       rounded="lg"
