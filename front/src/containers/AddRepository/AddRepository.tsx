@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react'
-import { Button } from '@chakra-ui/core'
+import { Button, Heading, Text, Stack } from '@chakra-ui/core'
 import { FaGithub } from 'react-icons/fa'
 import { Column } from '@components/Flex'
 import useMessageListener from '@hooks/useMessageListener'
@@ -23,7 +23,7 @@ const AddRepository = () => {
     const win = window.open(
       `https://github.com/apps/${process.env.REACT_APP_GITHUB_APP_NAME}/installations/new`,
       'Add repositories',
-      'height=640,width=960,toolbar=no,menubar=no,scrollbars=no,location=no,status=no',
+      'height=640,width=960,toolbar=no,menubar=no,scrollbars=yes,location=no,status=no',
     )
 
     return win
@@ -104,17 +104,35 @@ const AddRepository = () => {
             installations={installations}
             onSelectRepo={onSelectRepo}
           />
+          <Stack spacing={4} mt={6}>
+            <Text fontSize={['md', 'lg']} textAlign="center">
+              Can't find your repository ?
+            </Text>
+            <Button
+              variantColor="teal"
+              size="lg"
+              leftIcon={FaGithub}
+              onClick={onOpenGithub}
+            >
+              Add it from GitHub
+            </Button>
+          </Stack>
+        </Column>
+      ) : (
+        <Stack spacing={4} mt={6}>
+          <Text fontSize={['md', 'lg']} textAlign="center">
+            It seems you have no repository configured.
+          </Text>
           <Button
             variantColor="teal"
             size="lg"
             leftIcon={FaGithub}
             onClick={onOpenGithub}
-            mt={6}
           >
-            Add from GitHub
+            Configure on GitHub
           </Button>
-        </Column>
-      ) : null
+        </Stack>
+      )
     case 2:
       return (
         <Column align="flex-start">
