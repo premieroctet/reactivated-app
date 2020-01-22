@@ -33,14 +33,14 @@ function RepoContent() {
   const { jwTokenData } = useAuth()
   const { userId } = jwTokenData!
   const dependencies = useMemo(() => {
-    if (!data?.dependencies.deps) {
+    if (!data?.dependencies?.deps) {
       return []
     }
     return data.dependencies.deps.filter((dep) => dep[4] === 'dependencies')
   }, [data])
 
   const devDependencies = useMemo(() => {
-    if (!data?.dependencies.deps) {
+    if (!data?.dependencies?.deps) {
       return []
     }
     return data.dependencies.deps.filter((dep) => dep[4] === 'devDependencies')

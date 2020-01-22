@@ -27,7 +27,7 @@ interface Repository {
   user: User
   dependencies: {
     deps: Dependency[]
-  }
+  } | null
   branch: string
   path?: string
 }
