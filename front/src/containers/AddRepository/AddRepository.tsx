@@ -1,23 +1,30 @@
-import React, { useState, useCallback } from 'react'
-import { Button, Heading, Text, Stack } from '@chakra-ui/core'
+import React, { useState, useCallback, useEffect } from 'react'
+import { Button, Text, Stack, useToast } from '@chakra-ui/core'
 import { FaGithub } from 'react-icons/fa'
 import { Column } from '@components/Flex'
 import useMessageListener from '@hooks/useMessageListener'
 import InstallationRepositories from '@components/InstallationRepositories'
-import InstallationsAPI from '@api/installations'
-import RepositoryAPI from '@api/repositories'
+import * as InstallationsAPI from '@api/installations'
+import * as RepositoryAPI from '@api/repositories'
 import RepoConfigForm from '@components/RepoConfigForm/RepoConfigForm'
-import { useAuth } from '@contexts/AuthContext'
 import { useHistory } from 'react-router'
+import { useRequest } from '@hooks/useRequest'
 
 const AddRepository = () => {
-  const { jwTokenData } = useAuth()
   const [step, setStep] = useState(0)
-  const [installations, setInstallations] = useState<GithubInstallation[]>([])
+  const {
+    data: installations,
+    revalidate: getInstallations,
+    isValidating: installationsLoading,
+  } = useRequest<GithubInstallation[]>('installations', {
+    fetcher: InstallationsAPI.getUserInstallations,
+    initialData: [],
+    revalidateOnFocus: false,
+  })
   const [branches, setBranches] = useState<GithubBranch['name'][]>([])
   const [selectedRepo, setSelectedRepo] = useState<Repository | null>(null)
-  const [installationsLoading, setInstallationsLoading] = useState(false)
   const history = useHistory()
+  const toast = useToast()
 
   const onOpenGithub = () => {
     const win = window.open(
@@ -29,26 +36,22 @@ const AddRepository = () => {
     return win
   }
 
-  const getInstallations = async () => {
-    const installations = await InstallationsAPI.getUserInstallations()
-
-    setInstallations(installations)
-  }
-
-  const onMessage = useCallback((e: MessageEvent) => {
-    if (e.data === 'installation-made') {
-      getInstallations()
-    }
-  }, [])
+  const onMessage = useCallback(
+    (e: MessageEvent) => {
+      if (e.data === 'installation-made') {
+        getInstallations()
+      }
+    },
+    [getInstallations],
+  )
 
   useMessageListener(onMessage)
 
   const onSelectRepo = async (repo: GithubInstallationRepository) => {
-    const { data: branches } = await RepositoryAPI.getRepositoryBranches(
+    const { data: repository } = await RepositoryAPI.findRepositoryByName(
       repo.fullName,
     )
-    const { data: repository } = await RepositoryAPI.findRepositoryByName(
-      jwTokenData!.userId,
+    const { data: branches } = await RepositoryAPI.getRepositoryBranches(
       repo.fullName,
     )
 
@@ -58,28 +61,34 @@ const AddRepository = () => {
   }
 
   const onSelectGithub = async () => {
-    setInstallationsLoading(true)
-    try {
-      await getInstallations()
-      setStep(1)
-    } finally {
-      setInstallationsLoading(false)
-    }
+    await getInstallations()
+    setStep(1)
   }
 
   const onSubmitRepoConfig = async (data: {
     branch: string
     path?: string
   }) => {
-    await RepositoryAPI.configureRepository({
-      id: selectedRepo!.id,
-      userId: jwTokenData!.userId,
-      data: {
-        branch: data.branch,
-        path: data.path,
-      },
-    })
-    history.push('/')
+    try {
+      await RepositoryAPI.configureRepository({
+        id: selectedRepo!.id,
+        data: {
+          branch: data.branch,
+          path: data.path,
+          fullName: selectedRepo!.fullName,
+        },
+      })
+      history.push('/')
+    } catch (e) {
+      toast({
+        title: 'An error occured',
+        duration: 5000,
+        position: 'top',
+        status: 'error',
+        description: 'Please check the package.json & yarn.lock path is valid.',
+        isClosable: true,
+      })
+    }
   }
 
   switch (step) {
@@ -98,7 +107,7 @@ const AddRepository = () => {
         </Column>
       )
     case 1:
-      return installations.length !== 0 ? (
+      return installations && installations.length !== 0 ? (
         <Column align="center">
           <InstallationRepositories
             installations={installations}

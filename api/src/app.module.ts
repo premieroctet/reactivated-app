@@ -8,6 +8,7 @@ import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
 import { AuthModule } from './auth/auth.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
+import { GithubModule } from './github/github.module';
 
 @Module({
   imports: [
@@ -25,11 +26,13 @@ import { WebhooksModule } from './webhooks/webhooks.module';
         database: configService.get('TYPEORM_DATABASE'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: Boolean(configService.get('TYPEORM_SYNCHRONIZE')),
+        logging: process.env.NODE_ENV === 'dev',
       }),
     }),
     ConfigModule,
     AuthModule,
     WebhooksModule,
+    GithubModule,
   ],
   controllers: [AppController],
   providers: [AppService],

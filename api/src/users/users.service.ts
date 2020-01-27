@@ -23,6 +23,12 @@ export class UsersService extends TypeOrmCrudService<User> {
     return users[0];
   }
 
+  async getById(id: User['id']) {
+    return this.usersRepository.findOne({
+      where: { id },
+    });
+  }
+
   async updateUser(user: User) {
     this.usersRepository.save(user);
   }

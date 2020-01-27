@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm';
 import { User } from '../users/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -64,11 +70,14 @@ export class Repository {
   @Column()
   repoUrl: string;
 
-  @ApiProperty({
-    readOnly: true,
-  })
-  @ManyToOne(user => User)
-  user: User;
+  @ApiProperty()
+  @ManyToMany(
+    user => User,
+    user => user.id,
+    { onDelete: 'CASCADE' },
+  )
+  @JoinTable()
+  users?: User[];
 
   @ApiProperty({
     description: 'Dependencies of the repo',
@@ -88,4 +97,8 @@ export class Repository {
     default: '/',
   })
   path?: string;
+
+  @ApiProperty()
+  @Column({ default: false })
+  isConfigured?: boolean;
 }

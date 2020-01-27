@@ -14,11 +14,40 @@ interface Props {
   branches: GithubBranch['name'][]
   repoName: string
   onSubmit: (data: { branch: string; path?: string }) => Promise<void>
+  initialBranch?: string
+  initialPath?: string
 }
 
-const RepoConfigForm: React.FC<Props> = ({ branches, repoName, onSubmit }) => {
-  const [selectedBranch, setSelectedBranch] = useState(branches[0])
-  const [mainPath, setMainPath] = useState('')
+const RepoConfigForm: React.FC<Props> = ({
+  branches,
+  repoName,
+  onSubmit,
+  initialBranch,
+  initialPath,
+}) => {
+  const [selectedBranch, setSelectedBranch] = useState<string>(() => {
+    if (!initialBranch) {
+      const master = branches.find((branch) => branch === 'master')
+      if (!master) {
+        return branches[0]
+      }
+
+      return master
+    }
+
+    return initialBranch
+  })
+  const [mainPath, setMainPath] = useState<string>(() => {
+    if (initialPath) {
+      if (initialPath === '/') {
+        return ''
+      }
+
+      return initialPath
+    }
+
+    return ''
+  })
   const [submitLoading, setSubmitLoading] = useState(false)
 
   const onChangeBranch = (e: React.ChangeEvent<HTMLSelectElement>) => {

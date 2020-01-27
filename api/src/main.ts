@@ -13,8 +13,10 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('reactivated app')
     .build();
-  const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('swagger', app, document);
+  if (process.env.NODE_ENV === 'dev') {
+    const document = SwaggerModule.createDocument(app, options);
+    SwaggerModule.setup('swagger', app, document);
+  }
 
   await app.listen(process.env.PORT || 3000);
 }

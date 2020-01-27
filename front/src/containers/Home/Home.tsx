@@ -1,26 +1,20 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { Button, Text } from '@chakra-ui/core'
-import { useAuth } from '@contexts/AuthContext'
-import RepositoriesAPI from '@api/repositories'
+import * as RepositoriesAPI from '@api/repositories'
 import RepositoriesList from '@components/RepositoriesList'
 import { Column } from '@components/Flex'
 import { FaGithub } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
+import { useAxiosRequest } from '@hooks/useRequest'
 
 function Home() {
-  const [repositories, setRepositories] = useState<Repository[]>([])
-  const { jwTokenData } = useAuth()
-  const { userId } = jwTokenData!
+  const { data: repositories } = useAxiosRequest('/repositories', {
+    fetcher: RepositoriesAPI.getRepositories,
+  })
 
-  const loadRepository = async () => {
-    const responseApi = await RepositoriesAPI.getRepositories(userId)
-    setRepositories(responseApi.data)
+  if (!repositories) {
+    return null
   }
-
-  useEffect(() => {
-    loadRepository()
-    // eslint-disable-next-line
-  }, [])
 
   return (
     <Column flex="1">
