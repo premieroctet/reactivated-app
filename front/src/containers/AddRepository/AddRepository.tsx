@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useCallback } from 'react'
 import { Button, Text, Stack, useToast } from '@chakra-ui/core'
 import { FaGithub } from 'react-icons/fa'
 import { Column } from '@components/Flex'

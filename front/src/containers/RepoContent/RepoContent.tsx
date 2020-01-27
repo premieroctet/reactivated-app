@@ -47,9 +47,9 @@ function RepoContent() {
     return data.dependencies.deps.filter((dep) => dep[4] === 'devDependencies')
   }, [data])
 
-  const recomputeDeps = () => {
+  const recomputeDeps = useCallback(() => {
     return RepositoriesAPI.recomputeDeps(parseInt(id, 10))
-  }
+  }, [id])
 
   const renderLoading = useCallback(() => {
     return (
