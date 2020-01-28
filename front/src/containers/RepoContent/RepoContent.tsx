@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react'
+import React, { useMemo, useCallback, useState } from 'react'
 import { formatDistance } from 'date-fns'
 import { Link, useRouteMatch, useHistory } from 'react-router-dom'
 import DependenciesList from '@components/DependenciesList'
@@ -18,11 +18,21 @@ import {
   Alert,
   AlertIcon,
   AlertDescription,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  useToast,
 } from '@chakra-ui/core'
 import { FaGithub } from 'react-icons/fa'
 import * as RepositoriesAPI from '@api/repositories'
 import { Column } from '@components/Flex'
 import { useAxiosRequest } from '@hooks/useRequest'
+import RepoConfigForm from '@components/RepoConfigForm'
+import { mutate } from 'swr'
 
 function RepoContent() {
   const {
@@ -31,7 +41,20 @@ function RepoContent() {
   const history = useHistory()
   const { data, error } = useAxiosRequest<Repository>([id], {
     fetcher: RepositoriesAPI.getRepository,
+    revalidateOnFocus: true,
   })
+  const { data: branches, error: branchesError } = useAxiosRequest<
+    GithubBranch[]
+  >(`branches-${data?.githubId}`, {
+    fetcher: () => RepositoriesAPI.getRepositoryBranches(data!.fullName),
+    revalidateOnFocus: false,
+  })
+  const {
+    isOpen: configModalOpen,
+    onOpen: openConfigModal,
+    onClose: closeConfigModal,
+  } = useDisclosure()
+  const toast = useToast()
 
   const dependencies = useMemo(() => {
     if (!data?.dependencies?.deps) {
@@ -94,6 +117,17 @@ function RepoContent() {
             </Text>{' '}
             {formatDistance(new Date(data.createdAt), new Date())} ago
           </Text>
+          <Button
+            size="lg"
+            leftIcon="settings"
+            variant="outline"
+            variantColor="teal"
+            onClick={openConfigModal}
+            isDisabled={!!branchesError}
+            isLoading={!branches}
+          >
+            Settings
+          </Button>
         </Stack>
 
         {data.dependencies && data.dependencies.deps && (
@@ -144,7 +178,15 @@ function RepoContent() {
         )}
       </>
     )
-  }, [data, dependencies, devDependencies, recomputeDeps])
+  }, [
+    data,
+    dependencies,
+    devDependencies,
+    recomputeDeps,
+    openConfigModal,
+    branchesError,
+    branches,
+  ])
 
   const renderError = useCallback(() => {
     return (
@@ -160,11 +202,73 @@ function RepoContent() {
     )
   }, [history])
 
+  const onUpdateConfig = useCallback(
+    async (config: { branch: string; path?: string }) => {
+      const didUpdateConfig = !(
+        config.branch === data?.branch && config.path === data.path
+      )
+      try {
+        if (didUpdateConfig) {
+          const {
+            data: configData,
+          } = await RepositoriesAPI.configureRepository({
+            id: parseInt(id, 10),
+            data: { ...config, fullName: data!.fullName },
+          })
+          mutate([id], configData)
+        }
+        closeConfigModal()
+        toast({
+          status: 'success',
+          title: 'Success !',
+          description: "Successfully updated your repository's configuration",
+          isClosable: true,
+          position: 'top',
+        })
+      } catch (e) {
+        toast({
+          title: 'An error occured',
+          duration: 5000,
+          position: 'top',
+          status: 'error',
+          description:
+            'Please check the package.json & yarn.lock path is valid.',
+          isClosable: true,
+        })
+        throw e
+      }
+    },
+    [closeConfigModal, data, id, toast],
+  )
+
   return (
     <Column align="center" px={[4, 0]}>
       {!data && renderLoading()}
       {!!data && renderData()}
       {error && renderError()}
+      {data && (
+        <Modal
+          isOpen={configModalOpen}
+          onClose={closeConfigModal}
+          isCentered
+          closeOnOverlayClick={false}
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Update repository configuration</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <RepoConfigForm
+                repoName={data.fullName}
+                initialBranch={data.branch}
+                initialPath={data.path}
+                onSubmit={onUpdateConfig}
+                branches={branches?.map((branch) => branch.name) || []}
+              />
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+      )}
     </Column>
   )
 }

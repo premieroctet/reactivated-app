@@ -74,7 +74,6 @@ export class Repository {
   @ManyToMany(
     user => User,
     user => user.id,
-    { onDelete: 'CASCADE' },
   )
   @JoinTable()
   users?: User[];

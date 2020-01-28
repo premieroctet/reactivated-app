@@ -76,18 +76,20 @@ export class RepositoryController implements CrudController<Repository> {
     @Request() req,
   ) {
     try {
-      await this.githubService.getPackageJson({
-        branch: repo.branch,
-        name: repo.fullName,
-        path: repo.path,
-        token: req.user.githubToken,
-      });
-      await this.githubService.getYarnLock({
-        branch: repo.branch,
-        name: repo.fullName,
-        path: repo.path,
-        token: req.user.githubToken,
-      });
+      await Promise.all([
+        this.githubService.getPackageJson({
+          branch: repo.branch,
+          name: repo.fullName,
+          path: repo.path,
+          token: req.user.githubToken,
+        }),
+        await this.githubService.getYarnLock({
+          branch: repo.branch,
+          name: repo.fullName,
+          path: repo.path,
+          token: req.user.githubToken,
+        }),
+      ]);
     } catch (e) {
       throw new NotFoundException();
     }
@@ -98,6 +100,7 @@ export class RepositoryController implements CrudController<Repository> {
       ...repo,
       isConfigured: true,
       users: [user],
+      dependencies: null,
     });
 
     await this.queue.add('compute_yarn_dependencies', {
@@ -118,7 +121,9 @@ export class RepositoryController implements CrudController<Repository> {
   @Get(':id/compute_deps')
   async computeDependencies(@Param('id') repoId: string, @Request() req) {
     const userId = req.user.id;
-    const repository = await this.service.findRepo(repoId);
+    const repository = await this.service.findRepo({
+      id: parseInt(repoId, 10),
+    });
 
     await this.queue.add('compute_yarn_dependencies', {
       repositoryFullName: repository.fullName,

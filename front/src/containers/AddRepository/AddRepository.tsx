@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react'
-import { Button, Text, Stack, useToast } from '@chakra-ui/core'
+import { Button, Text, Stack, useToast, Heading } from '@chakra-ui/core'
 import { FaGithub } from 'react-icons/fa'
 import { Column } from '@components/Flex'
 import useMessageListener from '@hooks/useMessageListener'
@@ -145,6 +145,7 @@ const AddRepository = () => {
     case 2:
       return (
         <Column align="flex-start">
+          <Heading as="h2">Repo config</Heading>
           <RepoConfigForm
             branches={branches}
             repoName={selectedRepo!.fullName}

@@ -17,14 +17,9 @@ export class RepositoryService extends TypeOrmCrudService<Repository> {
     super(repositoryContent);
   }
 
-  async findRepo(repoId: string | ObjectLiteral) {
+  async findRepo(criteria: Partial<Repository>) {
     return this.repositoryContent.findOne({
-      where:
-        typeof repoId === 'string'
-          ? {
-              id: repoId,
-            }
-          : repoId,
+      where: criteria,
       relations: ['users'],
     });
   }
@@ -34,10 +29,14 @@ export class RepositoryService extends TypeOrmCrudService<Repository> {
   }
 
   async updateRepo(repoId: string, repo: Repository) {
-    const repository = await this.findRepo(repoId);
+    const repository = await this.findRepo({ id: parseInt(repoId, 10) });
 
     let users = repository.users;
 
+    /*
+     * Search if the users passed in repo exists in the repository found in db
+     * If it doesnt exist, adds the user to the repository
+     */
     if (
       repo.users &&
       users &&

@@ -1,19 +1,11 @@
 import React, { useState } from 'react'
 import FormInput from '@components/FormInput'
-import {
-  Select,
-  Heading,
-  Input,
-  Stack,
-  Link,
-  Icon,
-  Button,
-} from '@chakra-ui/core'
+import { Select, Input, Stack, Link, Icon, Button } from '@chakra-ui/core'
 
 interface Props {
   branches: GithubBranch['name'][]
   repoName: string
-  onSubmit: (data: { branch: string; path?: string }) => Promise<void>
+  onSubmit: (data: { branch: string; path?: string }) => void | Promise<void>
   initialBranch?: string
   initialPath?: string
 }
@@ -66,14 +58,13 @@ const RepoConfigForm: React.FC<Props> = ({
         branch: selectedBranch,
         path: `${mainPath}${mainPath.endsWith('/') ? '' : '/'}`,
       })
-    } finally {
+    } catch {
       setSubmitLoading(false)
     }
   }
 
   return (
     <form onSubmit={onSubmitForm}>
-      <Heading as="h2">Repo config</Heading>
       <Stack spacing={6}>
         <FormInput label="Select a branch" id="repo-branch" mt={4}>
           <Select size="md" onChange={onChangeBranch} value={selectedBranch}>
