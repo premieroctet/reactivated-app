@@ -83,7 +83,7 @@ export class RepositoryController implements CrudController<Repository> {
           path: repo.path,
           token: req.user.githubToken,
         }),
-        await this.githubService.getYarnLock({
+        this.githubService.getYarnLock({
           branch: repo.branch,
           name: repo.fullName,
           path: repo.path,
