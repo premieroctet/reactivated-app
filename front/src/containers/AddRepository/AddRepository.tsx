@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react'
-import { Button, Text, Stack, useToast, Heading } from '@chakra-ui/core'
+import { Button, Text, Stack, Heading } from '@chakra-ui/core'
 import { FaGithub } from 'react-icons/fa'
 import { Column } from '@components/Flex'
 import useMessageListener from '@hooks/useMessageListener'
@@ -9,6 +9,7 @@ import * as RepositoryAPI from '@api/repositories'
 import RepoConfigForm from '@components/RepoConfigForm/RepoConfigForm'
 import { useHistory } from 'react-router'
 import { useRequest } from '@hooks/useRequest'
+import useChakraToast from '@hooks/useChakraToast'
 
 const AddRepository = () => {
   const [step, setStep] = useState(0)
@@ -24,7 +25,7 @@ const AddRepository = () => {
   const [branches, setBranches] = useState<GithubBranch['name'][]>([])
   const [selectedRepo, setSelectedRepo] = useState<Repository | null>(null)
   const history = useHistory()
-  const toast = useToast()
+  const toast = useChakraToast()
 
   const onOpenGithub = () => {
     const win = window.open(
@@ -82,11 +83,8 @@ const AddRepository = () => {
     } catch (e) {
       toast({
         title: 'An error occured',
-        duration: 5000,
-        position: 'top',
         status: 'error',
         description: 'Please check the package.json & yarn.lock path is valid.',
-        isClosable: true,
       })
     }
   }

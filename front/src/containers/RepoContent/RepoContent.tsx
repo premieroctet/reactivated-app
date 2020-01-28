@@ -25,7 +25,6 @@ import {
   ModalHeader,
   ModalCloseButton,
   ModalBody,
-  useToast,
 } from '@chakra-ui/core'
 import { FaGithub } from 'react-icons/fa'
 import * as RepositoriesAPI from '@api/repositories'
@@ -33,6 +32,7 @@ import { Column } from '@components/Flex'
 import { useAxiosRequest } from '@hooks/useRequest'
 import RepoConfigForm from '@components/RepoConfigForm'
 import { mutate } from 'swr'
+import useChakraToast from '@hooks/useChakraToast'
 
 function RepoContent() {
   const {
@@ -54,7 +54,7 @@ function RepoContent() {
     onOpen: openConfigModal,
     onClose: closeConfigModal,
   } = useDisclosure()
-  const toast = useToast()
+  const toast = useChakraToast()
 
   const dependencies = useMemo(() => {
     if (!data?.dependencies?.deps) {
@@ -222,18 +222,13 @@ function RepoContent() {
           status: 'success',
           title: 'Success !',
           description: "Successfully updated your repository's configuration",
-          isClosable: true,
-          position: 'top',
         })
       } catch (e) {
         toast({
           title: 'An error occured',
-          duration: 5000,
-          position: 'top',
           status: 'error',
           description:
             'Please check the package.json & yarn.lock path is valid.',
-          isClosable: true,
         })
         throw e
       }
