@@ -20,7 +20,7 @@ type InstallationRepositories = {
   }>
 }
 
-const getUserInstallations = async (): Promise<GithubInstallation[]> => {
+export const getUserInstallations = async (): Promise<GithubInstallation[]> => {
   const { data: installationsData } = await GithubAPI.get<Installations>(
     '/user/installations',
   )
@@ -56,5 +56,3 @@ const getUserInstallations = async (): Promise<GithubInstallation[]> => {
     }
   })
 }
-
-export default { getUserInstallations }

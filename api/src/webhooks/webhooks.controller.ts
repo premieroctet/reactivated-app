@@ -26,39 +26,54 @@ export class WebhooksController {
   ) {
     if (['installation_repositories', 'installation'].includes(xGitHubEvent)) {
       const user = await this.userService.getUser(body.sender.login);
-      let repositories = [];
-      let repositoriesRemoved = [];
-      if (body.action === 'created') {
-        repositories = body.repositories;
-      } else if (body.action === 'added') {
-        repositories = body.repositories_added;
-      } else if (body.action === 'removed') {
-        repositoriesRemoved = body.repositories_removed;
-      }
 
-      repositories.forEach(async repoAdd => {
-        const newRepo = {
-          name: repoAdd.name,
-          fullName: repoAdd.full_name,
-          githubId: repoAdd.id,
-          installationId: body.installation.id,
-          author: body.installation.account.login,
-          repoImg: body.installation.account.avatar_url,
-          createdAt: new Date(),
-          repoUrl: body.installation.account.html_url,
-          user,
-        };
-        await this.repositoryService.addRepo(newRepo);
-      });
+      if (user) {
+        let repositories = [];
+        let repositoriesRemoved = [];
+        if (body.action === 'created') {
+          repositories = body.repositories;
+        } else if (body.action === 'added') {
+          repositories = body.repositories_added;
+        } else if (body.action === 'removed') {
+          repositoriesRemoved = body.repositories_removed;
+        }
 
-      repositoriesRemoved.forEach(async repoAdd => {
-        await this.repositoryService.deleteRepo({ githubId: repoAdd.id });
-      });
+        await Promise.all(
+          repositories.map(repoAdd => {
+            const newRepo = {
+              name: repoAdd.name,
+              fullName: repoAdd.full_name,
+              githubId: repoAdd.id,
+              installationId: body.installation.id,
+              author: body.installation.account.login,
+              repoImg: body.installation.account.avatar_url,
+              createdAt: new Date(),
+              repoUrl: body.installation.account.html_url,
+              users: [user],
+            };
+            return this.repositoryService.addRepo(newRepo);
+          }),
+        );
 
-      if (body.action === 'deleted') {
-        await this.repositoryService.deleteRepo({
-          installationId: body.installation.id,
-        });
+        await Promise.all(
+          repositoriesRemoved.map(repoAdd => {
+            return this.repositoryService.deleteRepo(
+              {
+                githubId: repoAdd.id,
+              },
+              user.id,
+            );
+          }),
+        );
+
+        if (body.action === 'deleted') {
+          await this.repositoryService.deleteRepo(
+            {
+              installationId: body.installation.id,
+            },
+            user.id,
+          );
+        }
       }
 
       return {};

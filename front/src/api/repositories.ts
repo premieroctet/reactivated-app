@@ -1,48 +1,42 @@
 import API from './api'
 import GithubAPI from './github'
 
-const getRepositories = (userId: User['id']) => {
-  return API.get<Repository[]>(`/users/${userId}/repositories`)
-}
-
-const getRepository = (userId: User['id'], repositoryId: string) => {
-  return API.get<Repository>(`/users/${userId}/repositories/${repositoryId}`)
-}
-
-const getRepositoryBranches = (fullName: string) => {
-  return GithubAPI.get<GithubBranch[]>(`/repos/${fullName}/branches`)
-}
-
-interface UpdateRepoParams {
-  id: Repository['id']
-  userId: User['id']
-  data: Partial<Repository>
-}
-
-const configureRepository = (params: UpdateRepoParams) => {
-  return API.put<Repository>(
-    `/users/${params.userId}/repositories/${params.id}/configure`,
-    params.data,
-  )
-}
-
-const findRepositoryByName = (userId: User['id'], name: string) => {
-  return API.get<Repository[]>(`/users/${userId}/repositories`, {
+export const getRepositories = () => {
+  return API.get<Repository[]>(`/repositories`, {
     params: {
-      s: JSON.stringify({ fullName: name }),
+      filter: 'isConfigured||eq||true',
     },
   })
 }
 
-const recomputeDeps = (userId: User['id'], repoId: Repository['id']) => {
-  return API.get(`/users/${userId}/repositories/${repoId}/compute_deps`)
+export const getRepository = (repositoryId: string) => {
+  return API.get<Repository>(`/repositories/${repositoryId}`)
 }
 
-export default {
-  getRepositories,
-  getRepository,
-  getRepositoryBranches,
-  configureRepository,
-  findRepositoryByName,
-  recomputeDeps,
+export const getRepositoryBranches = (fullName: string) => {
+  return GithubAPI.get<GithubBranch[]>(`/repos/${fullName}/branches`)
+}
+
+interface ConfigureRepoParams {
+  id: Repository['id']
+  data: Pick<Repository, 'branch' | 'path' | 'fullName'>
+}
+
+export const configureRepository = (params: ConfigureRepoParams) => {
+  return API.put<Repository>(
+    `/repositories/${params.id}/configure`,
+    params.data,
+  )
+}
+
+export const findRepositoryByName = (name: string) => {
+  return API.get<Repository[]>(`/repositories`, {
+    params: {
+      filter: `fullName||eq||${name}`,
+    },
+  })
+}
+
+export const recomputeDeps = (repoId: Repository['id']) => {
+  return API.get(`/repositories/${repoId}/compute_deps`)
 }

@@ -18,7 +18,8 @@
     "react-icons": "^3.8.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.2.0",
-    "semver": "^6.3.0"
+    "semver": "^6.3.0",
+    "swr": "^0.1.16"
   },
   "scripts": {
     "start": "PORT=3007 react-app-rewired start",

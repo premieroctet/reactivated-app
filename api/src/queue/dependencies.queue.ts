@@ -1,7 +1,8 @@
 import { BullQueueEvents, OnQueueEvent, Processor, Process } from 'nest-bull';
 import { Job } from 'bull';
-import { Logger, HttpService } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { RepositoryService } from '../repository/repository.service';
+import { GithubService } from '../github/github.service';
 
 const { exec } = require('child_process');
 const fs = require('fs');
@@ -15,34 +16,24 @@ export class DependenciesQueue {
 
   constructor(
     private repositoriesService: RepositoryService,
-    private readonly httpService: HttpService,
+    private readonly githubService: GithubService,
   ) {}
 
   @Process({ name: 'compute_yarn_dependencies' })
   async computeYarnDependencies(job: Job) {
-    const responsePackageJson = await this.httpService
-      .get(
-        `https://api.github.com/repos/${job.data.repositoryFullName}/contents/${job.data.path}package.json?ref=${job.data.branch}`,
-        {
-          headers: {
-            Authorization: `token ${job.data.githubToken}`,
-            Accept: 'application/vnd.github.machine-man-preview+json',
-          },
-        },
-      )
-      .toPromise();
+    const responsePackageJson = await this.githubService.getPackageJson({
+      name: job.data.repositoryFullName,
+      path: job.data.path,
+      branch: job.data.branch,
+      token: job.data.githubToken,
+    });
 
-    const responseYarnLock = await this.httpService
-      .get(
-        `https://api.github.com/repos/${job.data.repositoryFullName}/contents/${job.data.path}yarn.lock?ref=${job.data.branch}`,
-        {
-          headers: {
-            Authorization: `token ${job.data.githubToken}`,
-            Accept: 'application/vnd.github.machine-man-preview+json',
-          },
-        },
-      )
-      .toPromise();
+    const responseYarnLock = await this.githubService.getYarnLock({
+      name: job.data.repositoryFullName,
+      path: job.data.path,
+      branch: job.data.branch,
+      token: job.data.githubToken,
+    });
 
     const path = `tmp/${job.data.repositoryId}`;
     if (!fs.existsSync(path)) {
@@ -63,9 +54,8 @@ export class DependenciesQueue {
 
     await asyncWriteFile(`${path}/yarn.lock`, bufferLock.toString('utf-8'));
 
-    const repository = await this.repositoriesService.findOne({
+    const repository = await this.repositoriesService.findRepo({
       githubId: job.data.repositoryId,
-      user: job.data.userId,
     });
 
     exec(
@@ -73,13 +63,16 @@ export class DependenciesQueue {
       async (err, stdout) => {
         const manifest = JSON.parse(stdout.split('\n')[1]);
         repository.dependencies = { deps: manifest.data.body };
-        await this.repositoriesService.addRepo(repository);
+        await this.repositoriesService.updateRepo(
+          repository.id.toString(),
+          repository,
+        );
       },
     );
   }
 
   @OnQueueEvent(BullQueueEvents.COMPLETED)
-  async onCompleted(job: Job) {
+  onCompleted(job: Job) {
     this.logger.log(`Completed job ${job.id} of type ${job.name} with result`);
   }
 
