@@ -11,8 +11,14 @@ import { useHistory } from 'react-router'
 import { useRequest } from '@hooks/useRequest'
 import useChakraToast from '@hooks/useChakraToast'
 
-const AddRepository = () => {
-  const [step, setStep] = useState(0)
+enum Step {
+  PROVIDER_SELECTION = 0,
+  REPO_SELECTION = 1,
+  REPO_CONFIGURATION = 2,
+}
+
+const AddRepo = () => {
+  const [step, setStep] = useState(Step.PROVIDER_SELECTION)
   const {
     data: installations,
     revalidate: getInstallations,
@@ -49,21 +55,31 @@ const AddRepository = () => {
   useMessageListener(onMessage)
 
   const onSelectRepo = async (repo: GithubInstallationRepository) => {
-    const { data: repository } = await RepositoryAPI.findRepositoryByName(
+    const { data: repositories } = await RepositoryAPI.findRepositoriesByName(
       repo.fullName,
     )
     const { data: branches } = await RepositoryAPI.getRepositoryBranches(
       repo.fullName,
     )
 
-    setSelectedRepo(repository[0])
+    if (repositories.length === 0) {
+      // Repo has been deleted in our db, we have to recover it
+      const { data: repository } = await RepositoryAPI.syncRepository(
+        repo.fullName,
+      )
+
+      setSelectedRepo(repository)
+    } else {
+      setSelectedRepo(repositories[0])
+    }
+
     setBranches(branches.map((branch) => branch.name))
-    setStep(2)
+    setStep(Step.REPO_CONFIGURATION)
   }
 
   const onSelectGithub = async () => {
     await getInstallations()
-    setStep(1)
+    setStep(Step.REPO_SELECTION)
   }
 
   const onSubmitRepoConfig = async (data: {
@@ -90,7 +106,7 @@ const AddRepository = () => {
   }
 
   switch (step) {
-    case 0:
+    case Step.PROVIDER_SELECTION:
       return (
         <Column align="center">
           <Button
@@ -104,7 +120,7 @@ const AddRepository = () => {
           </Button>
         </Column>
       )
-    case 1:
+    case Step.REPO_SELECTION:
       return installations && installations.length !== 0 ? (
         <Column align="center">
           <InstallationRepositories
@@ -140,7 +156,7 @@ const AddRepository = () => {
           </Button>
         </Stack>
       )
-    case 2:
+    case Step.REPO_CONFIGURATION:
       return (
         <Column align="flex-start">
           <Heading as="h2">Repo config</Heading>
@@ -156,4 +172,4 @@ const AddRepository = () => {
   }
 }
 
-export default AddRepository
+export default AddRepo

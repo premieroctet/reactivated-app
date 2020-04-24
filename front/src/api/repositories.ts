@@ -29,7 +29,7 @@ export const configureRepository = (params: ConfigureRepoParams) => {
   )
 }
 
-export const findRepositoryByName = (name: string) => {
+export const findRepositoriesByName = (name: string) => {
   return API.get<Repository[]>(`/repositories`, {
     params: {
       filter: `fullName||eq||${name}`,
@@ -39,4 +39,8 @@ export const findRepositoryByName = (name: string) => {
 
 export const recomputeDeps = (repoId: Repository['id']) => {
   return API.get(`/repositories/${repoId}/compute_deps`)
+}
+
+export const syncRepository = (fullName: string) => {
+  return API.get<Repository>(`/repositories/sync/${fullName}`)
 }

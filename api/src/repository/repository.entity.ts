@@ -39,8 +39,8 @@ export class Repository {
   @ApiProperty({
     readOnly: true,
   })
-  @Column()
-  installationId: string;
+  @Column('text', { nullable: true })
+  installationId?: string;
 
   @ApiProperty({
     description: 'Author of the repo',
@@ -62,6 +62,10 @@ export class Repository {
   })
   @Column()
   createdAt: Date;
+
+  @ApiProperty()
+  @Column('datetime', { nullable: true })
+  dependenciesUpdatedAt?: Date;
 
   @ApiProperty({
     description: 'URL of the repo',

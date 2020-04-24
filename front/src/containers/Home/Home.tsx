@@ -19,7 +19,7 @@ function Home() {
   return (
     <Column flex="1">
       <Column px={2} flex="1" py={16} align="center">
-        <Link to="/add_repository">
+        <Link to="/add-repository">
           <Button
             cursor="pointer"
             size="lg"

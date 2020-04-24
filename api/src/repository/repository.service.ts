@@ -2,11 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from './repository.entity';
-import {
-  Repository as RepositoryContent,
-  ObjectLiteral,
-  DeleteResult,
-} from 'typeorm';
+import { Repository as RepositoryContent, DeleteResult } from 'typeorm';
 
 @Injectable()
 export class RepositoryService extends TypeOrmCrudService<Repository> {
