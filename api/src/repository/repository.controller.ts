@@ -8,7 +8,6 @@ import {
   Get,
   ForbiddenException,
   NotFoundException,
-  UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RepositoryService } from './repository.service';
@@ -18,7 +17,6 @@ import {
   Override,
   ParsedRequest,
   CrudRequest,
-  CrudRequestInterceptor,
   CrudAuth,
 } from '@nestjsx/crud';
 import { Repository } from './repository.entity';
@@ -26,7 +24,6 @@ import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { Queue } from 'bull';
 import { InjectQueue } from 'nest-bull';
 import { GithubService } from '../github/github.service';
-import { User } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
 
 @Crud({
@@ -99,8 +96,8 @@ export class RepositoryController implements CrudController<Repository> {
     const repository = await this.service.updateRepo(repoId, {
       ...repo,
       isConfigured: true,
+      dependenciesUpdatedAt: new Date(),
       users: [user],
-      dependencies: null,
     });
 
     await this.queue.add('compute_yarn_dependencies', {
@@ -144,5 +141,39 @@ export class RepositoryController implements CrudController<Repository> {
     }
 
     return data;
+  }
+
+  @ApiOperation({
+    summary: 'Sync a repository from user GitHub account',
+  })
+  @Get('sync/:author/:name')
+  async resyncRepo(
+    @Param('author') author: string,
+    @Param('name') name: string,
+    @Request() req,
+  ) {
+    const { user } = req;
+
+    const response = await this.githubService.getRepository({
+      fullName: `${author}/${name}`,
+      token: user.githubToken,
+    });
+    const { data } = response;
+
+    const repository: Repository = {
+      name: data.name,
+      fullName: data.full_name,
+      githubId: data.id,
+      installationId: null,
+      author: data.owner.login,
+      repoImg: data.owner.avatar_url,
+      createdAt: new Date(),
+      repoUrl: data.html_url,
+      users: [user],
+    };
+
+    const createdRepository = await this.service.addRepo(repository);
+
+    return createdRepository;
   }
 }

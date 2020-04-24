@@ -1,5 +1,5 @@
 import React from 'react'
-import { List } from '@chakra-ui/core'
+import { List, Box, Button } from '@chakra-ui/core'
 import { Link } from 'react-router-dom'
 import RepositoryListItem from './RepositoryListItem'
 
@@ -8,6 +8,19 @@ interface Props {
 }
 
 const RepositoriesList = ({ repositories }: Props) => {
+  if (repositories.length === 0) {
+    return (
+      <Box>
+        No repo,{' '}
+        <Link to="/add-repository">
+          <Button cursor="pointer" variantColor="teal" variant="link">
+            add one
+          </Button>
+        </Link>
+      </Box>
+    )
+  }
+
   return (
     <List
       my="0"

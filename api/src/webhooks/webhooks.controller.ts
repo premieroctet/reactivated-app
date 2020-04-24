@@ -51,6 +51,7 @@ export class WebhooksController {
               repoUrl: body.installation.account.html_url,
               users: [user],
             };
+
             return this.repositoryService.addRepo(newRepo);
           }),
         );

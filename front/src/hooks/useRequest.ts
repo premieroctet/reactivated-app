@@ -13,7 +13,6 @@ const useAxiosRequest = <T extends any>(
   config: ConfigInterface,
 ) => {
   const { data: response, ...rest } = useRequest<AxiosResponse<T>>(key, config)
-
   const data = response?.data
 
   return { data, ...rest }

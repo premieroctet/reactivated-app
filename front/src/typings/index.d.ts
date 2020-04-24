@@ -23,6 +23,7 @@ interface Repository {
   author: string
   repoImg: string
   createdAt: string // Date
+  dependenciesUpdatedAt: string // Date
   repoUrl: string
   user: User
   dependencies: {

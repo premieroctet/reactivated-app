@@ -53,12 +53,13 @@ const RepoConfigForm: React.FC<Props> = ({
   const onSubmitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setSubmitLoading(true)
+
     try {
       await onSubmit({
         branch: selectedBranch,
         path: `${mainPath}${mainPath.endsWith('/') ? '' : '/'}`,
       })
-    } catch {
+    } finally {
       setSubmitLoading(false)
     }
   }
