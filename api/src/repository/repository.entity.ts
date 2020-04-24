@@ -39,7 +39,7 @@ export class Repository {
   @ApiProperty({
     readOnly: true,
   })
-  @Column('text', { nullable: true })
+  @Column({ nullable: true })
   installationId?: string;
 
   @ApiProperty({
@@ -64,7 +64,7 @@ export class Repository {
   createdAt: Date;
 
   @ApiProperty()
-  @Column('datetime', { nullable: true })
+  @Column({ nullable: true })
   dependenciesUpdatedAt?: Date;
 
   @ApiProperty({
