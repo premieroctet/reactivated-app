@@ -25,8 +25,8 @@ import {
   ModalHeader,
   ModalCloseButton,
   ModalBody,
+  Flex,
 } from '@chakra-ui/core'
-import { FaGithub } from 'react-icons/fa'
 import * as RepositoriesAPI from '@api/repositories'
 import { Column } from '@components/Flex'
 import { useAxiosRequest } from '@hooks/useRequest'
@@ -35,9 +35,7 @@ import { mutate } from 'swr'
 import useChakraToast from '@hooks/useChakraToast'
 
 const Loader = () => (
-  <Box color="teal.400" fontWeight="bold" fontSize={20}>
-    <Heading>Chargement...</Heading>
-  </Box>
+  <Box color="teal.400" fontWeight="bold" fontSize={20}></Box>
 )
 
 const AlertError = () => {
@@ -124,18 +122,36 @@ function ViewRepo() {
   }
 
   return (
-    <Column align="center" px={[4, 0]}>
+    <Column px={[4, 0]}>
       {!data ? (
         <Loader />
       ) : (
         <>
-          <Stack mt={2} align="center" spacing={4}>
+          <Flex justifyContent="space-between">
             <Link to="/">
-              <Button size="lg" leftIcon={FaGithub} variantColor="teal" mb={4}>
-                Return to repo list
+              <Button
+                leftIcon="chevron-left"
+                variant="ghost"
+                variantColor="teal"
+                mb={4}
+              >
+                Dashboard
               </Button>
             </Link>
 
+            <Button
+              leftIcon="settings"
+              variant="outline"
+              variantColor="teal"
+              onClick={openConfigModal}
+              isDisabled={!!branchesError}
+              isLoading={!branches}
+            >
+              Settings
+            </Button>
+          </Flex>
+
+          <Stack mt={2} align="center" spacing={4}>
             <ChakraLink href={data.repoUrl}>
               <Image
                 rounded="md"
@@ -144,7 +160,7 @@ function ViewRepo() {
                 size={[16, 24]}
               />
             </ChakraLink>
-            <Box border="1px solid" borderColor="teal.300" px={20} py={2}>
+            <Box px={20} py={2}>
               <Heading fontSize={20}>{data.name}</Heading>
             </Box>
 
@@ -158,17 +174,6 @@ function ViewRepo() {
               {formatDistance(new Date(data.dependenciesUpdatedAt), new Date())}{' '}
               ago
             </Text>
-            <Button
-              size="lg"
-              leftIcon="settings"
-              variant="outline"
-              variantColor="teal"
-              onClick={openConfigModal}
-              isDisabled={!!branchesError}
-              isLoading={!branches}
-            >
-              Settings
-            </Button>
           </Stack>
 
           {data.dependencies && data.dependencies.deps && (
@@ -176,17 +181,17 @@ function ViewRepo() {
               <Tabs
                 defaultIndex={dependencies.length === 0 ? 1 : 0}
                 isFitted
-                variant="soft-rounded"
+                variant="enclosed-colored"
               >
                 <TabList>
                   <Tab
-                    _selected={{ bg: 'teal.500', color: 'white' }}
+                    _selected={{ bg: 'secondary.500', color: 'white' }}
                     disabled={dependencies.length === 0}
                   >
                     Dependencies
                   </Tab>
                   <Tab
-                    _selected={{ bg: 'teal.500', color: 'white' }}
+                    _selected={{ bg: 'secondary.500', color: 'white' }}
                     disabled={devDependencies.length === 0}
                   >
                     Dev Dependencies
@@ -197,7 +202,7 @@ function ViewRepo() {
                     <DependenciesList dependencies={dependencies} />
                   </TabPanel>
                   <TabPanel>
-                    <DependenciesList dependencies={devDependencies} />
+                    <DependenciesList isDev dependencies={devDependencies} />
                   </TabPanel>
                 </TabPanels>
               </Tabs>
@@ -227,7 +232,7 @@ function ViewRepo() {
           closeOnOverlayClick={false}
         >
           <ModalOverlay />
-          <ModalContent>
+          <ModalContent pb={4} rounded={10}>
             <ModalHeader>Update repository configuration</ModalHeader>
             <ModalCloseButton />
             <ModalBody>

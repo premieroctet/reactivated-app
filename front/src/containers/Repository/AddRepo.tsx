@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from 'react'
-import { Button, Text, Stack, Heading } from '@chakra-ui/core'
+import { Button, Text, Stack, Box, IconButton, Flex } from '@chakra-ui/core'
 import { FaGithub } from 'react-icons/fa'
-import { Column } from '@components/Flex'
 import useMessageListener from '@hooks/useMessageListener'
 import InstallationRepositories from '@components/InstallationRepositories'
 import * as InstallationsAPI from '@api/installations'
@@ -15,6 +14,40 @@ enum Step {
   PROVIDER_SELECTION = 0,
   REPO_SELECTION = 1,
   REPO_CONFIGURATION = 2,
+}
+
+interface IWrapperProps {
+  onBack: () => void
+  title: string
+  caption?: string
+}
+const Wrapper: React.FC<IWrapperProps> = ({
+  onBack,
+  title,
+  caption,
+  children,
+}) => {
+  return (
+    <Box>
+      <Text fontSize="3xl">
+        <IconButton
+          onClick={onBack}
+          aria-label="Back"
+          fontSize="2xl"
+          icon="chevron-left"
+          mr={2}
+          variant="ghost"
+        />
+        {title}
+      </Text>
+
+      {caption && <Text ml={10}>{caption}</Text>}
+
+      <Box ml={10} mt={8}>
+        {children}
+      </Box>
+    </Box>
+  )
 }
 
 const AddRepo = () => {
@@ -108,9 +141,14 @@ const AddRepo = () => {
   switch (step) {
     case Step.PROVIDER_SELECTION:
       return (
-        <Column align="center">
+        <Wrapper
+          onBack={() => {
+            history.push('/')
+          }}
+          title="Select your provider"
+          caption=" Choose the Git provider where your site’s source code is hosted."
+        >
           <Button
-            variantColor="teal"
             size="lg"
             leftIcon={FaGithub}
             onClick={onSelectGithub}
@@ -118,29 +156,33 @@ const AddRepo = () => {
           >
             Github
           </Button>
-        </Column>
+        </Wrapper>
       )
     case Step.REPO_SELECTION:
       return installations && installations.length !== 0 ? (
-        <Column align="center">
+        <Wrapper
+          title="Pick your repo"
+          onBack={() => {
+            setStep(Step.PROVIDER_SELECTION)
+          }}
+        >
           <InstallationRepositories
             installations={installations}
             onSelectRepo={onSelectRepo}
           />
-          <Stack spacing={4} mt={6}>
-            <Text fontSize={['md', 'lg']} textAlign="center">
-              Can't find your repository ?
+          <Box textAlign="center" mt={6}>
+            <Text mb={4} fontSize={['md', 'lg']} textAlign="center">
+              Can't find your repository/organization?
             </Text>
             <Button
-              variantColor="teal"
-              size="lg"
+              variantColor="secondary"
               leftIcon={FaGithub}
               onClick={onOpenGithub}
             >
               Add it from GitHub
             </Button>
-          </Stack>
-        </Column>
+          </Box>
+        </Wrapper>
       ) : (
         <Stack spacing={4} mt={6}>
           <Text fontSize={['md', 'lg']} textAlign="center">
@@ -158,14 +200,20 @@ const AddRepo = () => {
       )
     case Step.REPO_CONFIGURATION:
       return (
-        <Column align="flex-start">
-          <Heading as="h2">Repo config</Heading>
-          <RepoConfigForm
-            branches={branches}
-            repoName={selectedRepo!.fullName}
-            onSubmit={onSubmitRepoConfig}
-          />
-        </Column>
+        <Wrapper
+          title="Configuration"
+          onBack={() => {
+            setStep(Step.REPO_SELECTION)
+          }}
+        >
+          <Flex>
+            <RepoConfigForm
+              branches={branches}
+              repoName={selectedRepo!.fullName}
+              onSubmit={onSubmitRepoConfig}
+            />
+          </Flex>
+        </Wrapper>
       )
     default:
       return null

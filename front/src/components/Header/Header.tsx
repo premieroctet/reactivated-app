@@ -1,22 +1,26 @@
-import React, { ReactNode } from 'react'
-import { Row } from '@components/Flex'
-import { Heading } from '@chakra-ui/core'
-import { Link } from 'react-router-dom'
+import React from 'react'
+import { Text, Flex, Stack, Box } from '@chakra-ui/core'
+import { FaPlug } from 'react-icons/fa'
 
-interface Props {
-  renderRight: () => ReactNode
-}
-
-const Header = ({ renderRight }: Props) => {
+const Header: React.FC = ({ children }) => {
   return (
-    <Row w="100%" align="center" justify="space-between" py={6} px={6}>
-      <Link to="/">
-        <Heading size="lg" cursor="pointer">
-          Reactivated
-        </Heading>
-      </Link>
-      {renderRight && renderRight()}
-    </Row>
+    <Flex pb={10} as="header" pt={10} justifyContent="space-between">
+      <Stack isInline alignItems="center">
+        <Box color="brand.500" fontSize="2xl" as={FaPlug} />
+        <Flex alignItems="center">
+          <Text color="brand.500" fontSize="2xl" fontWeight="bold">
+            Reactivated
+          </Text>
+          <Text color="white" fontSize="xs" mx={1}>
+            ⬤
+          </Text>
+          <Text color="white" fontSize="2xl">
+            app
+          </Text>
+        </Flex>
+      </Stack>
+      <Flex>{children}</Flex>
+    </Flex>
   )
 }
 

@@ -3,7 +3,7 @@ import { useLocation, Redirect } from 'react-router'
 import { useAuth } from '@contexts/AuthContext'
 import AuthAPI from '@api/auth'
 import qs from 'query-string'
-import Login from '@components/Login'
+import Home from '@containers/Home'
 
 const GithubRedirect = () => {
   const { token, setToken } = useAuth()
@@ -28,7 +28,7 @@ const GithubRedirect = () => {
   }, [])
 
   if (!token) {
-    return <Login loading />
+    return <Home loading />
   }
 
   if (window.opener) {

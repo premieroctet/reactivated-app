@@ -1,5 +1,7 @@
 interface JwTokenData {
   githubToken: string
+  githubId: string
+  userName: string
   userId: User['id']
 }
 
