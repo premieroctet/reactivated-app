@@ -25,8 +25,9 @@ import {
   ModalHeader,
   ModalCloseButton,
   ModalBody,
+  Flex,
+  Badge,
 } from '@chakra-ui/core'
-import { FaGithub } from 'react-icons/fa'
 import * as RepositoriesAPI from '@api/repositories'
 import { Column } from '@components/Flex'
 import { useAxiosRequest } from '@hooks/useRequest'
@@ -35,9 +36,7 @@ import { mutate } from 'swr'
 import useChakraToast from '@hooks/useChakraToast'
 
 const Loader = () => (
-  <Box color="teal.400" fontWeight="bold" fontSize={20}>
-    <Heading>Chargement...</Heading>
-  </Box>
+  <Box color="teal.400" fontWeight="bold" fontSize={20}></Box>
 )
 
 const AlertError = () => {
@@ -124,18 +123,35 @@ function ViewRepo() {
   }
 
   return (
-    <Column align="center" px={[4, 0]}>
+    <Column px={[4, 0]}>
       {!data ? (
         <Loader />
       ) : (
         <>
-          <Stack mt={2} align="center" spacing={4}>
+          <Flex justifyContent="space-between">
             <Link to="/">
-              <Button size="lg" leftIcon={FaGithub} variantColor="teal" mb={4}>
-                Return to repo list
+              <Button
+                leftIcon="chevron-left"
+                variant="ghost"
+                variantColor="gray"
+                mb={4}
+              >
+                Dashboard
               </Button>
             </Link>
+            <Button
+              leftIcon="settings"
+              variantColor="gray"
+              variant="ghost"
+              onClick={openConfigModal}
+              isDisabled={!!branchesError}
+              isLoading={!branches}
+            >
+              Settings
+            </Button>
+          </Flex>
 
+          <Stack isInline spacing={4} my={4}>
             <ChakraLink href={data.repoUrl}>
               <Image
                 rounded="md"
@@ -144,52 +160,44 @@ function ViewRepo() {
                 size={[16, 24]}
               />
             </ChakraLink>
-            <Box border="1px solid" borderColor="teal.300" px={20} py={2}>
-              <Heading fontSize={20}>{data.name}</Heading>
-            </Box>
 
-            <Text fontSize={17}>
-              by <b>{data.author}</b>
-            </Text>
-            <Text>
-              <Text as="span" role="img" aria-label="light">
-                ⏱
-              </Text>{' '}
-              {formatDistance(new Date(data.dependenciesUpdatedAt), new Date())}{' '}
-              ago
-            </Text>
-            <Button
-              size="lg"
-              leftIcon="settings"
-              variant="outline"
-              variantColor="teal"
-              onClick={openConfigModal}
-              isDisabled={!!branchesError}
-              isLoading={!branches}
-            >
-              Settings
-            </Button>
+            <Box>
+              <Heading fontSize="2xl">{data.name}</Heading>
+              <Text fontSize="sm">
+                <b>@{data.author}</b> <Badge variantColor="brand">GitHub</Badge>
+              </Text>
+            </Box>
           </Stack>
 
+          <Heading mt={10} as="h3" fontSize="xl">
+            Outdated Dependencies
+          </Heading>
+
+          <Text fontSize="xs">
+            Refreshed{' '}
+            {formatDistance(new Date(data.dependenciesUpdatedAt), new Date())}{' '}
+            ago
+          </Text>
+
           {data.dependencies && data.dependencies.deps && (
-            <Box w={['100%', 'unset']} minW={['100%']} mt={6}>
+            <Box w={['100%', 'unset']} minW={['100%']} mt={4}>
               <Tabs
                 defaultIndex={dependencies.length === 0 ? 1 : 0}
                 isFitted
-                variant="soft-rounded"
+                variant="enclosed"
               >
                 <TabList>
                   <Tab
-                    _selected={{ bg: 'teal.500', color: 'white' }}
+                    _selected={{ bg: 'secondary.500', color: 'white' }}
                     disabled={dependencies.length === 0}
                   >
                     Dependencies
                   </Tab>
                   <Tab
-                    _selected={{ bg: 'teal.500', color: 'white' }}
+                    _selected={{ bg: 'secondary.500', color: 'white' }}
                     disabled={devDependencies.length === 0}
                   >
-                    Dev Dependencies
+                    Dev Dependencies{' '}
                   </Tab>
                 </TabList>
                 <TabPanels>
@@ -197,7 +205,7 @@ function ViewRepo() {
                     <DependenciesList dependencies={dependencies} />
                   </TabPanel>
                   <TabPanel>
-                    <DependenciesList dependencies={devDependencies} />
+                    <DependenciesList isDev dependencies={devDependencies} />
                   </TabPanel>
                 </TabPanels>
               </Tabs>
@@ -227,7 +235,7 @@ function ViewRepo() {
           closeOnOverlayClick={false}
         >
           <ModalOverlay />
-          <ModalContent>
+          <ModalContent pb={4} rounded={10}>
             <ModalHeader>Update repository configuration</ModalHeader>
             <ModalCloseButton />
             <ModalBody>

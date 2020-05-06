@@ -1,29 +1,30 @@
 import React, { lazy, Suspense } from 'react'
-import Template from '@containers/Template'
+import AuthApp from '@containers/Layout/AuthApp'
 import { useAuth } from '@contexts/AuthContext'
-import { BrowserRouter, Route } from 'react-router-dom'
+import { BrowserRouter, Route, Switch } from 'react-router-dom'
 
-const GithubRedirect = lazy(() =>
-  import('./containers/GithubRedirect/GithubRedirect'),
-)
-const Login = lazy(() => import('./containers/Login/Login'))
+const GithubRedirect = lazy(() => import('./containers/GithubRedirect'))
+const Home = lazy(() => import('./containers/Home'))
 
 function App() {
   const { token } = useAuth()
-  return (
-    <Suspense fallback={<p>Chargement de la page...</p>}>
-      <BrowserRouter>
-        <Route exact path="/redirect" component={GithubRedirect} />
-        <Route
-          path="/"
-          render={() => {
-            if (token) {
-              return <Template />
-            }
 
-            return <Login />
-          }}
-        />
+  return (
+    <Suspense fallback={<></>}>
+      <BrowserRouter>
+        <Switch>
+          <Route exact path="/redirect" component={GithubRedirect} />
+          <Route
+            path="/"
+            render={() => {
+              if (token) {
+                return <AuthApp />
+              }
+
+              return <Home />
+            }}
+          />
+        </Switch>
       </BrowserRouter>
     </Suspense>
   )
