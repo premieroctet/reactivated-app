@@ -63,6 +63,7 @@ const AuthApp = () => {
       ></Box>
       <Box maxWidth="60rem" marginX="auto" position="relative">
         <Flex
+          mb={10}
           minHeight="20rem"
           bg="white"
           rounded={10}

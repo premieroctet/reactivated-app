@@ -1,64 +1,127 @@
 import React from 'react'
 import semver from 'semver'
-import { Box, BoxProps, Link, Switch } from '@chakra-ui/core'
+import { Box, Link, Switch, Stack, Tag, Flex, FormLabel } from '@chakra-ui/core'
 import { Tooltip } from '@chakra-ui/core'
 
 interface IProps {
   dependency: Dependency
-  onSelect: (checked: boolean, name: string) => void
+  onSelect: (checked: boolean, name: string, type: 'stable' | 'latest') => void
+  isStableChecked?: boolean
+  isLatestChecked?: boolean
 }
 
-const TableCell = (props: BoxProps) => (
-  <Box
-    py={4}
-    as="td"
-    textAlign="center"
-    fontSize={['sm', 'sm', 'md']}
-    {...props}
-  />
-)
-
-const DependencyItem: React.FC<IProps> = ({ dependency, onSelect }) => {
-  const hasMajorUpdate = semver.satisfies(dependency[2], dependency[3])
+const DependencyItem: React.FC<IProps> = ({
+  dependency,
+  onSelect,
+  isLatestChecked = false,
+  isStableChecked = false,
+}) => {
+  const hasMinorUpdate = semver.satisfies(dependency[1], dependency[3])
+  const hasStableUpdate =
+    dependency[1] !== dependency[2] && dependency[2] !== dependency[3]
 
   return (
-    <>
-      <TableCell>
-        <Tooltip
-          hasArrow
-          aria-label={hasMajorUpdate ? 'Major' : 'Minor'}
-          label={hasMajorUpdate ? 'Major update' : 'Minor update'}
-          placement="top"
-        >
-          <Box
-            bg={hasMajorUpdate ? 'red.300' : 'yellow.300'}
-            size={6}
-            rounded={20}
-            m="0 auto"
+    <Stack
+      p={2}
+      justifyContent="space-between"
+      alignItems="center"
+      position="relative"
+      isInline
+    >
+      <Flex
+        zIndex={1}
+        bg="white"
+        justifyContent="space-between"
+        direction="row"
+        width="20rem"
+        p={2}
+        rounded={10}
+        shadow="sm"
+      >
+        <Stack alignItems="center" isInline>
+          <Box>
+            <Tooltip
+              zIndex={1}
+              hasArrow
+              aria-label={hasMinorUpdate ? 'Minor' : 'Major'}
+              label={hasMinorUpdate ? 'Minor update' : 'Major update'}
+              placement="top"
+            >
+              <Box
+                bg={hasMinorUpdate ? 'yellow.300' : 'red.200'}
+                size={4}
+                rounded={20}
+              />
+            </Tooltip>
+          </Box>
+          <Link
+            isTruncated
+            maxWidth="14rem"
+            mr={2}
+            fontWeight="semibold"
+            isExternal
+            href={`https://www.npmjs.com/package/${dependency[0]}`}
+          >
+            {dependency[0]}
+          </Link>
+        </Stack>
+
+        <Tag variantColor="gray" size="sm">
+          {dependency[1]}
+        </Tag>
+      </Flex>
+
+      {hasStableUpdate && (
+        <Box px={4} bg="white" zIndex={1}>
+          <FormLabel
+            cursor="pointer"
+            htmlFor={`${dependency[0]}-${dependency[2]}`}
+          >
+            <Tag variantColor="green" size="sm">
+              {dependency[2]}
+            </Tag>
+          </FormLabel>
+          <Switch
+            isChecked={isStableChecked}
+            id={`${dependency[0]}-${dependency[2]}`}
+            size="sm"
+            onChange={(e) => {
+              onSelect(e.currentTarget.checked, dependency[0], 'stable')
+            }}
+            color="secondary"
           />
-        </Tooltip>
-      </TableCell>
-      <TableCell textAlign="left" minW={20}>
-        <Link
-          fontWeight="semibold"
-          isExternal
-          href={`https://www.npmjs.com/package/${dependency[0]}`}
+        </Box>
+      )}
+
+      <Box px={4} bg="white" zIndex={1}>
+        <FormLabel
+          cursor="pointer"
+          htmlFor={`${dependency[0]}-${dependency[3]}`}
         >
-          {dependency[0]}
-        </Link>
-      </TableCell>
-      <TableCell minW={20}>{dependency[1]}</TableCell>
-      <TableCell minW={20}>{dependency[2]}</TableCell>
-      <TableCell minW={20}>{dependency[3]} </TableCell>
-      <TableCell minW={20}>
+          <Tag variantColor="orange" size="sm">
+            {dependency[3]}
+          </Tag>
+        </FormLabel>
         <Switch
+          isChecked={isLatestChecked}
+          id={`${dependency[0]}-${dependency[3]}`}
+          size="sm"
           onChange={(e) => {
-            onSelect(e.currentTarget.checked, dependency[0])
+            onSelect(e.currentTarget.checked, dependency[0], 'latest')
           }}
           color="secondary"
         />
-      </TableCell>
-    </>
+      </Box>
+
+      <Box
+        zIndex={0}
+        position="absolute"
+        left={10}
+        right={10}
+        border="1px dashed"
+        borderColor="gray.200"
+      ></Box>
+    </Stack>
   )
 }
 

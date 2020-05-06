@@ -26,6 +26,7 @@ import {
   ModalCloseButton,
   ModalBody,
   Flex,
+  Badge,
 } from '@chakra-ui/core'
 import * as RepositoriesAPI from '@api/repositories'
 import { Column } from '@components/Flex'
@@ -132,17 +133,16 @@ function ViewRepo() {
               <Button
                 leftIcon="chevron-left"
                 variant="ghost"
-                variantColor="teal"
+                variantColor="gray"
                 mb={4}
               >
                 Dashboard
               </Button>
             </Link>
-
             <Button
               leftIcon="settings"
-              variant="outline"
-              variantColor="teal"
+              variantColor="gray"
+              variant="ghost"
               onClick={openConfigModal}
               isDisabled={!!branchesError}
               isLoading={!branches}
@@ -151,7 +151,7 @@ function ViewRepo() {
             </Button>
           </Flex>
 
-          <Stack mt={2} align="center" spacing={4}>
+          <Stack isInline spacing={4} my={4}>
             <ChakraLink href={data.repoUrl}>
               <Image
                 rounded="md"
@@ -160,28 +160,31 @@ function ViewRepo() {
                 size={[16, 24]}
               />
             </ChakraLink>
-            <Box px={20} py={2}>
-              <Heading fontSize={20}>{data.name}</Heading>
-            </Box>
 
-            <Text fontSize={17}>
-              by <b>{data.author}</b>
-            </Text>
-            <Text>
-              <Text as="span" role="img" aria-label="light">
-                ⏱
-              </Text>{' '}
-              {formatDistance(new Date(data.dependenciesUpdatedAt), new Date())}{' '}
-              ago
-            </Text>
+            <Box>
+              <Heading fontSize="2xl">{data.name}</Heading>
+              <Text fontSize="sm">
+                <b>@{data.author}</b> <Badge variantColor="brand">GitHub</Badge>
+              </Text>
+            </Box>
           </Stack>
 
+          <Heading mt={10} as="h3" fontSize="xl">
+            Outdated Dependencies
+          </Heading>
+
+          <Text fontSize="xs">
+            Refreshed{' '}
+            {formatDistance(new Date(data.dependenciesUpdatedAt), new Date())}{' '}
+            ago
+          </Text>
+
           {data.dependencies && data.dependencies.deps && (
-            <Box w={['100%', 'unset']} minW={['100%']} mt={6}>
+            <Box w={['100%', 'unset']} minW={['100%']} mt={4}>
               <Tabs
                 defaultIndex={dependencies.length === 0 ? 1 : 0}
                 isFitted
-                variant="enclosed-colored"
+                variant="enclosed"
               >
                 <TabList>
                   <Tab
@@ -194,7 +197,7 @@ function ViewRepo() {
                     _selected={{ bg: 'secondary.500', color: 'white' }}
                     disabled={devDependencies.length === 0}
                   >
-                    Dev Dependencies
+                    Dev Dependencies{' '}
                   </Tab>
                 </TabList>
                 <TabPanels>
