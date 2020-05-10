@@ -70,7 +70,8 @@ const AuthApp = () => {
           shadow="md"
           direction="column"
           flex="1"
-          p={10}
+          py={[5, 10]}
+          px={[0, 10]}
         >
           <Router />
         </Flex>
