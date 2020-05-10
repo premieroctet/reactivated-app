@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@chakra-ui/core": "^0.5.2",
+    "@chakra-ui/core": "^0.7.0",
     "@emotion/core": "^10.0.27",
     "@emotion/styled": "^10.0.27",
     "@rehooks/local-storage": "^1.7.0",
