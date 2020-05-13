@@ -3,6 +3,7 @@ import { Job } from 'bull';
 import { Logger } from '@nestjs/common';
 import { RepositoryService } from '../repository/repository.service';
 import { GithubService } from '../github/github.service';
+import { getDependenciesCount, getNbOutdatedDeps } from 'utils/dependencies';
 
 const { exec } = require('child_process');
 const fs = require('fs');
@@ -64,19 +65,8 @@ export class DependenciesQueue {
         const manifest = JSON.parse(stdout.split('\n')[1]);
         const deps = manifest.data.body;
 
-        let nbOutdatedDevDeps = 0,
-          nbOutdatedDeps = 0;
-        for (const dep of deps) {
-          if (dep[4] === 'devDependencies') {
-            nbOutdatedDevDeps++;
-          } else {
-            nbOutdatedDeps++;
-          }
-        }
-        const { dependencies, devDependencies } = repository.packageJson;
-        const totalDependencies =
-          Object.keys(dependencies).length +
-          Object.keys(devDependencies).length;
+        const [nbOutdatedDeps, nbOutdatedDevDeps] = getNbOutdatedDeps(deps);
+        const totalDependencies = getDependenciesCount(repository.packageJson);
         const score = Math.round(
           101 -
             ((nbOutdatedDeps + nbOutdatedDevDeps) / totalDependencies) * 100,

@@ -35,6 +35,7 @@ import React, { useCallback, useMemo } from 'react'
 import { Link, useHistory, useRouteMatch } from 'react-router-dom'
 import { mutate } from 'swr'
 import ViewRepoSkeleton from './ViewRepoSkeleton'
+import { getDependenciesCount } from '@utils/dependencies'
 
 const AlertError = () => {
   const history = useHistory()
@@ -71,13 +72,6 @@ function ViewRepo() {
     revalidateOnFocus: false,
   })
 
-  let totalDependencies = null
-  if (data && data.packageJson) {
-    totalDependencies =
-      Object.keys(data.packageJson.dependencies).length +
-      Object.keys(data.packageJson.devDependencies).length
-  }
-
   const {
     isOpen: configModalOpen,
     onOpen: openConfigModal,
@@ -90,13 +84,13 @@ function ViewRepo() {
     }
     return data.dependencies.deps.filter((dep) => dep[4] === 'dependencies')
   }, [data])
-
   const devDependencies = useMemo(() => {
     if (!data?.dependencies?.deps) {
       return []
     }
     return data.dependencies.deps.filter((dep) => dep[4] === 'devDependencies')
   }, [data])
+  const totalDependencies = getDependenciesCount(data?.packageJson)
 
   const recomputeDeps = useCallback(() => {
     return RepositoriesAPI.recomputeDeps(parseInt(id, 10))
