@@ -23,10 +23,10 @@ import {
   Tabs,
   Text,
   useDisclosure,
-  Progress,
 } from '@chakra-ui/core'
 import DependenciesList from '@components/DependenciesList'
 import { Column } from '@components/Flex'
+import HealthBar from '@components/HealthBar/HealthBar'
 import RepoConfigForm from '@components/RepoConfigForm'
 import useChakraToast from '@hooks/useChakraToast'
 import { useAxiosRequest } from '@hooks/useRequest'
@@ -126,16 +126,6 @@ function ViewRepo() {
     }
   }
 
-  const getHealthBarColor = (score: number) => {
-    let color = 'green'
-    if (score < 25) {
-      color = 'red'
-    } else if (score < 75) {
-      color = 'orange'
-    }
-    return color
-  }
-
   return (
     <>
       <Column px={[4, 0]}>
@@ -183,19 +173,11 @@ function ViewRepo() {
 
                 {data?.score !== null && totalDependencies !== null && (
                   <>
-                    <Text as="em">Project's health bar</Text>
-                    <Progress
-                      color={getHealthBarColor(data.score)}
-                      size="md"
-                      value={data.score}
-                      width="100%"
-                      hasStripe
-                      isAnimated
-                    />
-                    <Text color={'red.500'} display="inline">
+                    <HealthBar score={data.score} />
+                    <Text as="small" color={'red.500'} display="inline">
                       {dependencies.length + devDependencies.length} (outdated)
                     </Text>
-                    <Text display="inline">
+                    <Text as="small" display="inline">
                       {' '}
                       / {totalDependencies} libraries
                     </Text>
