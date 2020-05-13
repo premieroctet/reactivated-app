@@ -32,11 +32,6 @@ interface Repository {
   packageJson: Object | null
   dependencies: {
     deps: Dependency[]
-    meta: {
-      score: number
-      nbOutdatedDeps: number
-      nbOutdatedDevDeps: number
-    }
   } | null
   branch: string
   path?: string
