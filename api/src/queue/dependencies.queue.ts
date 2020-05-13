@@ -66,7 +66,10 @@ export class DependenciesQueue {
         const deps = manifest.data.body;
 
         const [nbOutdatedDeps, nbOutdatedDevDeps] = getNbOutdatedDeps(deps);
+
+        repository.packageJson = JSON.parse(bufferPackage.toString('utf-8'));
         const totalDependencies = getDependenciesCount(repository.packageJson);
+
         const score = Math.round(
           101 -
             ((nbOutdatedDeps + nbOutdatedDevDeps) / totalDependencies) * 100,
@@ -76,7 +79,6 @@ export class DependenciesQueue {
           deps,
         };
         repository.score = score;
-        repository.packageJson = JSON.parse(bufferPackage.toString('utf-8'));
         await this.repositoriesService.updateRepo(
           repository.id.toString(),
           repository,
