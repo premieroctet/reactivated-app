@@ -78,16 +78,11 @@ export class DependenciesQueue {
         const score = Math.round(
           101 - ((nbOutdatedDeps + nbOutdatedDevDeps) / deps.length) * 100,
         );
-        const meta = {
-          score,
-          nbOutdatedDeps,
-          nbOutdatedDevDeps,
-        };
 
         repository.dependencies = {
           deps,
-          meta,
         };
+        repository.score = score;
         repository.packageJson = JSON.parse(bufferPackage.toString('utf-8'));
         await this.repositoriesService.updateRepo(
           repository.id.toString(),

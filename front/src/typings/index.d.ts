@@ -28,6 +28,7 @@ interface Repository {
   dependenciesUpdatedAt: string // Date
   repoUrl: string
   user: User
+  score: number
   packageJson: Object | null
   dependencies: {
     deps: Dependency[]

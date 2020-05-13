@@ -111,4 +111,8 @@ export class Repository {
   @ApiProperty()
   @Column({ default: false })
   isConfigured?: boolean;
+
+  @ApiProperty()
+  @Column({ type: 'tinyint', default: 0 })
+  score?: number;
 }

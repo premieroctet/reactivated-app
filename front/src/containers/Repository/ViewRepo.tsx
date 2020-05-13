@@ -1,39 +1,39 @@
-import React, { useMemo, useCallback } from 'react'
-import { formatDistance } from 'date-fns'
-import { Link, useRouteMatch, useHistory } from 'react-router-dom'
-import DependenciesList from '@components/DependenciesList'
+import * as RepositoriesAPI from '@api/repositories'
 import {
-  Button,
-  Box,
-  Heading,
-  Link as ChakraLink,
-  Image,
-  Text,
-  Tab,
-  Tabs,
-  TabPanels,
-  TabPanel,
-  TabList,
-  Stack,
   Alert,
-  AlertIcon,
   AlertDescription,
-  useDisclosure,
+  AlertIcon,
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Image,
+  Link as ChakraLink,
   Modal,
-  ModalOverlay,
+  ModalBody,
+  ModalCloseButton,
   ModalContent,
   ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  Flex,
+  ModalOverlay,
+  Stack,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+  useDisclosure,
   Progress,
 } from '@chakra-ui/core'
-import * as RepositoriesAPI from '@api/repositories'
+import DependenciesList from '@components/DependenciesList'
 import { Column } from '@components/Flex'
-import { useAxiosRequest } from '@hooks/useRequest'
 import RepoConfigForm from '@components/RepoConfigForm'
-import { mutate } from 'swr'
 import useChakraToast from '@hooks/useChakraToast'
+import { useAxiosRequest } from '@hooks/useRequest'
+import { formatDistance } from 'date-fns'
+import React, { useCallback, useMemo } from 'react'
+import { Link, useHistory, useRouteMatch } from 'react-router-dom'
+import { mutate } from 'swr'
 import ViewRepoSkeleton from './ViewRepoSkeleton'
 
 const AlertError = () => {
@@ -168,30 +168,29 @@ function ViewRepo() {
                   size={[16, 24]}
                 />
               </ChakraLink>
-              <Box>
+              <Box backgroundColor="yellow">
                 <Heading fontSize="2xl">{data.name}</Heading>
-                <Text mb={4} fontSize="sm">
+                <Text mb={4} fontSize="sm" backgroundColor="yellow">
                   <b>@{data.author}</b>
                 </Text>
 
-                {data.dependencies && data.dependencies.meta.score && (
+                {data?.score !== 0 && (
                   <>
                     <Text as="em">Project's health bar</Text>
                     <Progress
-                      color={getHealthBarColor(data.dependencies.meta.score)}
+                      color={getHealthBarColor(data.score)}
                       size="md"
-                      value={data.dependencies.meta.score}
+                      value={data.score}
+                      width="100%"
                       hasStripe
                       isAnimated
                     />
-                    <Text color="red.500" display="inline">
-                      {data.dependencies.meta.nbOutdatedDeps +
-                        data.dependencies.meta.nbOutdatedDevDeps}{' '}
-                      (outdated)
+                    <Text color={'red.500'} display="inline">
+                      {dependencies.length + devDependencies.length} (outdated)
                     </Text>
                     <Text display="inline">
                       {' '}
-                      / {data.dependencies.deps.length} libraries
+                      / {data.dependencies?.deps.length} libraries
                     </Text>
                   </>
                 )}
