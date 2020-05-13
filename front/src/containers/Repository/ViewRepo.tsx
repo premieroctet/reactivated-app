@@ -71,6 +71,13 @@ function ViewRepo() {
     revalidateOnFocus: false,
   })
 
+  let totalDependencies = null
+  if (data && data.packageJson) {
+    totalDependencies =
+      Object.keys(data.packageJson.dependencies).length +
+      Object.keys(data.packageJson.devDependencies).length
+  }
+
   const {
     isOpen: configModalOpen,
     onOpen: openConfigModal,
@@ -174,7 +181,7 @@ function ViewRepo() {
                   <b>@{data.author}</b>
                 </Text>
 
-                {data?.score !== null && (
+                {data?.score !== null && totalDependencies !== null && (
                   <>
                     <Text as="em">Project's health bar</Text>
                     <Progress
@@ -190,7 +197,7 @@ function ViewRepo() {
                     </Text>
                     <Text display="inline">
                       {' '}
-                      / {data.dependencies?.deps.length} libraries
+                      / {totalDependencies} libraries
                     </Text>
                   </>
                 )}

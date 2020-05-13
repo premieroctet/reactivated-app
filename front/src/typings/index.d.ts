@@ -29,7 +29,10 @@ interface Repository {
   repoUrl: string
   user: User
   score: number
-  packageJson: Object | null
+  packageJson: {
+    dependencies: object
+    devDependencies: object
+  } | null
   dependencies: {
     deps: Dependency[]
   } | null

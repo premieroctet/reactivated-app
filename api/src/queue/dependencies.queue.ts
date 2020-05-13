@@ -73,8 +73,13 @@ export class DependenciesQueue {
             nbOutdatedDeps++;
           }
         }
+        const { dependencies, devDependencies } = repository.packageJson;
+        const totalDependencies =
+          Object.keys(dependencies).length +
+          Object.keys(devDependencies).length;
         const score = Math.round(
-          101 - ((nbOutdatedDeps + nbOutdatedDevDeps) / deps.length) * 100,
+          101 -
+            ((nbOutdatedDeps + nbOutdatedDevDeps) / totalDependencies) * 100,
         );
 
         repository.dependencies = {
