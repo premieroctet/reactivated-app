@@ -174,7 +174,7 @@ function ViewRepo() {
                   <b>@{data.author}</b>
                 </Text>
 
-                {data?.score !== 0 && (
+                {data?.score !== null && (
                   <>
                     <Text as="em">Project's health bar</Text>
                     <Progress
