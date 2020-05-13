@@ -67,12 +67,10 @@ export class DependenciesQueue {
         let nbOutdatedDevDeps = 0,
           nbOutdatedDeps = 0;
         for (const dep of deps) {
-          if (dep[1] !== dep[2] || dep[1] !== dep[3]) {
-            if (dep[4] === 'devDependencies') {
-              nbOutdatedDevDeps++;
-            } else {
-              nbOutdatedDeps++;
-            }
+          if (dep[4] === 'devDependencies') {
+            nbOutdatedDevDeps++;
+          } else {
+            nbOutdatedDeps++;
           }
         }
         const score = Math.round(
