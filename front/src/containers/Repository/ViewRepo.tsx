@@ -91,6 +91,19 @@ function ViewRepo() {
     return data.dependencies.deps.filter((dep) => dep[4] === 'devDependencies')
   }, [data])
 
+  let nbOutdatedDevDeps = 0,
+    nbOutdatedDeps = 0
+  for (const dep of dependencies) {
+    if (dep[1] !== dep[2] || dep[1] !== dep[3]) {
+      nbOutdatedDeps++
+    }
+  }
+  for (const devDep of devDependencies) {
+    if (devDep[1] !== devDep[2] || devDep[1] !== devDep[3]) {
+      nbOutdatedDevDeps++
+    }
+  }
+
   const recomputeDeps = useCallback(() => {
     return RepositoriesAPI.recomputeDeps(parseInt(id, 10))
   }, [id])
@@ -186,7 +199,7 @@ function ViewRepo() {
                       isAnimated
                     />
                     <Text color={'red.500'} display="inline">
-                      {dependencies.length + devDependencies.length} (outdated)
+                      {nbOutdatedDeps + nbOutdatedDevDeps} (outdated)
                     </Text>
                     <Text display="inline">
                       {' '}
