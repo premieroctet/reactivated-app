@@ -26,6 +26,7 @@ import {
   ModalCloseButton,
   ModalBody,
   Flex,
+  Progress,
 } from '@chakra-ui/core'
 import * as RepositoriesAPI from '@api/repositories'
 import { Column } from '@components/Flex'
@@ -118,6 +119,16 @@ function ViewRepo() {
     }
   }
 
+  const getHealthBarColor = (score: number) => {
+    let color = 'green'
+    if (score < 25) {
+      color = 'red'
+    } else if (score < 75) {
+      color = 'orange'
+    }
+    return color
+  }
+
   return (
     <>
       <Column px={[4, 0]}>
@@ -157,12 +168,33 @@ function ViewRepo() {
                   size={[16, 24]}
                 />
               </ChakraLink>
-
               <Box>
                 <Heading fontSize="2xl">{data.name}</Heading>
                 <Text mb={4} fontSize="sm">
                   <b>@{data.author}</b>
                 </Text>
+
+                {data.dependencies && data.dependencies.meta.score && (
+                  <>
+                    <Text as="em">Project's health bar</Text>
+                    <Progress
+                      color={getHealthBarColor(data.dependencies.meta.score)}
+                      size="md"
+                      value={data.dependencies.meta.score}
+                      hasStripe
+                      isAnimated
+                    />
+                    <Text color="red.500" display="inline">
+                      {data.dependencies.meta.nbOutdatedDeps +
+                        data.dependencies.meta.nbOutdatedDevDeps}{' '}
+                      (outdated)
+                    </Text>
+                    <Text display="inline">
+                      {' '}
+                      / {data.dependencies.deps.length} libraries
+                    </Text>
+                  </>
+                )}
               </Box>
             </Stack>
 

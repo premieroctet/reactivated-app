@@ -52,8 +52,8 @@ const ViewRepoSkeleton = () => {
           <Code></Code>
         </Skeleton>
 
-        {[...new Array(5)].map(() => (
-          <Skeleton width="20rem" height={10} mb={4} rounded={10}>
+        {[...new Array(5)].map((_, i) => (
+          <Skeleton width="20rem" height={10} mb={4} rounded={10} key={i}>
             Dep
           </Skeleton>
         ))}

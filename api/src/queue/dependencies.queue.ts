@@ -62,7 +62,33 @@ export class DependenciesQueue {
       `cd ${path} && yarn outdated --json && cd .. && rm -rf ./${job.data.repositoryId}`,
       async (err, stdout) => {
         const manifest = JSON.parse(stdout.split('\n')[1]);
-        repository.dependencies = { deps: manifest.data.body };
+        const deps = manifest.data.body;
+
+        let nbOutdatedDevDeps = 0,
+          nbOutdatedDeps = 0;
+        for (const dep of deps) {
+          if (dep[1] !== dep[2] || dep[1] !== dep[3]) {
+            if (dep[4] === 'devDependencies') {
+              nbOutdatedDevDeps++;
+            } else {
+              nbOutdatedDeps++;
+            }
+          }
+        }
+        const score = Math.round(
+          101 - ((nbOutdatedDeps + nbOutdatedDevDeps) / deps.length) * 100,
+        );
+        const meta = {
+          score,
+          nbOutdatedDeps,
+          nbOutdatedDevDeps,
+        };
+
+        repository.dependencies = {
+          deps,
+          meta,
+        };
+        repository.packageJson = JSON.parse(bufferPackage.toString('utf-8'));
         await this.repositoriesService.updateRepo(
           repository.id.toString(),
           repository,

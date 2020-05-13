@@ -28,8 +28,14 @@ interface Repository {
   dependenciesUpdatedAt: string // Date
   repoUrl: string
   user: User
+  packageJson: Object | null
   dependencies: {
     deps: Dependency[]
+    meta: {
+      score: number
+      nbOutdatedDeps: number
+      nbOutdatedDevDeps: number
+    }
   } | null
   branch: string
   path?: string
