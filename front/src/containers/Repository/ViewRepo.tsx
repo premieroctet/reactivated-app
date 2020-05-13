@@ -176,7 +176,6 @@ function ViewRepo() {
 
                 {data?.score !== null && (
                   <>
-                    <Text as="em">Project's health bar</Text>
                     <Progress
                       color={getHealthBarColor(data.score)}
                       size="md"
@@ -185,12 +184,12 @@ function ViewRepo() {
                       hasStripe
                       isAnimated
                     />
-                    <Text color={'red.500'} display="inline">
+                    <Text as="small" color={'red.500'} display="inline">
                       {dependencies.length + devDependencies.length} (outdated)
                     </Text>
-                    <Text display="inline">
+                    <Text as="small" display="inline">
                       {' '}
-                      / {data.dependencies?.deps.length} libraries
+                      / {50} libraries
                     </Text>
                   </>
                 )}

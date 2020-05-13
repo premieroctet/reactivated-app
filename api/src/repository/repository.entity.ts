@@ -8,6 +8,15 @@ import {
 import { User } from '../users/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
+type Framework =
+  | 'react'
+  | 'react native'
+  | 'vue'
+  | 'angular'
+  | 'next.js'
+  | 'nest.js'
+  | 'express';
+
 @Entity()
 export class Repository {
   @ApiProperty({
@@ -115,4 +124,8 @@ export class Repository {
   @ApiProperty()
   @Column({ type: 'tinyint', nullable: true })
   score?: number;
+
+  @ApiProperty()
+  @Column({ nullable: true })
+  framework?: Framework;
 }

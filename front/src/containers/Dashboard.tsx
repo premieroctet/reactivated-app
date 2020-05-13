@@ -6,9 +6,12 @@ import { Link } from 'react-router-dom'
 import { useAxiosRequest } from '@hooks/useRequest'
 
 function Home() {
-  const { data: repositories } = useAxiosRequest('/repositories', {
+  const { data: repositories, ...a } = useAxiosRequest('/repositories', {
     fetcher: RepositoriesAPI.getRepositories,
   })
+
+  console.log('Home -> repositories', repositories)
+  console.log('Home -> repositories', a)
 
   if (!repositories) {
     return null
