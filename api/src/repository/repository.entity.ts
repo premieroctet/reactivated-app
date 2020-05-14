@@ -113,6 +113,6 @@ export class Repository {
   isConfigured?: boolean;
 
   @ApiProperty()
-  @Column({ type: 'tinyint', nullable: true })
+  @Column({ nullable: true })
   score?: number;
 }
