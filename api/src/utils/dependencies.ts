@@ -32,20 +32,20 @@ export const getFrameworkFromPackageJson = (packageJson): FrameworkTag => {
   const { dependencies } = packageJson;
 
   for (const library in dependencies) {
-    if (library === FrameworkWhiteList.REACT) {
-      return 'react';
-    }
     if (library === FrameworkWhiteList.REACTNATIVE) {
       return 'react native';
+    }
+    if (library === FrameworkWhiteList.NEXTJS) {
+      return 'next.js';
+    }
+    if (library === FrameworkWhiteList.REACT) {
+      return 'react';
     }
     if (library === FrameworkWhiteList.VUE) {
       return 'vue';
     }
     if (library === FrameworkWhiteList.ANGULAR) {
       return 'angular';
-    }
-    if (library === FrameworkWhiteList.NEXTJS) {
-      return 'next.js';
     }
     if (library === FrameworkWhiteList.NESTJS) {
       return 'nest.js';
