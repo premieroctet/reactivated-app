@@ -3,7 +3,12 @@ import { Job } from 'bull';
 import { Logger } from '@nestjs/common';
 import { RepositoryService } from '../repository/repository.service';
 import { GithubService } from '../github/github.service';
-import { getDependenciesCount, getNbOutdatedDeps } from '../utils/dependencies';
+import {
+  getNbOutdatedDeps,
+  getDependenciesCount,
+  getFrameworkFromPackageJson,
+  getDependenciesByFirstLetter,
+} from '../utils/dependencies';
 
 const { exec } = require('child_process');
 const fs = require('fs');
@@ -79,6 +84,13 @@ export class DependenciesQueue {
           deps,
         };
         repository.score = score;
+        repository.framework = getFrameworkFromPackageJson(
+          repository.packageJson,
+        );
+        repository.sortedDependencies = getDependenciesByFirstLetter(
+          repository.packageJson,
+        );
+
         await this.repositoriesService.updateRepo(
           repository.id.toString(),
           repository,

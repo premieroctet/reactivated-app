@@ -21,6 +21,15 @@ type PackageJson = {
   devDependencies: object
 } | null
 
+type FrameworkTag =
+  | 'react'
+  | 'react native'
+  | 'vue'
+  | 'angular'
+  | 'next.js'
+  | 'nest.js'
+  | 'express'
+
 interface Repository {
   id: number
   name: string
@@ -40,6 +49,7 @@ interface Repository {
   } | null
   branch: string
   path?: string
+  framework: FrameworkTag
 }
 
 interface GithubAccount {

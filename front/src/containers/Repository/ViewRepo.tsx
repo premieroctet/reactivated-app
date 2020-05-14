@@ -30,12 +30,13 @@ import HealthBar from '@components/HealthBar/HealthBar'
 import RepoConfigForm from '@components/RepoConfigForm'
 import useChakraToast from '@hooks/useChakraToast'
 import { useAxiosRequest } from '@hooks/useRequest'
+import { getDependenciesCount } from '@utils/dependencies'
 import { formatDistance } from 'date-fns'
 import React, { useCallback, useMemo } from 'react'
 import { Link, useHistory, useRouteMatch } from 'react-router-dom'
 import { mutate } from 'swr'
+import FrameworkTag from '../../components/FrameworkTag/FrameworkTag'
 import ViewRepoSkeleton from './ViewRepoSkeleton'
-import { getDependenciesCount } from '@utils/dependencies'
 
 const AlertError = () => {
   const history = useHistory()
@@ -161,8 +162,16 @@ function ViewRepo() {
               </ChakraLink>
               <Box backgroundColor="yellow">
                 <Heading fontSize="2xl">{data.name}</Heading>
-                <Text mb={4} fontSize="sm" backgroundColor="yellow">
+                <Text
+                  mb={4}
+                  fontSize="sm"
+                  display="flex"
+                  justifyContent="space-between"
+                >
                   <b>@{data.author}</b>
+                  {data?.framework !== null && (
+                    <FrameworkTag framework={data.framework} />
+                  )}
                 </Text>
 
                 {data?.score !== null && totalDependencies !== null && (
@@ -178,6 +187,7 @@ function ViewRepo() {
                   </>
                 )}
               </Box>
+              <Flex alignItems="center" justifyContent="center" flex="1"></Flex>
             </Stack>
 
             <Heading mt={10} as="h3" fontSize="xl">

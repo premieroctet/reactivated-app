@@ -8,6 +8,25 @@ import {
 import { User } from '../users/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
+export type FrameworkTag =
+  | 'react'
+  | 'react native'
+  | 'vue'
+  | 'angular'
+  | 'next.js'
+  | 'nest.js'
+  | 'express';
+
+export enum FrameworkWhiteList {
+  REACT = 'react',
+  REACTNATIVE = 'react-native',
+  VUE = 'vue',
+  ANGULAR = 'angular',
+  NEXTJS = 'next',
+  NESTJS = '@nestjs/core',
+  EXPRESS = 'express',
+}
+
 @Entity()
 export class Repository {
   @ApiProperty({
@@ -90,11 +109,18 @@ export class Repository {
   packageJson?: any;
 
   @ApiProperty({
-    description: 'Dependencies of the repo',
+    description: 'Outdated dependencies of the repo',
     readOnly: true,
   })
   @Column('simple-json', { nullable: true })
   dependencies?: any;
+
+  @ApiProperty({
+    description: 'Dependencies of the repo sorted by first letter',
+    readOnly: true,
+  })
+  @Column('simple-json', { nullable: true })
+  sortedDependencies?: any;
 
   @ApiProperty()
   @Column({
@@ -115,4 +141,8 @@ export class Repository {
   @ApiProperty()
   @Column({ nullable: true })
   score?: number;
+
+  @ApiProperty()
+  @Column({ nullable: true })
+  framework?: FrameworkTag;
 }
