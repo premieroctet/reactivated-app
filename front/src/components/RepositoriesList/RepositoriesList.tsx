@@ -43,6 +43,7 @@ const RepositoriesList = ({ repositories }: Props) => {
             repoImg={repository.repoImg}
             name={repository.name}
             score={repository.score}
+            framework={repository.framework}
           />
         </Link>
       ))}

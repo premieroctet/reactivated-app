@@ -23,6 +23,7 @@ import {
   Tabs,
   Text,
   useDisclosure,
+  Tag,
 } from '@chakra-ui/core'
 import DependenciesList from '@components/DependenciesList'
 import { Column } from '@components/Flex'
@@ -178,6 +179,13 @@ function ViewRepo() {
                   </>
                 )}
               </Box>
+              <Flex alignItems="center" justifyContent="center" flex="1">
+                {data?.framework !== null && (
+                  <Tag size="lg" variant="outline">
+                    {data?.framework.toUpperCase()}
+                  </Tag>
+                )}
+              </Flex>
             </Stack>
 
             <Heading mt={10} as="h3" fontSize="xl">
