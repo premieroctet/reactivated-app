@@ -7,6 +7,7 @@ import {
   getNbOutdatedDeps,
   getDependenciesCount,
   getFrameworkFromPackageJson,
+  getDependenciesByFirstLetter,
 } from '../utils/dependencies';
 
 const { exec } = require('child_process');
@@ -86,6 +87,8 @@ export class DependenciesQueue {
         repository.framework = getFrameworkFromPackageJson(
           repository.packageJson,
         );
+
+        getDependenciesByFirstLetter(repository.packageJson);
         await this.repositoriesService.updateRepo(
           repository.id.toString(),
           repository,
