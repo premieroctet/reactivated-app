@@ -1,7 +1,7 @@
-import React, { memo } from 'react'
-import { ListItem, Image, Text, IconButton, Tag } from '@chakra-ui/core'
-import { Row, Column } from '@components/Flex'
+import { IconButton, Image, ListItem, Text } from '@chakra-ui/core'
+import { Column, Row } from '@components/Flex'
 import HealthBar from '@components/HealthBar/HealthBar'
+import React, { memo } from 'react'
 import FrameworkTag from '../FrameworkTag/FrameworkTag'
 
 interface Props

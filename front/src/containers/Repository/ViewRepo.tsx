@@ -23,7 +23,6 @@ import {
   Tabs,
   Text,
   useDisclosure,
-  Tag,
 } from '@chakra-ui/core'
 import DependenciesList from '@components/DependenciesList'
 import { Column } from '@components/Flex'
@@ -31,13 +30,13 @@ import HealthBar from '@components/HealthBar/HealthBar'
 import RepoConfigForm from '@components/RepoConfigForm'
 import useChakraToast from '@hooks/useChakraToast'
 import { useAxiosRequest } from '@hooks/useRequest'
+import { getDependenciesCount } from '@utils/dependencies'
 import { formatDistance } from 'date-fns'
 import React, { useCallback, useMemo } from 'react'
 import { Link, useHistory, useRouteMatch } from 'react-router-dom'
 import { mutate } from 'swr'
-import ViewRepoSkeleton from './ViewRepoSkeleton'
-import { getDependenciesCount } from '@utils/dependencies'
 import FrameworkTag from '../../components/FrameworkTag/FrameworkTag'
+import ViewRepoSkeleton from './ViewRepoSkeleton'
 
 const AlertError = () => {
   const history = useHistory()
