@@ -109,11 +109,18 @@ export class Repository {
   packageJson?: any;
 
   @ApiProperty({
-    description: 'Dependencies of the repo',
+    description: 'Outdated dependencies of the repo',
     readOnly: true,
   })
   @Column('simple-json', { nullable: true })
   dependencies?: any;
+
+  @ApiProperty({
+    description: 'Dependencies of the repo sorted by first letter',
+    readOnly: true,
+  })
+  @Column('simple-json', { nullable: true })
+  sortedDependencies?: any;
 
   @ApiProperty()
   @Column({

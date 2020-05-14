@@ -87,8 +87,10 @@ export class DependenciesQueue {
         repository.framework = getFrameworkFromPackageJson(
           repository.packageJson,
         );
+        repository.sortedDependencies = getDependenciesByFirstLetter(
+          repository.packageJson,
+        );
 
-        getDependenciesByFirstLetter(repository.packageJson);
         await this.repositoriesService.updateRepo(
           repository.id.toString(),
           repository,
