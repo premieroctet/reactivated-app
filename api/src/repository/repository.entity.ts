@@ -83,6 +83,13 @@ export class Repository {
   users?: User[];
 
   @ApiProperty({
+    description: 'Package.json file of the repo',
+    readOnly: true,
+  })
+  @Column('simple-json', { nullable: true })
+  packageJson?: any;
+
+  @ApiProperty({
     description: 'Dependencies of the repo',
     readOnly: true,
   })
@@ -104,4 +111,8 @@ export class Repository {
   @ApiProperty()
   @Column({ default: false })
   isConfigured?: boolean;
+
+  @ApiProperty()
+  @Column({ type: 'tinyint', nullable: true })
+  score?: number;
 }

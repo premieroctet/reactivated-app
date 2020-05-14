@@ -1,10 +1,11 @@
 import React, { memo } from 'react'
 import { ListItem, Image, Text, IconButton } from '@chakra-ui/core'
 import { Row, Column } from '@components/Flex'
+import HealthBar from '@components/HealthBar/HealthBar'
 
-interface Props extends Pick<Repository, 'repoImg' | 'name' | 'author'> {}
+interface Props extends Pick<Repository, 'repoImg' | 'name' | 'score'> {}
 
-const RepositoryListItem = memo(({ repoImg, name, author }: Props) => {
+const RepositoryListItem = memo(({ repoImg, name, score }: Props) => {
   return (
     <ListItem
       px={5}
@@ -19,9 +20,7 @@ const RepositoryListItem = memo(({ repoImg, name, author }: Props) => {
             <Text as="span" fontSize="lg" fontWeight="semibold">
               {name}
             </Text>
-            <Text as="span" fontSize="sm" color="rgb(114, 114, 114)">
-              created by <b>{author}</b>
-            </Text>
+            <HealthBar score={score} />
           </Column>
         </Row>
         <IconButton

@@ -1,39 +1,41 @@
-import React, { useMemo, useCallback } from 'react'
-import { formatDistance } from 'date-fns'
-import { Link, useRouteMatch, useHistory } from 'react-router-dom'
-import DependenciesList from '@components/DependenciesList'
+import * as RepositoriesAPI from '@api/repositories'
 import {
-  Button,
-  Box,
-  Heading,
-  Link as ChakraLink,
-  Image,
-  Text,
-  Tab,
-  Tabs,
-  TabPanels,
-  TabPanel,
-  TabList,
-  Stack,
   Alert,
-  AlertIcon,
   AlertDescription,
-  useDisclosure,
+  AlertIcon,
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Image,
+  Link as ChakraLink,
   Modal,
-  ModalOverlay,
+  ModalBody,
+  ModalCloseButton,
   ModalContent,
   ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  Flex,
+  ModalOverlay,
+  Stack,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+  useDisclosure,
 } from '@chakra-ui/core'
-import * as RepositoriesAPI from '@api/repositories'
+import DependenciesList from '@components/DependenciesList'
 import { Column } from '@components/Flex'
-import { useAxiosRequest } from '@hooks/useRequest'
+import HealthBar from '@components/HealthBar/HealthBar'
 import RepoConfigForm from '@components/RepoConfigForm'
-import { mutate } from 'swr'
 import useChakraToast from '@hooks/useChakraToast'
+import { useAxiosRequest } from '@hooks/useRequest'
+import { formatDistance } from 'date-fns'
+import React, { useCallback, useMemo } from 'react'
+import { Link, useHistory, useRouteMatch } from 'react-router-dom'
+import { mutate } from 'swr'
 import ViewRepoSkeleton from './ViewRepoSkeleton'
+import { getDependenciesCount } from '@utils/dependencies'
 
 const AlertError = () => {
   const history = useHistory()
@@ -82,13 +84,13 @@ function ViewRepo() {
     }
     return data.dependencies.deps.filter((dep) => dep[4] === 'dependencies')
   }, [data])
-
   const devDependencies = useMemo(() => {
     if (!data?.dependencies?.deps) {
       return []
     }
     return data.dependencies.deps.filter((dep) => dep[4] === 'devDependencies')
   }, [data])
+  const totalDependencies = getDependenciesCount(data?.packageJson)
 
   const recomputeDeps = useCallback(() => {
     return RepositoriesAPI.recomputeDeps(parseInt(id, 10))
@@ -157,12 +159,24 @@ function ViewRepo() {
                   size={[16, 24]}
                 />
               </ChakraLink>
-
-              <Box>
+              <Box backgroundColor="yellow">
                 <Heading fontSize="2xl">{data.name}</Heading>
-                <Text mb={4} fontSize="sm">
+                <Text mb={4} fontSize="sm" backgroundColor="yellow">
                   <b>@{data.author}</b>
                 </Text>
+
+                {data?.score !== null && totalDependencies !== null && (
+                  <>
+                    <HealthBar score={data.score} />
+                    <Text as="small" color={'red.500'} display="inline">
+                      {dependencies.length + devDependencies.length} (outdated)
+                    </Text>
+                    <Text as="small" display="inline">
+                      {' '}
+                      / {totalDependencies} libraries
+                    </Text>
+                  </>
+                )}
               </Box>
             </Stack>
 

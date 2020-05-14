@@ -59,6 +59,7 @@ const DependenciesList: React.FC<IProps> = ({ dependencies, isDev }) => {
               }
             }}
             dependency={key}
+            key={key[0]}
           />
         ))}
       </Box>

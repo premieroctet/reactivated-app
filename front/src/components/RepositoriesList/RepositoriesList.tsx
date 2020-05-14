@@ -41,8 +41,8 @@ const RepositoriesList = ({ repositories }: Props) => {
         <Link key={repository.id} to={`/repo/${repository.id}`}>
           <RepositoryListItem
             repoImg={repository.repoImg}
-            author={repository.author}
             name={repository.name}
+            score={repository.score}
           />
         </Link>
       ))}

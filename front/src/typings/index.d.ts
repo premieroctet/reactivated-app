@@ -16,6 +16,11 @@ type Dependency = [string, string, string, string, DependencyType, string]
 
 type DependencyType = 'dependencies' | 'devDependencies'
 
+type PackageJson = {
+  dependencies: object
+  devDependencies: object
+} | null
+
 interface Repository {
   id: number
   name: string
@@ -28,6 +33,8 @@ interface Repository {
   dependenciesUpdatedAt: string // Date
   repoUrl: string
   user: User
+  score: number
+  packageJson: PackageJson
   dependencies: {
     deps: Dependency[]
   } | null

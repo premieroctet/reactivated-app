@@ -3,6 +3,7 @@ import { Job } from 'bull';
 import { Logger } from '@nestjs/common';
 import { RepositoryService } from '../repository/repository.service';
 import { GithubService } from '../github/github.service';
+import { getDependenciesCount, getNbOutdatedDeps } from 'utils/dependencies';
 
 const { exec } = require('child_process');
 const fs = require('fs');
@@ -62,7 +63,22 @@ export class DependenciesQueue {
       `cd ${path} && yarn outdated --json && cd .. && rm -rf ./${job.data.repositoryId}`,
       async (err, stdout) => {
         const manifest = JSON.parse(stdout.split('\n')[1]);
-        repository.dependencies = { deps: manifest.data.body };
+        const deps = manifest.data.body;
+
+        const [nbOutdatedDeps, nbOutdatedDevDeps] = getNbOutdatedDeps(deps);
+
+        repository.packageJson = JSON.parse(bufferPackage.toString('utf-8'));
+        const totalDependencies = getDependenciesCount(repository.packageJson);
+
+        const score = Math.round(
+          101 -
+            ((nbOutdatedDeps + nbOutdatedDevDeps) / totalDependencies) * 100,
+        );
+
+        repository.dependencies = {
+          deps,
+        };
+        repository.score = score;
         await this.repositoriesService.updateRepo(
           repository.id.toString(),
           repository,
