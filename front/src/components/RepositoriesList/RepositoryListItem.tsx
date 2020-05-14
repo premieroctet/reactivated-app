@@ -2,6 +2,7 @@ import React, { memo } from 'react'
 import { ListItem, Image, Text, IconButton, Tag } from '@chakra-ui/core'
 import { Row, Column } from '@components/Flex'
 import HealthBar from '@components/HealthBar/HealthBar'
+import FrameworkTag from '../FrameworkTag/FrameworkTag'
 
 interface Props
   extends Pick<Repository, 'repoImg' | 'name' | 'score' | 'framework'> {}
@@ -26,11 +27,7 @@ const RepositoryListItem = memo(
             </Column>
           </Row>
           <Row>
-            {framework !== null && (
-              <Tag size="sm" variant="outline">
-                {framework.toUpperCase()}
-              </Tag>
-            )}
+            {framework !== null && <FrameworkTag framework={framework} />}
             <IconButton
               variant="ghost"
               fontSize="3xl"

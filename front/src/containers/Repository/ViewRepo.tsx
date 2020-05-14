@@ -37,6 +37,7 @@ import { Link, useHistory, useRouteMatch } from 'react-router-dom'
 import { mutate } from 'swr'
 import ViewRepoSkeleton from './ViewRepoSkeleton'
 import { getDependenciesCount } from '@utils/dependencies'
+import FrameworkTag from '../../components/FrameworkTag/FrameworkTag'
 
 const AlertError = () => {
   const history = useHistory()
@@ -162,8 +163,16 @@ function ViewRepo() {
               </ChakraLink>
               <Box backgroundColor="yellow">
                 <Heading fontSize="2xl">{data.name}</Heading>
-                <Text mb={4} fontSize="sm" backgroundColor="yellow">
+                <Text
+                  mb={4}
+                  fontSize="sm"
+                  display="flex"
+                  justifyContent="space-between"
+                >
                   <b>@{data.author}</b>
+                  {data?.framework !== null && (
+                    <FrameworkTag framework={data.framework} />
+                  )}
                 </Text>
 
                 {data?.score !== null && totalDependencies !== null && (
@@ -179,13 +188,7 @@ function ViewRepo() {
                   </>
                 )}
               </Box>
-              <Flex alignItems="center" justifyContent="center" flex="1">
-                {data?.framework !== null && (
-                  <Tag size="lg" variant="outline">
-                    {data?.framework.toUpperCase()}
-                  </Tag>
-                )}
-              </Flex>
+              <Flex alignItems="center" justifyContent="center" flex="1"></Flex>
             </Stack>
 
             <Heading mt={10} as="h3" fontSize="xl">
