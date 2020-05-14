@@ -4,10 +4,10 @@ import { Logger } from '@nestjs/common';
 import { RepositoryService } from '../repository/repository.service';
 import { GithubService } from '../github/github.service';
 import {
-  getDependenciesCount,
   getNbOutdatedDeps,
+  getDependenciesCount,
   getFrameworkFromPackageJson,
-} from 'utils/dependencies';
+} from '../utils/dependencies';
 
 const { exec } = require('child_process');
 const fs = require('fs');

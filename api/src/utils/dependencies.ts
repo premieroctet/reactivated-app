@@ -1,4 +1,7 @@
-import { FrameworkWhiteList, FrameworkTag } from 'repository/repository.entity';
+import {
+  FrameworkWhiteList,
+  FrameworkTag,
+} from '../repository/repository.entity';
 
 export const getDependenciesCount = packageJson => {
   let totalDependencies = 0;
