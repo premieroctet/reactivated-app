@@ -8,7 +8,7 @@ import {
 import { User } from '../users/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
-type Framework =
+export type FrameworkTag =
   | 'react'
   | 'react native'
   | 'vue'
@@ -16,6 +16,16 @@ type Framework =
   | 'next.js'
   | 'nest.js'
   | 'express';
+
+export enum FrameworkWhiteList {
+  REACT = 'react',
+  REACTNATIVE = 'react-native',
+  VUE = 'vue',
+  ANGULAR = 'angular',
+  NEXTJS = 'next',
+  NESTJS = '@nestjs/core',
+  EXPRESS = 'express',
+}
 
 @Entity()
 export class Repository {
@@ -127,5 +137,5 @@ export class Repository {
 
   @ApiProperty()
   @Column({ nullable: true })
-  framework?: Framework;
+  framework?: FrameworkTag;
 }

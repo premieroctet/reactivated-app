@@ -10,6 +10,7 @@ module.exports = override(
     '@containers': path.resolve('src', 'containers'),
     '@contexts': path.resolve('src', 'contexts'),
     '@hooks': path.resolve('src', 'hooks'),
+    '@utils': path.resolve('src', 'utils'),
   }),
   addReactRefresh({ disableRefreshCheck: true }),
   useBabelRc(),

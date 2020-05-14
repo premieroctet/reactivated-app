@@ -3,6 +3,11 @@ import { Job } from 'bull';
 import { Logger } from '@nestjs/common';
 import { RepositoryService } from '../repository/repository.service';
 import { GithubService } from '../github/github.service';
+import {
+  getDependenciesCount,
+  getNbOutdatedDeps,
+  getFrameworkFromPackageJson,
+} from 'utils/dependencies';
 
 const { exec } = require('child_process');
 const fs = require('fs');
@@ -64,36 +69,23 @@ export class DependenciesQueue {
         const manifest = JSON.parse(stdout.split('\n')[1]);
         const deps = manifest.data.body;
 
-        let nbOutdatedDevDeps = 0,
-          nbOutdatedDeps = 0;
-        for (const dep of deps) {
-          console.log(
-            'DependenciesQueue -> computeYarnDependencies -> dep',
-            dep,
-          );
-          if (dep[4] === 'devDependencies') {
-            nbOutdatedDevDeps++;
-          } else {
-            nbOutdatedDeps++;
-          }
-        }
+        const [nbOutdatedDeps, nbOutdatedDevDeps] = getNbOutdatedDeps(deps);
 
-        console.log(repository.packageJson);
+        repository.packageJson = JSON.parse(bufferPackage.toString('utf-8'));
+        const totalDependencies = getDependenciesCount(repository.packageJson);
+
         const score = Math.round(
-          101 - ((nbOutdatedDeps + nbOutdatedDevDeps) / deps.length) * 100,
+          101 -
+            ((nbOutdatedDeps + nbOutdatedDevDeps) / totalDependencies) * 100,
         );
 
         repository.dependencies = {
           deps,
         };
         repository.score = score;
-        /**
-        |--------------------------------------------------
-        | @TODO : 
-        |--------------------------------------------------
-        */
-        repository.framework = 'react';
-        repository.packageJson = JSON.parse(bufferPackage.toString('utf-8'));
+        repository.framework = getFrameworkFromPackageJson(
+          repository.packageJson,
+        );
         await this.repositoriesService.updateRepo(
           repository.id.toString(),
           repository,

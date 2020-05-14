@@ -23,10 +23,10 @@ import {
   Tabs,
   Text,
   useDisclosure,
-  Progress,
 } from '@chakra-ui/core'
 import DependenciesList from '@components/DependenciesList'
 import { Column } from '@components/Flex'
+import HealthBar from '@components/HealthBar/HealthBar'
 import RepoConfigForm from '@components/RepoConfigForm'
 import useChakraToast from '@hooks/useChakraToast'
 import { useAxiosRequest } from '@hooks/useRequest'
@@ -35,6 +35,7 @@ import React, { useCallback, useMemo } from 'react'
 import { Link, useHistory, useRouteMatch } from 'react-router-dom'
 import { mutate } from 'swr'
 import ViewRepoSkeleton from './ViewRepoSkeleton'
+import { getDependenciesCount } from '@utils/dependencies'
 
 const AlertError = () => {
   const history = useHistory()
@@ -83,13 +84,13 @@ function ViewRepo() {
     }
     return data.dependencies.deps.filter((dep) => dep[4] === 'dependencies')
   }, [data])
-
   const devDependencies = useMemo(() => {
     if (!data?.dependencies?.deps) {
       return []
     }
     return data.dependencies.deps.filter((dep) => dep[4] === 'devDependencies')
   }, [data])
+  const totalDependencies = getDependenciesCount(data?.packageJson)
 
   const recomputeDeps = useCallback(() => {
     return RepositoriesAPI.recomputeDeps(parseInt(id, 10))
@@ -117,16 +118,6 @@ function ViewRepo() {
       })
       throw e
     }
-  }
-
-  const getHealthBarColor = (score: number) => {
-    let color = 'green'
-    if (score < 25) {
-      color = 'red'
-    } else if (score < 75) {
-      color = 'orange'
-    }
-    return color
   }
 
   return (
@@ -174,22 +165,15 @@ function ViewRepo() {
                   <b>@{data.author}</b>
                 </Text>
 
-                {data?.score !== null && (
+                {data?.score !== null && totalDependencies !== null && (
                   <>
-                    <Progress
-                      color={getHealthBarColor(data.score)}
-                      size="md"
-                      value={data.score}
-                      width="100%"
-                      hasStripe
-                      isAnimated
-                    />
+                    <HealthBar score={data.score} />
                     <Text as="small" color={'red.500'} display="inline">
                       {dependencies.length + devDependencies.length} (outdated)
                     </Text>
                     <Text as="small" display="inline">
                       {' '}
-                      / {50} libraries
+                      / {totalDependencies} libraries
                     </Text>
                   </>
                 )}
