@@ -10,9 +10,6 @@ function Home() {
     fetcher: RepositoriesAPI.getRepositories,
   })
 
-  console.log('Home -> repositories', repositories)
-  console.log('Home -> repositories', a)
-
   if (!repositories) {
     return null
   }
