@@ -14,7 +14,7 @@ const RepositoryListItem = memo(
         px={5}
         py={4}
         transition=".3s background-color"
-        _hover={{ bg: 'gray.100' }}
+        _hover={{ bg: 'gray.300' }}
       >
         <Row alignItems="center" justifyContent="space-between">
           <Row alignItems="center" justifyContent="center">
