@@ -1,13 +1,13 @@
-import { BullQueueEvents, OnQueueEvent, Processor, Process } from 'nest-bull';
-import { Job } from 'bull';
 import { Logger } from '@nestjs/common';
-import { RepositoryService } from '../repository/repository.service';
+import { Job } from 'bull';
+import { BullQueueEvents, OnQueueEvent, Process, Processor } from 'nest-bull';
 import { GithubService } from '../github/github.service';
+import { RepositoryService } from '../repository/repository.service';
 import {
-  getNbOutdatedDeps,
   getDependenciesCount,
   getFrameworkFromPackageJson,
-  getDependenciesByFirstLetter,
+  getNbOutdatedDeps,
+  getPrefixedDependencies,
 } from '../utils/dependencies';
 
 const { exec } = require('child_process');
@@ -68,9 +68,10 @@ export class DependenciesQueue {
       `cd ${path} && yarn outdated --json && cd .. && rm -rf ./${job.data.repositoryId}`,
       async (err, stdout) => {
         const manifest = JSON.parse(stdout.split('\n')[1]);
-        const deps = manifest.data.body;
-
-        const [nbOutdatedDeps, nbOutdatedDevDeps] = getNbOutdatedDeps(deps);
+        const outdatedDeps = manifest.data.body;
+        const [nbOutdatedDeps, nbOutdatedDevDeps] = getNbOutdatedDeps(
+          outdatedDeps,
+        );
 
         repository.packageJson = JSON.parse(bufferPackage.toString('utf-8'));
         const totalDependencies = getDependenciesCount(repository.packageJson);
@@ -80,14 +81,13 @@ export class DependenciesQueue {
             ((nbOutdatedDeps + nbOutdatedDevDeps) / totalDependencies) * 100,
         );
 
+        const deps = getPrefixedDependencies(outdatedDeps);
         repository.dependencies = {
+          // deps: outdatedDeps,
           deps,
         };
         repository.score = score;
         repository.framework = getFrameworkFromPackageJson(
-          repository.packageJson,
-        );
-        repository.sortedDependencies = getDependenciesByFirstLetter(
           repository.packageJson,
         );
 
@@ -101,7 +101,11 @@ export class DependenciesQueue {
 
   @OnQueueEvent(BullQueueEvents.COMPLETED)
   onCompleted(job: Job) {
-    this.logger.log(`Completed job ${job.id} of type ${job.name} with result`);
+    this.logger.log(
+      `Completed job ${job.id} of type ${
+        job.name
+      } with result (${job.finishedOn - job.processedOn} ms)`,
+    );
   }
 
   @OnQueueEvent(BullQueueEvents.FAILED)

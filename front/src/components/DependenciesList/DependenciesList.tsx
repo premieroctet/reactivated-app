@@ -1,10 +1,20 @@
+import {
+  Accordion,
+  Box,
+  Button,
+  Code,
+  useClipboard,
+  AccordionHeader,
+  AccordionItem,
+  AccordionIcon,
+  AccordionPanel,
+} from '@chakra-ui/core'
 import React, { useState } from 'react'
-import { Box, Code, Button } from '@chakra-ui/core'
 import DependencyItem from './DependencyItem'
-import { useClipboard } from '@chakra-ui/core'
+import PrefixAccordion from './PrefixAccordion'
 
 interface IProps {
-  dependencies: Dependency[]
+  dependencies: (Dependency | PrefixedDependency)[]
   isDev?: boolean
 }
 
@@ -46,22 +56,36 @@ const DependenciesList: React.FC<IProps> = ({ dependencies, isDev }) => {
       </Code>
 
       <Box w="100%">
-        {dependencies.map((key) => (
-          <DependencyItem
-            isStableChecked={packages[key[0]] === 'stable'}
-            isLatestChecked={packages[key[0]] === 'latest'}
-            onSelect={(checked, name, type) => {
-              if (checked) {
-                setPackages({ ...packages, [name]: type })
-              } else {
-                const { [name]: omit, ...rest } = packages
-                setPackages({ ...rest })
-              }
-            }}
-            dependency={key}
-            key={key[0]}
-          />
-        ))}
+        {dependencies.map((dep) => {
+          if (Array.isArray(dep)) {
+            return (
+              <DependencyItem
+                isStableChecked={packages[dep[0]] === 'stable'}
+                isLatestChecked={packages[dep[0]] === 'latest'}
+                onSelect={(checked, name, type) => {
+                  if (checked) {
+                    setPackages({ ...packages, [name]: type })
+                  } else {
+                    const { [name]: omit, ...rest } = packages
+                    setPackages({ ...rest })
+                  }
+                }}
+                dependency={dep}
+                key={dep[0]}
+              />
+            )
+          }
+
+          const prefix = Object.keys(dep)[0]
+          return (
+            <PrefixAccordion
+              prefix={prefix}
+              packages={packages}
+              prefixedDep={dep}
+              setPackages={setPackages}
+            />
+          )
+        })}
       </Box>
     </Box>
   )
