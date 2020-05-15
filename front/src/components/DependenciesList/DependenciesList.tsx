@@ -1,14 +1,4 @@
-import {
-  Accordion,
-  Box,
-  Button,
-  Code,
-  useClipboard,
-  AccordionHeader,
-  AccordionItem,
-  AccordionIcon,
-  AccordionPanel,
-} from '@chakra-ui/core'
+import { Box, Button, Code, useClipboard } from '@chakra-ui/core'
 import React, { useState } from 'react'
 import DependencyItem from './DependencyItem'
 import PrefixAccordion from './PrefixAccordion'
