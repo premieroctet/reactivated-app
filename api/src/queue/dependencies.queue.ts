@@ -9,6 +9,7 @@ import {
   getNbOutdatedDeps,
   getPrefixedDependencies,
 } from '../utils/dependencies';
+import { execSync } from 'child_process';
 
 const { exec } = require('child_process');
 const fs = require('fs');
@@ -34,12 +35,23 @@ export class DependenciesQueue {
       token: job.data.githubToken,
     });
 
-    const responseYarnLock = await this.githubService.getYarnLock({
-      name: job.data.repositoryFullName,
-      path: job.data.path,
-      branch: job.data.branch,
-      token: job.data.githubToken,
-    });
+    let responseLock = null;
+    const hasYarnLock = job.data.hasYarnLock;
+    if (hasYarnLock) {
+      responseLock = await this.githubService.getYarnLock({
+        name: job.data.repositoryFullName,
+        path: job.data.path,
+        branch: job.data.branch,
+        token: job.data.githubToken,
+      });
+    } else {
+      responseLock = await this.githubService.getPackageLockJson({
+        name: job.data.repositoryFullName,
+        path: job.data.path,
+        branch: job.data.branch,
+        token: job.data.githubToken,
+      });
+    }
 
     const path = `tmp/${job.data.repositoryId}`;
     if (!fs.existsSync(path)) {
@@ -56,17 +68,36 @@ export class DependenciesQueue {
       bufferPackage.toString('utf-8'),
     );
 
-    const bufferLock = Buffer.from(responseYarnLock.data.content, 'base64');
+    const bufferLock = Buffer.from(responseLock.data.content, 'base64');
 
-    await asyncWriteFile(`${path}/yarn.lock`, bufferLock.toString('utf-8'));
+    console.log(
+      'DependenciesQueue -> computeYarnDependencies -> hasYarnLock',
+      hasYarnLock,
+    );
+    if (hasYarnLock) {
+      await asyncWriteFile(`${path}/yarn.lock`, bufferLock.toString('utf-8'));
+    } else {
+      await asyncWriteFile(
+        `${path}/package-lock.json`,
+        bufferLock.toString('utf-8'),
+      );
+    }
 
     const repository = await this.repositoriesService.findRepo({
       githubId: job.data.repositoryId,
     });
-
+    // const packageLockCommand = `cd ${path} && yarn import && yarn outdated --json && cd .. && rm -rf ./${job.data.repositoryId}`;
+    if (!hasYarnLock) {
+      // Generate yarn.lock from package-lock.json
+      execSync(`cd ${path} && yarn import`);
+    }
     exec(
       `cd ${path} && yarn outdated --json && cd .. && rm -rf ./${job.data.repositoryId}`,
       async (err, stdout) => {
+        console.log(
+          'DependenciesQueue -> computeYarnDependencies -> stdout',
+          stdout,
+        );
         const manifest = JSON.parse(stdout.split('\n')[1]);
         const outdatedDeps = manifest.data.body;
         const [nbOutdatedDeps, nbOutdatedDevDeps] = getNbOutdatedDeps(

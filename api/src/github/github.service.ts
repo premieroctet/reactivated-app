@@ -44,6 +44,20 @@ export class GithubService {
       .toPromise();
   }
 
+  async getPackageLockJson(data: IDependenciesData) {
+    return this.httpService
+      .get(
+        `https://api.github.com/repos/${data.name}/contents/${data.path}package-lock.json?ref=${data.branch}`,
+        {
+          headers: {
+            Authorization: `token ${data.token}`,
+            Accept: 'application/vnd.github.machine-man-preview+json',
+          },
+        },
+      )
+      .toPromise();
+  }
+
   async getRepository(data: IRepoData) {
     return this.httpService
       .get(`https://api.github.com/repos/${data.fullName}`, {

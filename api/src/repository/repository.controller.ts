@@ -72,21 +72,32 @@ export class RepositoryController implements CrudController<Repository> {
     @Param('id') repoId: string,
     @Request() req,
   ) {
+    let hasYarnLock = true;
+
     try {
-      await Promise.all([
-        this.githubService.getPackageJson({
+      await this.githubService.getPackageJson({
+        branch: repo.branch,
+        name: repo.fullName,
+        path: repo.path,
+        token: req.user.githubToken,
+      });
+
+      try {
+        await this.githubService.getYarnLock({
           branch: repo.branch,
           name: repo.fullName,
           path: repo.path,
           token: req.user.githubToken,
-        }),
-        this.githubService.getYarnLock({
+        });
+      } catch (error) {
+        hasYarnLock = false;
+        await this.githubService.getPackageLockJson({
           branch: repo.branch,
           name: repo.fullName,
           path: repo.path,
           token: req.user.githubToken,
-        }),
-      ]);
+        });
+      }
     } catch (e) {
       throw new NotFoundException();
     }
@@ -107,6 +118,7 @@ export class RepositoryController implements CrudController<Repository> {
       userId,
       branch: repository.branch,
       path: repository.path,
+      hasYarnLock,
     });
 
     return repository;
