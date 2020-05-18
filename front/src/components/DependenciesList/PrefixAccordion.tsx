@@ -24,15 +24,15 @@ const PrefixAccordion: React.FC<PrefixAccordionProps> = ({
 }) => {
   if (prefixedDep[prefix].length > 1) {
     return (
-      <Accordion allowToggle>
+      <Accordion allowToggle p={0}>
         <AccordionItem defaultIsOpen>
-          <AccordionHeader>
+          <AccordionHeader pt={2} px={0}>
             <Box flex="1" textAlign="left">
               {prefix}
             </Box>
             <AccordionIcon />
           </AccordionHeader>
-          <AccordionPanel pb={4}>
+          <AccordionPanel px={0} pb={4}>
             {prefixedDep[prefix].map((dep: Dependency) => {
               return (
                 <DependencyItem
