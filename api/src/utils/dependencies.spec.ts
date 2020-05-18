@@ -65,7 +65,7 @@ describe('Utils dependencies', () => {
       'https://nestjs.com',
     ],
     [
-      'types/bull',
+      '@types/bull',
       '3.10.6',
       '3.13.0',
       '3.13.0',
@@ -73,7 +73,7 @@ describe('Utils dependencies', () => {
       'https://github.com/DefinitelyTyped/DefinitelyTyped.git',
     ],
     [
-      'types/express',
+      '@types/express',
       '4.17.2',
       '4.17.6',
       '4.17.6',
@@ -101,10 +101,7 @@ describe('Utils dependencies', () => {
     });
     it('should return an array of 2 objects with common prefix ', () => {
       const result = getPrefixedDependencies(outdatedDepsMixedPrefix);
-      console.log(
-        "JSON.stringify(result, null, '	')",
-        JSON.stringify(result, null, '	'),
-      );
+
       expect(result.length).toEqual(2);
       expect(result[0]).toBeInstanceOf(Object);
       expect(result[1]).toBeInstanceOf(Object);
