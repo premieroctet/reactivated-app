@@ -123,7 +123,7 @@ export const getPrefixedDependencies = outdatedDeps => {
       while (depIdx < dependencies.length) {
         //   If there is a prefix
         if (packageSplit.length > 1) {
-          const commonPrefix = packageSplit[0];
+          let commonPrefix = packageSplit[0];
 
           // If common prefix is not the same, reset the common prefix
           if (
@@ -134,10 +134,12 @@ export const getPrefixedDependencies = outdatedDeps => {
             prefixedDependencies.push({
               [commonPrefix + '/']: commonPrefixDeps,
             });
-            commonPrefixDeps = [dependencies[depIdx]];
+            // commonPrefixDeps = [dependencies[depIdx]];
+            commonPrefixDeps = [];
             packageSplit = parseOutdatedPackage(
               dependencies[depIdx],
             ).packageLabel.split('/');
+            commonPrefix = packageSplit[0];
           }
 
           // If common prefix is the same, add to common prefix dep array

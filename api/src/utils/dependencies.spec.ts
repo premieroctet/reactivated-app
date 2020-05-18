@@ -65,7 +65,7 @@ describe('Utils dependencies', () => {
       'https://nestjs.com',
     ],
     [
-      '@types/bull',
+      'types/bull',
       '3.10.6',
       '3.13.0',
       '3.13.0',
@@ -73,7 +73,7 @@ describe('Utils dependencies', () => {
       'https://github.com/DefinitelyTyped/DefinitelyTyped.git',
     ],
     [
-      '@types/express',
+      'types/express',
       '4.17.2',
       '4.17.6',
       '4.17.6',
@@ -82,32 +82,6 @@ describe('Utils dependencies', () => {
     ],
   ];
 
-  const outdatedDepsSameLetter = [
-    [
-      '@nestjs/cli',
-      '6.12.2',
-      '6.14.2',
-      '7.1.5',
-      'devDependencies',
-      'https://github.com/nestjs/nest-cli#readme',
-    ],
-    [
-      '@nestjs/common',
-      '6.10.5',
-      '6.11.11',
-      '7.0.13',
-      'dependencies',
-      'https://nestjs.com',
-    ],
-    [
-      '@types/bull',
-      '3.10.6',
-      '3.13.0',
-      '3.13.0',
-      'dependencies',
-      'https://github.com/DefinitelyTyped/DefinitelyTyped.git',
-    ],
-  ];
   describe('getPrefixedDependencies', () => {
     it('should return array of outdated deps with no common prefix ', () => {
       const result = getPrefixedDependencies(outdatedDepsNoPrefix);
@@ -127,7 +101,10 @@ describe('Utils dependencies', () => {
     });
     it('should return an array of 2 objects with common prefix ', () => {
       const result = getPrefixedDependencies(outdatedDepsMixedPrefix);
-
+      console.log(
+        "JSON.stringify(result, null, '	')",
+        JSON.stringify(result, null, '	'),
+      );
       expect(result.length).toEqual(2);
       expect(result[0]).toBeInstanceOf(Object);
       expect(result[1]).toBeInstanceOf(Object);
@@ -148,10 +125,5 @@ describe('Utils dependencies', () => {
         });
       }
     });
-
-    // it('should return object with common prefix and dependency without prefix', () => {
-    //   const result = getPrefixedDependencies(outdatedDepsSameLetter);
-    //   console.log('result', JSON.stringify(result, null, '	'));
-    // });
   });
 });
