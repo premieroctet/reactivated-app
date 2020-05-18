@@ -70,10 +70,6 @@ export class DependenciesQueue {
 
     const bufferLock = Buffer.from(responseLock.data.content, 'base64');
 
-    console.log(
-      'DependenciesQueue -> computeYarnDependencies -> hasYarnLock',
-      hasYarnLock,
-    );
     if (hasYarnLock) {
       await asyncWriteFile(`${path}/yarn.lock`, bufferLock.toString('utf-8'));
     } else {
