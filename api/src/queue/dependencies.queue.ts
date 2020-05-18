@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
+import { execSync } from 'child_process';
 import { BullQueueEvents, OnQueueEvent, Process, Processor } from 'nest-bull';
 import { GithubService } from '../github/github.service';
 import { RepositoryService } from '../repository/repository.service';
@@ -9,7 +10,6 @@ import {
   getNbOutdatedDeps,
   getPrefixedDependencies,
 } from '../utils/dependencies';
-import { execSync } from 'child_process';
 
 const { exec } = require('child_process');
 const fs = require('fs');
