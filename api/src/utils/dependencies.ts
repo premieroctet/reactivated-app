@@ -119,28 +119,37 @@ export const getPrefixedDependencies = outdatedDeps => {
         dependencies[depIdx],
       ).packageLabel.split('/');
 
+      // Find dependencies with same prefix
       while (depIdx < dependencies.length) {
         //   If there is a prefix
         if (packageSplit.length > 1) {
           const commonPrefix = packageSplit[0];
+
           // If common prefix is not the same, reset the common prefix
           if (
             parseOutdatedPackage(dependencies[depIdx]).packageLabel.split(
               '/',
-            )[0] !== commonPrefix ||
-            depIdx === dependencies.length - 1
+            )[0] !== commonPrefix
           ) {
             prefixedDependencies.push({
               [commonPrefix + '/']: commonPrefixDeps,
             });
+            commonPrefixDeps = [dependencies[depIdx]];
             packageSplit = parseOutdatedPackage(
               dependencies[depIdx],
             ).packageLabel.split('/');
-            commonPrefixDeps = [dependencies[depIdx]];
-            depIdx++;
           }
+
           // If common prefix is the same, add to common prefix dep array
           commonPrefixDeps.push(dependencies[depIdx]);
+
+          // No more dependencies to check
+          if (depIdx === dependencies.length - 1) {
+            prefixedDependencies.push({
+              [commonPrefix + '/']: commonPrefixDeps,
+            });
+          }
+
           depIdx++;
         } else {
           //   No prefix
