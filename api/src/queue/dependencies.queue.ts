@@ -86,18 +86,15 @@ export class DependenciesQueue {
     const repository = await this.repositoriesService.findRepo({
       githubId: job.data.repositoryId,
     });
-    // const packageLockCommand = `cd ${path} && yarn import && yarn outdated --json && cd .. && rm -rf ./${job.data.repositoryId}`;
+
     if (!hasYarnLock) {
       // Generate yarn.lock from package-lock.json
       execSync(`cd ${path} && yarn import`);
     }
+
     exec(
       `cd ${path} && yarn outdated --json && cd .. && rm -rf ./${job.data.repositoryId}`,
       async (err, stdout) => {
-        console.log(
-          'DependenciesQueue -> computeYarnDependencies -> stdout',
-          stdout,
-        );
         const manifest = JSON.parse(stdout.split('\n')[1]);
         const outdatedDeps = manifest.data.body;
         const [nbOutdatedDeps, nbOutdatedDevDeps] = getNbOutdatedDeps(
