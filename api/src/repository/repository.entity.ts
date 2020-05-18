@@ -115,13 +115,6 @@ export class Repository {
   @Column('simple-json', { nullable: true })
   dependencies?: any;
 
-  @ApiProperty({
-    description: 'Dependencies of the repo sorted by first letter',
-    readOnly: true,
-  })
-  @Column('simple-json', { nullable: true })
-  sortedDependencies?: any;
-
   @ApiProperty()
   @Column({
     default: 'master',

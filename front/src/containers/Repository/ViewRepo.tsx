@@ -32,7 +32,7 @@ import useChakraToast from '@hooks/useChakraToast'
 import { useAxiosRequest } from '@hooks/useRequest'
 import { getDependenciesCount } from '@utils/dependencies'
 import { formatDistance } from 'date-fns'
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback } from 'react'
 import { Link, useHistory, useRouteMatch } from 'react-router-dom'
 import { mutate } from 'swr'
 import FrameworkTag from '../../components/FrameworkTag/FrameworkTag'
@@ -79,18 +79,27 @@ function ViewRepo() {
     onClose: closeConfigModal,
   } = useDisclosure()
 
-  const dependencies = useMemo(() => {
-    if (!data?.dependencies?.deps) {
-      return []
+  const dependencies: (Dependency | PrefixedDependency)[] = []
+  const devDependencies: (Dependency | PrefixedDependency)[] = []
+
+  data?.dependencies?.deps.forEach((dep) => {
+    if (Array.isArray(dep)) {
+      if (dep[4] === 'dependencies') {
+        dependencies.push(dep)
+      } else {
+        devDependencies.push(dep)
+      }
+    } else {
+      const prefix = Object.keys(dep)[0]
+      dependencies.push({
+        [prefix]: dep[prefix].filter((dep) => dep[4] === 'dependencies'),
+      })
+      devDependencies.push({
+        [prefix]: dep[prefix].filter((dep) => dep[4] === 'devDependencies'),
+      })
     }
-    return data.dependencies.deps.filter((dep) => dep[4] === 'dependencies')
-  }, [data])
-  const devDependencies = useMemo(() => {
-    if (!data?.dependencies?.deps) {
-      return []
-    }
-    return data.dependencies.deps.filter((dep) => dep[4] === 'devDependencies')
-  }, [data])
+  })
+
   const totalDependencies = getDependenciesCount(data?.packageJson)
 
   const recomputeDeps = useCallback(() => {

@@ -69,15 +69,98 @@ export const getFrameworkFromPackageJson = (packageJson): FrameworkTag => {
   return frameworkToLabelMap[mainFramework];
 };
 
-export const getDependenciesByFirstLetter = packageJson => {
-  const { dependencies } = packageJson;
+type packageInfo = {
+  packageLabel?: string;
+  current?: string;
+  wanted?: string;
+  latest?: string;
+  package_type?: string;
+  url?: string;
+};
+const headers = [
+  'packageLabel',
+  'current',
+  'wanted',
+  'latest',
+  'package_type',
+  'url',
+];
+export const parseOutdatedPackage = (outdatedDep): packageInfo => {
+  const parsedPackage: packageInfo = {};
+  for (let i = 0; i < headers.length; i++) {
+    parsedPackage[headers[i]] = outdatedDep[i];
+  }
+  return parsedPackage;
+};
+
+export const getPrefixedDependencies = outdatedDeps => {
   const dependenciesByFirstLetter = {};
-  Object.keys(dependencies).forEach(dep => {
-    if (dependenciesByFirstLetter[dep[0]]) {
-      dependenciesByFirstLetter[dep[0]].push(dep);
+  for (const dep of outdatedDeps) {
+    const { packageLabel } = parseOutdatedPackage(dep);
+
+    if (dependenciesByFirstLetter[packageLabel[0]]) {
+      dependenciesByFirstLetter[packageLabel[0]].push(dep);
     } else {
-      dependenciesByFirstLetter[dep[0]] = [dep];
+      dependenciesByFirstLetter[packageLabel[0]] = [dep];
     }
-  });
-  return dependenciesByFirstLetter;
+  }
+
+  const prefixedDependencies = [];
+
+  for (const firstLetter in dependenciesByFirstLetter) {
+    const dependencies = dependenciesByFirstLetter[firstLetter];
+
+    if (dependencies.length === 1) {
+      prefixedDependencies.push(...dependencies);
+    } else {
+      let depIdx = 0;
+      let commonPrefixDeps = [];
+      let packageSplit = parseOutdatedPackage(
+        dependencies[depIdx],
+      ).packageLabel.split('/');
+
+      // Find dependencies with same prefix
+      while (depIdx < dependencies.length) {
+        //   If there is a prefix
+        if (packageSplit.length > 1) {
+          let commonPrefix = packageSplit[0];
+
+          // If common prefix is not the same, reset the common prefix
+          if (
+            parseOutdatedPackage(dependencies[depIdx]).packageLabel.split(
+              '/',
+            )[0] !== commonPrefix
+          ) {
+            prefixedDependencies.push({
+              [commonPrefix + '/']: commonPrefixDeps,
+            });
+            // commonPrefixDeps = [dependencies[depIdx]];
+            commonPrefixDeps = [];
+            packageSplit = parseOutdatedPackage(
+              dependencies[depIdx],
+            ).packageLabel.split('/');
+            commonPrefix = packageSplit[0];
+          }
+
+          // If common prefix is the same, add to common prefix dep array
+          commonPrefixDeps.push(dependencies[depIdx]);
+
+          // No more dependencies to check
+          if (depIdx === dependencies.length - 1) {
+            prefixedDependencies.push({
+              [commonPrefix + '/']: commonPrefixDeps,
+            });
+          }
+
+          depIdx++;
+        } else {
+          //   No prefix
+          prefixedDependencies.push(dependencies[depIdx]);
+          depIdx++;
+        }
+      }
+    }
+  }
+
+  return prefixedDependencies;
 };

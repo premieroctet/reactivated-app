@@ -13,6 +13,7 @@ interface User {
 }
 
 type Dependency = [string, string, string, string, DependencyType, string]
+type PrefixedDependency = { [prefix: string]: Dependency[] }
 
 type DependencyType = 'dependencies' | 'devDependencies'
 
@@ -45,7 +46,7 @@ interface Repository {
   score: number
   packageJson: PackageJson
   dependencies: {
-    deps: Dependency[]
+    deps: (Dependency | PrefixedDependency)[]
   } | null
   branch: string
   path?: string
