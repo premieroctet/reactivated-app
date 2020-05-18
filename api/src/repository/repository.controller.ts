@@ -75,27 +75,30 @@ export class RepositoryController implements CrudController<Repository> {
     let hasYarnLock = true;
 
     try {
-      await this.githubService.getPackageJson({
+      await this.githubService.getFile({
         branch: repo.branch,
         name: repo.fullName,
         path: repo.path,
         token: req.user.githubToken,
+        fileName: 'package.json',
       });
 
       try {
-        await this.githubService.getYarnLock({
+        await this.githubService.getFile({
           branch: repo.branch,
           name: repo.fullName,
           path: repo.path,
           token: req.user.githubToken,
+          fileName: 'yarn.lock',
         });
       } catch (error) {
         hasYarnLock = false;
-        await this.githubService.getPackageLockJson({
+        await this.githubService.getFile({
           branch: repo.branch,
           name: repo.fullName,
           path: repo.path,
           token: req.user.githubToken,
+          fileName: 'package-lock.json',
         });
       }
     } catch (e) {

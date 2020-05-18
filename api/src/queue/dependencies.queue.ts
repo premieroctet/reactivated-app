@@ -28,28 +28,31 @@ export class DependenciesQueue {
 
   @Process({ name: 'compute_yarn_dependencies' })
   async computeYarnDependencies(job: Job) {
-    const responsePackageJson = await this.githubService.getPackageJson({
+    const responsePackageJson = await this.githubService.getFile({
       name: job.data.repositoryFullName,
       path: job.data.path,
       branch: job.data.branch,
       token: job.data.githubToken,
+      fileName: 'package.json',
     });
 
     let responseLock = null;
     const hasYarnLock = job.data.hasYarnLock;
     if (hasYarnLock) {
-      responseLock = await this.githubService.getYarnLock({
+      responseLock = await this.githubService.getFile({
         name: job.data.repositoryFullName,
         path: job.data.path,
         branch: job.data.branch,
         token: job.data.githubToken,
+        fileName: 'yarn.lock',
       });
     } else {
-      responseLock = await this.githubService.getPackageLockJson({
+      responseLock = await this.githubService.getFile({
         name: job.data.repositoryFullName,
         path: job.data.path,
         branch: job.data.branch,
         token: job.data.githubToken,
+        fileName: 'package-lock.json',
       });
     }
 
@@ -88,39 +91,35 @@ export class DependenciesQueue {
       execSync(`cd ${path} && yarn import`);
     }
 
-    exec(
-      `cd ${path} && yarn outdated --json && cd .. && rm -rf ./${job.data.repositoryId}`,
-      async (err, stdout) => {
-        const manifest = JSON.parse(stdout.split('\n')[1]);
-        const outdatedDeps = manifest.data.body;
-        const [nbOutdatedDeps, nbOutdatedDevDeps] = getNbOutdatedDeps(
-          outdatedDeps,
-        );
+    exec(`cd ${path} && yarn outdated --json`, async (err, stdout) => {
+      const manifest = JSON.parse(stdout.split('\n')[1]);
+      const outdatedDeps = manifest.data.body;
+      const [nbOutdatedDeps, nbOutdatedDevDeps] = getNbOutdatedDeps(
+        outdatedDeps,
+      );
 
-        repository.packageJson = JSON.parse(bufferPackage.toString('utf-8'));
-        const totalDependencies = getDependenciesCount(repository.packageJson);
+      repository.packageJson = JSON.parse(bufferPackage.toString('utf-8'));
+      const totalDependencies = getDependenciesCount(repository.packageJson);
 
-        const score = Math.round(
-          101 -
-            ((nbOutdatedDeps + nbOutdatedDevDeps) / totalDependencies) * 100,
-        );
+      const score = Math.round(
+        101 - ((nbOutdatedDeps + nbOutdatedDevDeps) / totalDependencies) * 100,
+      );
 
-        const deps = getPrefixedDependencies(outdatedDeps);
-        repository.dependencies = {
-          // deps: outdatedDeps,
-          deps,
-        };
-        repository.score = score;
-        repository.framework = getFrameworkFromPackageJson(
-          repository.packageJson,
-        );
+      const deps = getPrefixedDependencies(outdatedDeps);
+      repository.dependencies = {
+        deps,
+      };
+      repository.score = score;
+      repository.framework = getFrameworkFromPackageJson(
+        repository.packageJson,
+      );
 
-        await this.repositoriesService.updateRepo(
-          repository.id.toString(),
-          repository,
-        );
-      },
-    );
+      await this.repositoriesService.updateRepo(
+        repository.id.toString(),
+        repository,
+      );
+      exec(`cd ${path} && cd .. && rm -rf ./${job.data.repositoryId}`);
+    });
   }
 
   @OnQueueEvent(BullQueueEvents.COMPLETED)
