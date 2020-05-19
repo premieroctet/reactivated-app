@@ -5,6 +5,7 @@ interface IDependenciesData {
   path: string;
   branch: string;
   token: string;
+  fileName: string;
 }
 
 interface IRepoData {
@@ -16,24 +17,10 @@ interface IRepoData {
 export class GithubService {
   constructor(private readonly httpService: HttpService) {}
 
-  async getPackageJson(data: IDependenciesData) {
+  async getFile(data: IDependenciesData) {
     return this.httpService
       .get(
-        `https://api.github.com/repos/${data.name}/contents/${data.path}package.json?ref=${data.branch}`,
-        {
-          headers: {
-            Authorization: `token ${data.token}`,
-            Accept: 'application/vnd.github.machine-man-preview+json',
-          },
-        },
-      )
-      .toPromise();
-  }
-
-  async getYarnLock(data: IDependenciesData) {
-    return this.httpService
-      .get(
-        `https://api.github.com/repos/${data.name}/contents/${data.path}yarn.lock?ref=${data.branch}`,
+        `https://api.github.com/repos/${data.name}/contents/${data.path}${data.fileName}?ref=${data.branch}`,
         {
           headers: {
             Authorization: `token ${data.token}`,
