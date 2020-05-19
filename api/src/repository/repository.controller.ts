@@ -95,8 +95,8 @@ export class RepositoryController implements CrudController<Repository> {
     const user = await this.usersService.getById(userId);
     const repository = await this.service.updateRepo(repoId, {
       ...repo,
-      isConfigured: true,
-      dependenciesUpdatedAt: new Date(),
+      // isConfigured: true,
+      // dependenciesUpdatedAt: new Date(),
       users: [user],
     });
 
