@@ -15,9 +15,9 @@ export class CronService {
     this.queue.add('refresh_repositories');
   }
 
-  @Timeout(5000)
-  runEveryMinute() {
-    this.logger.debug('Run once' + process.pid);
-    this.queue.add('refresh_repositories');
-  }
+  // @Timeout(1000)
+  // runOnce() {
+  //   this.logger.debug('Run once' + process.pid);
+  //   this.queue.add('refresh_repositories');
+  // }
 }
