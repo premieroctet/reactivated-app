@@ -111,6 +111,7 @@ export class RepositoryController implements CrudController<Repository> {
       ...repo,
       // isConfigured: true,
       // dependenciesUpdatedAt: new Date(),
+      hasYarnLock: hasYarnLock,
       users: [user],
     });
 
@@ -121,7 +122,6 @@ export class RepositoryController implements CrudController<Repository> {
       userId,
       branch: repository.branch,
       path: repository.path,
-      hasYarnLock,
     });
 
     return repository;

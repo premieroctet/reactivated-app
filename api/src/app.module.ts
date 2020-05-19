@@ -37,7 +37,6 @@ import { WebhooksModule } from './webhooks/webhooks.module';
     WebhooksModule,
     GithubModule,
     CronModule,
-    // ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],

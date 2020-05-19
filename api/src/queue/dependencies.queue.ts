@@ -28,116 +28,13 @@ export class DependenciesQueue {
 
   @Process({ name: 'compute_yarn_dependencies' })
   async computeYarnDependencies(job: Job) {
-    const hasYarnLock = job.data.hasYarnLock;
-
-    const responsePackageJson = await this.githubService.getFile({
-      name: job.data.repositoryFullName,
+    this.refreshDependencies({
+      repositoryFullName: job.data.repositoryFullName,
       path: job.data.path,
       branch: job.data.branch,
-      token: job.data.githubToken,
-      fileName: 'package.json',
+      githubToken: job.data.githubToken,
+      repositoryId: job.data.repositoryId,
     });
-
-    let responseLock = null;
-    if (hasYarnLock) {
-      responseLock = await this.githubService.getFile({
-        name: job.data.repositoryFullName,
-        path: job.data.path,
-        branch: job.data.branch,
-        token: job.data.githubToken,
-        fileName: 'yarn.lock',
-      });
-    } else {
-      responseLock = await this.githubService.getFile({
-        name: job.data.repositoryFullName,
-        path: job.data.path,
-        branch: job.data.branch,
-        token: job.data.githubToken,
-        fileName: 'package-lock.json',
-      });
-    }
-    const path = `tmp/${job.data.repositoryId}`;
-
-    const { bufferPackage } = await this.createTemporaryFiles(
-      path,
-      responsePackageJson,
-      responseLock,
-      hasYarnLock,
-    );
-
-    const repository = await this.repositoriesService.findRepo({
-      githubId: job.data.repositoryId,
-    });
-
-    if (!hasYarnLock) {
-      // Generate yarn.lock from package-lock.json
-      execSync(`cd ${path} && yarn import`);
-    }
-
-    exec(`cd ${path} && yarn outdated --json`, async (err, stdout) => {
-      const manifest = JSON.parse(stdout.split('\n')[1]);
-      const outdatedDeps = manifest.data.body;
-      const [nbOutdatedDeps, nbOutdatedDevDeps] = getNbOutdatedDeps(
-        outdatedDeps,
-      );
-
-      repository.packageJson = JSON.parse(bufferPackage.toString('utf-8'));
-      const totalDependencies = getDependenciesCount(repository.packageJson);
-
-      const score = Math.round(
-        101 - ((nbOutdatedDeps + nbOutdatedDevDeps) / totalDependencies) * 100,
-      );
-
-      const deps = getPrefixedDependencies(outdatedDeps);
-      repository.dependencies = {
-        deps,
-      };
-      repository.score = score;
-      repository.framework = getFrameworkFromPackageJson(
-        repository.packageJson,
-      );
-
-      repository.hasYarnLock = hasYarnLock;
-      repository.isConfigured = true;
-      repository.dependenciesUpdatedAt = new Date();
-      await this.repositoriesService.updateRepo(
-        repository.id.toString(),
-        repository,
-      );
-      exec(`cd ${path} && cd .. && rm -rf ./${job.data.repositoryId}`);
-    });
-  }
-
-  async createTemporaryFiles(
-    tmpPath: string,
-    responsePackageJson,
-    responseLock,
-    hasYarnLock: boolean,
-  ) {
-    if (!fs.existsSync(tmpPath)) {
-      fs.mkdirSync(tmpPath);
-    }
-    const bufferPackage = Buffer.from(
-      responsePackageJson.data.content,
-      'base64',
-    );
-    await asyncWriteFile(
-      `${tmpPath}/package.json`,
-      bufferPackage.toString('utf-8'),
-    );
-    const bufferLock = Buffer.from(responseLock.data.content, 'base64');
-    if (hasYarnLock) {
-      await asyncWriteFile(
-        `${tmpPath}/yarn.lock`,
-        bufferLock.toString('utf-8'),
-      );
-    } else {
-      await asyncWriteFile(
-        `${tmpPath}/package-lock.json`,
-        bufferLock.toString('utf-8'),
-      );
-    }
-    return { bufferPackage };
   }
 
   async refreshDependencies(data: {
@@ -186,7 +83,6 @@ export class DependenciesQueue {
       responseLock,
       hasYarnLock,
     );
-    this.logger.debug('create tmp');
 
     if (!hasYarnLock) {
       // Generate yarn.lock from package-lock.json
@@ -216,7 +112,6 @@ export class DependenciesQueue {
         repository.packageJson,
       );
 
-      repository.hasYarnLock = hasYarnLock;
       repository.isConfigured = true;
       repository.dependenciesUpdatedAt = new Date();
       await this.repositoriesService.updateRepo(
@@ -225,6 +120,38 @@ export class DependenciesQueue {
       );
       exec(`cd ${tmpPath} && cd .. && rm -rf ./${data.repositoryId}`);
     });
+  }
+
+  async createTemporaryFiles(
+    tmpPath: string,
+    responsePackageJson,
+    responseLock,
+    hasYarnLock: boolean,
+  ) {
+    if (!fs.existsSync(tmpPath)) {
+      fs.mkdirSync(tmpPath);
+    }
+    const bufferPackage = Buffer.from(
+      responsePackageJson.data.content,
+      'base64',
+    );
+    await asyncWriteFile(
+      `${tmpPath}/package.json`,
+      bufferPackage.toString('utf-8'),
+    );
+    const bufferLock = Buffer.from(responseLock.data.content, 'base64');
+    if (hasYarnLock) {
+      await asyncWriteFile(
+        `${tmpPath}/yarn.lock`,
+        bufferLock.toString('utf-8'),
+      );
+    } else {
+      await asyncWriteFile(
+        `${tmpPath}/package-lock.json`,
+        bufferLock.toString('utf-8'),
+      );
+    }
+    return { bufferPackage };
   }
 
   @Process({ name: 'refresh_repositories' })
