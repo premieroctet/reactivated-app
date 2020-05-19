@@ -154,25 +154,6 @@ export class DependenciesQueue {
     return { bufferPackage };
   }
 
-  @Process({ name: 'refresh_repositories' })
-  async refreshRepositories() {
-    const repos = await this.repositoriesService.getRepos();
-    for (const repo of repos) {
-      for (const user of repo.users) {
-        if (user.githubToken) {
-          this.refreshDependencies({
-            repositoryFullName: repo.fullName,
-            path: repo.path,
-            branch: repo.branch,
-            githubToken: user.githubToken,
-            repositoryId: repo.githubId,
-          });
-          break;
-        }
-      }
-    }
-  }
-
   @OnQueueEvent(BullQueueEvents.COMPLETED)
   onCompleted(job: Job) {
     this.logger.log(
