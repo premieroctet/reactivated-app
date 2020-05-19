@@ -1,4 +1,5 @@
 import { Injectable, HttpService } from '@nestjs/common';
+import { UpdateDateColumn } from 'typeorm';
 
 interface IDependenciesData {
   name: string;
@@ -37,6 +38,29 @@ export class GithubService {
         headers: {
           Authorization: `token ${data.token}`,
           Accept: 'application/vnd.github.machine-man-preview+json',
+        },
+      })
+      .toPromise();
+  }
+
+  async createPullRequest(data: {
+    token: string;
+    fullName: string;
+    branch: string;
+    updatedDependencies: string[];
+  }) {
+    return this.httpService
+      .post(`https://api.github.com/repos/${data.fullName}/pulls`, {
+        headers: {
+          Authorization: `token ${data.token}`,
+          Accept: 'application/vnd.github.machine-man-preview+json',
+        },
+        body: {
+          // title: `Upgrade ${data.updatedDependencies.join(' ')}`,
+          title: `Upgrade`,
+          body: 'Please pull these awesome changes in!',
+          head: 'octocat:new-feature',
+          base: data.branch,
         },
       })
       .toPromise();
