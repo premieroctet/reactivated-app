@@ -166,7 +166,7 @@ export class DependenciesQueue {
 
     // Install all dependencies
     execSync(`cd ${path} && yarn install --force`);
-    // Upgrade the dependencies
+    // Upgrade the selected dependencies
     execSync(
       `cd ${path} && yarn upgrade ${job.data.updatedDependencies.join(' ')}`,
     );
