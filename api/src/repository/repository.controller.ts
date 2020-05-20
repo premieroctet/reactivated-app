@@ -8,6 +8,8 @@ import {
   Get,
   ForbiddenException,
   NotFoundException,
+  Post,
+  Logger,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RepositoryService } from './repository.service';
@@ -51,6 +53,7 @@ import { UsersService } from '../users/users.service';
 @ApiTags('repositories')
 @Controller(`/repositories`)
 export class RepositoryController implements CrudController<Repository> {
+  private readonly logger = new Logger(RepositoryController.name);
   constructor(
     public service: RepositoryService,
     private readonly githubService: GithubService,
@@ -118,7 +121,6 @@ export class RepositoryController implements CrudController<Repository> {
       repositoryFullName: repository.fullName,
       repositoryId: repository.githubId,
       githubToken: req.user.githubToken,
-      userId,
       branch: repository.branch,
       path: repository.path,
       hasYarnLock,
@@ -132,7 +134,6 @@ export class RepositoryController implements CrudController<Repository> {
   })
   @Get(':id/compute_deps')
   async computeDependencies(@Param('id') repoId: string, @Request() req) {
-    const userId = req.user.id;
     const repository = await this.service.findRepo({
       id: parseInt(repoId, 10),
     });
@@ -141,7 +142,6 @@ export class RepositoryController implements CrudController<Repository> {
       repositoryFullName: repository.fullName,
       repositoryId: repository.githubId,
       githubToken: req.user.githubToken,
-      userId,
       branch: repository.branch,
       path: repository.path,
     });
@@ -190,5 +190,42 @@ export class RepositoryController implements CrudController<Repository> {
     const createdRepository = await this.service.addRepo(repository);
 
     return createdRepository;
+  }
+
+  @Post(':author/:name/pulls')
+  async createUpgradePullRequest(
+    @Param('author') author: string,
+    @Param('name') name: string,
+    @Request() req,
+    @Body()
+    repoInfo: {
+      updatedDependencies: string[];
+      repoId: string;
+    },
+  ) {
+    const { githubToken } = req.user;
+    const fullName = `${author}/${name}`;
+
+    const repository = await this.service.findRepo({
+      id: parseInt(repoInfo.repoId, 10),
+    });
+
+    this.logger.debug('Add upgrade_dependencies message to queue');
+    this.queue.add('upgrade_dependencies', {
+      repositoryFullName: fullName,
+      repositoryId: repository.githubId,
+      githubToken,
+      branch: repository.branch,
+      path: repository.path,
+      updatedDependencies: repoInfo.updatedDependencies,
+    });
+
+    // this.logger.debug('Create PR on github', fullName);
+    // this.githubService.createPullRequest({
+    //   fullName,
+    //   branch: repository.branch,
+    //   token: githubToken,
+    //   updatedDependencies: repoInfo.updatedDependencies,
+    // });
   }
 }

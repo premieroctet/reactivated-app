@@ -1,6 +1,5 @@
 import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
-import { execSync } from 'child_process';
 import { BullQueueEvents, OnQueueEvent, Process, Processor } from 'nest-bull';
 import { GithubService } from '../github/github.service';
 import { RepositoryService } from '../repository/repository.service';
@@ -11,10 +10,9 @@ import {
   getPrefixedDependencies,
 } from '../utils/dependencies';
 
-const { exec } = require('child_process');
+const { exec, execSync } = require('child_process');
 const fs = require('fs');
 const { promisify } = require('util');
-
 const asyncWriteFile = promisify(fs.writeFile);
 
 @Processor({ name: 'dependencies' })
@@ -28,33 +26,11 @@ export class DependenciesQueue {
 
   @Process({ name: 'compute_yarn_dependencies' })
   async computeYarnDependencies(job: Job) {
-    const responsePackageJson = await this.githubService.getFile({
-      name: job.data.repositoryFullName,
-      path: job.data.path,
-      branch: job.data.branch,
-      token: job.data.githubToken,
-      fileName: 'package.json',
-    });
-
-    let responseLock = null;
-    const hasYarnLock = job.data.hasYarnLock;
-    if (hasYarnLock) {
-      responseLock = await this.githubService.getFile({
-        name: job.data.repositoryFullName,
-        path: job.data.path,
-        branch: job.data.branch,
-        token: job.data.githubToken,
-        fileName: 'yarn.lock',
-      });
-    } else {
-      responseLock = await this.githubService.getFile({
-        name: job.data.repositoryFullName,
-        path: job.data.path,
-        branch: job.data.branch,
-        token: job.data.githubToken,
-        fileName: 'package-lock.json',
-      });
-    }
+    const {
+      responsePackageJson,
+      responseLock,
+      hasYarnLock,
+    } = await this.getDependenciesFiles(job);
 
     const path = `tmp/${job.data.repositoryId}`;
     if (!fs.existsSync(path)) {
@@ -120,6 +96,85 @@ export class DependenciesQueue {
       );
       exec(`cd ${path} && cd .. && rm -rf ./${job.data.repositoryId}`);
     });
+  }
+
+  async getDependenciesFiles(job: Job) {
+    const responsePackageJson = await this.githubService.getFile({
+      name: job.data.repositoryFullName,
+      path: job.data.path,
+      branch: job.data.branch,
+      token: job.data.githubToken,
+      fileName: 'package.json',
+    });
+    let responseLock = null;
+    const hasYarnLock = job.data.hasYarnLock;
+    if (hasYarnLock) {
+      responseLock = await this.githubService.getFile({
+        name: job.data.repositoryFullName,
+        path: job.data.path,
+        branch: job.data.branch,
+        token: job.data.githubToken,
+        fileName: 'yarn.lock',
+      });
+    } else {
+      responseLock = await this.githubService.getFile({
+        name: job.data.repositoryFullName,
+        path: job.data.path,
+        branch: job.data.branch,
+        token: job.data.githubToken,
+        fileName: 'package-lock.json',
+      });
+    }
+    return { responsePackageJson, responseLock, hasYarnLock };
+  }
+
+  @Process({ name: 'upgrade_dependencies' })
+  async upgradeDependencies(job: Job) {
+    const {
+      responsePackageJson,
+      responseLock,
+      hasYarnLock,
+    } = await this.getDependenciesFiles(job);
+
+    const path = `tmp/${job.data.repositoryId}`;
+    if (!fs.existsSync(path)) {
+      fs.mkdirSync(path);
+    }
+
+    const bufferPackage = Buffer.from(
+      responsePackageJson.data.content,
+      'base64',
+    );
+
+    await asyncWriteFile(
+      `${path}/package.json`,
+      bufferPackage.toString('utf-8'),
+    );
+
+    const bufferLock = Buffer.from(responseLock.data.content, 'base64');
+
+    if (hasYarnLock) {
+      await asyncWriteFile(`${path}/yarn.lock`, bufferLock.toString('utf-8'));
+    } else {
+      await asyncWriteFile(
+        `${path}/package-lock.json`,
+        bufferLock.toString('utf-8'),
+      );
+      execSync(`cd ${path} && yarn import`);
+      fs.unlinkSync(`${path}/package-lock.json`);
+    }
+
+    // Install all dependencies
+    execSync(`cd ${path} && yarn install --force`);
+    // Upgrade the dependencies
+    execSync(
+      `cd ${path} && yarn upgrade ${job.data.updatedDependencies.join(' ')}`,
+    );
+
+    // Commit the new package.json and yarn.lock and create new PR
+
+    // Delete the yarn.lock, package.json, node_modules
+    exec(`cd ${path} && cd .. && rm -rf ./${job.data.repositoryId}`);
   }
 
   @OnQueueEvent(BullQueueEvents.COMPLETED)

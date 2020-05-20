@@ -1,5 +1,4 @@
-import { Injectable, HttpService } from '@nestjs/common';
-import { UpdateDateColumn } from 'typeorm';
+import { HttpService, Injectable } from '@nestjs/common';
 
 interface IDependenciesData {
   name: string;
@@ -56,13 +55,31 @@ export class GithubService {
           Accept: 'application/vnd.github.machine-man-preview+json',
         },
         body: {
-          // title: `Upgrade ${data.updatedDependencies.join(' ')}`,
-          title: `Upgrade`,
+          title: `Upgrade ${data.updatedDependencies.join(' ')}`,
           body: 'Please pull these awesome changes in!',
-          head: 'octocat:new-feature',
+          head: 'myPRBranch',
           base: data.branch,
         },
       })
-      .toPromise();
+      .toPromise()
+      .catch(e => {
+        console.warn(e.response.config);
+      });
   }
+
+  // async createCommit(data: { fullName: string; token: string }) {
+  //   return this.httpService.post(
+  //     `https://api.github.com/repos/${data.fullName}/git/commits`,
+  //     {
+  //       headers: {
+  //         Authorization: `token ${data.token}`,
+  //         Accept: 'application/vnd.github.machine-man-preview+json',
+  //       },
+  //       body: {
+  //         message: 'my commit message',
+  //         tree: '827efc6d56897b048c772eb4087f854f46256132',
+  //       },
+  //     },
+  //   );
+  // }
 }

@@ -1,25 +1,34 @@
-import { Box, Button, Code, useClipboard } from '@chakra-ui/core'
+import { Box, Button, Code, Flex, useClipboard } from '@chakra-ui/core'
 import React, { useState } from 'react'
+import { createUpgradePR } from '../../api/repositories'
 import DependencyItem from './DependencyItem'
 import PrefixAccordion from './PrefixAccordion'
 
 interface IProps {
   dependencies: (Dependency | PrefixedDependency)[]
   isDev?: boolean
+  repo: Repository
 }
 
-const DependenciesList: React.FC<IProps> = ({ dependencies, isDev }) => {
+const DependenciesList: React.FC<IProps> = ({ dependencies, isDev, repo }) => {
   const [packages, setPackages] = useState<{
     [key: string]: 'stable' | 'latest'
   }>({})
 
+  const { fullName } = repo
   const items = Object.keys(packages).map(
     (key) => `${key}${packages[key] === 'latest' ? `@${packages[key]}` : ''}`,
   )
 
   const commandeLine = `yarn upgrade ${isDev ? `--dev` : ``} ${items.join(' ')}`
   const { onCopy, hasCopied } = useClipboard(commandeLine)
-
+  const createPR = async () => {
+    const res = await createUpgradePR(fullName, {
+      updatedDependencies: items,
+      repoId: repo.id,
+    })
+    console.log('createPR -> res', res)
+  }
   return (
     <Box overflowX="auto" whiteSpace="nowrap">
       <Code
@@ -77,6 +86,10 @@ const DependenciesList: React.FC<IProps> = ({ dependencies, isDev }) => {
           )
         })}
       </Box>
+
+      <Flex flexDir="row-reverse">
+        <Button onClick={createPR}>Create my Pull Request</Button>
+      </Flex>
     </Box>
   )
 }

@@ -231,10 +231,17 @@ function ViewRepo() {
                   </TabList>
                   <TabPanels>
                     <TabPanel>
-                      <DependenciesList dependencies={dependencies} />
+                      <DependenciesList
+                        dependencies={dependencies}
+                        repo={data}
+                      />
                     </TabPanel>
                     <TabPanel>
-                      <DependenciesList isDev dependencies={devDependencies} />
+                      <DependenciesList
+                        isDev
+                        dependencies={devDependencies}
+                        repo={data}
+                      />
                     </TabPanel>
                   </TabPanels>
                 </Tabs>
