@@ -138,4 +138,8 @@ export class Repository {
   @ApiProperty()
   @Column({ nullable: true })
   framework?: FrameworkTag;
+
+  @ApiProperty()
+  @Column({ nullable: true })
+  hasYarnLock?: boolean;
 }
