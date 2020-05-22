@@ -168,7 +168,9 @@ export class DependenciesQueue {
     execSync(`cd ${path} && yarn install --force`);
     // Upgrade the selected dependencies
     execSync(
-      `cd ${path} && yarn upgrade ${job.data.updatedDependencies.join(' ')}`,
+      `cd ${path} && yarn upgrade ${
+        job.data.isDev ? '--dev' : ''
+      } ${job.data.updatedDependencies.join(' ')}`,
     );
 
     // Commit the new package.json and yarn.lock and create new PR

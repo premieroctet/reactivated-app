@@ -26,6 +26,7 @@ const DependenciesList: React.FC<IProps> = ({ dependencies, isDev, repo }) => {
     const res = await createUpgradePR(fullName, {
       updatedDependencies: items,
       repoId: repo.id,
+      isDev: isDev ? true : false,
     })
     console.log('createPR -> res', res)
   }

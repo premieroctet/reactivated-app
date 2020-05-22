@@ -201,6 +201,7 @@ export class RepositoryController implements CrudController<Repository> {
     repoInfo: {
       updatedDependencies: string[];
       repoId: string;
+      isDev: boolean;
     },
   ) {
     const { githubToken } = req.user;
@@ -210,21 +211,28 @@ export class RepositoryController implements CrudController<Repository> {
       id: parseInt(repoInfo.repoId, 10),
     });
 
-    this.logger.debug('Add upgrade_dependencies message to queue');
-    this.queue.add('upgrade_dependencies', {
-      repositoryFullName: fullName,
-      repositoryId: repository.githubId,
-      githubToken,
-      branch: repository.branch,
-      path: repository.path,
-      updatedDependencies: repoInfo.updatedDependencies,
-    });
+    // this.logger.debug('Add upgrade_dependencies message to queue');
+    // this.queue.add('upgrade_dependencies', {
+    //   repositoryFullName: fullName,
+    //   repositoryId: repository.githubId,
+    //   githubToken,
+    //   branch: repository.branch,
+    //   path: repository.path,
+    //   updatedDependencies: repoInfo.updatedDependencies,
+    // isDev,
+    // });
 
-    // this.logger.debug('Create PR on github', fullName);
+    this.logger.debug('Create PR on github', fullName);
+    const res = await this.githubService.createBranch({
+      fullName,
+      refName: 'test',
+      githubToken,
+    });
+    console.log('RepositoryController -> res', res);
     // this.githubService.createPullRequest({
     //   fullName,
     //   branch: repository.branch,
-    //   token: githubToken,
+    //    githubToken,
     //   updatedDependencies: repoInfo.updatedDependencies,
     // });
   }

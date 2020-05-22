@@ -47,7 +47,7 @@ export const syncRepository = (fullName: string) => {
 
 export const createUpgradePR = (
   fullName: string,
-  data: { updatedDependencies: string[]; repoId: number },
+  data: { updatedDependencies: string[]; repoId: number; isDev: boolean },
 ) => {
   return API.post(`repositories/${fullName}/pulls`, data)
 }
