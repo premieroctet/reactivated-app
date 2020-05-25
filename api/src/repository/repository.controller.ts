@@ -211,29 +211,15 @@ export class RepositoryController implements CrudController<Repository> {
       id: parseInt(repoInfo.repoId, 10),
     });
 
-    // this.logger.debug('upgrade_dependencies message to queue');
-    // this.queue.add('upgrade_dependencies', {
-    //   repositoryFullName: fullName,
-    //   repositoryId: repository.githubId,
-    //   githubToken,
-    //   branch: repository.branch,
-    //   path: repository.path,
-    //   updatedDependencies: repoInfo.updatedDependencies,
-    // isDev,
-    // });
-
-    this.logger.debug('Create PR on github', fullName);
-    const res = await this.githubService.createBranch({
-      fullName,
-      refName: 'test',
+    this.logger.debug('upgrade_dependencies message to queue');
+    this.queue.add('upgrade_dependencies', {
+      repositoryFullName: fullName,
+      repositoryId: repository.githubId,
       githubToken,
+      branch: repository.branch,
+      path: repository.path,
+      updatedDependencies: repoInfo.updatedDependencies,
+      isDev: repoInfo.isDev,
     });
-    console.log('RepositoryController -> res', res);
-    // this.githubService.createPullRequest({
-    //   fullName,
-    //   branch: repository.branch,
-    //    githubToken,
-    //   updatedDependencies: repoInfo.updatedDependencies,
-    // });
   }
 }

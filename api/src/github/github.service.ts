@@ -1,4 +1,4 @@
-import { HttpService, Injectable } from '@nestjs/common';
+import { HttpService, Injectable, Logger } from '@nestjs/common';
 
 interface IDependenciesData {
   name: string;
@@ -15,6 +15,8 @@ interface IRepoData {
 
 @Injectable()
 export class GithubService {
+  private readonly logger = new Logger(GithubService.name);
+
   constructor(private readonly httpService: HttpService) {}
 
   async getFile(data: IDependenciesData) {
@@ -70,9 +72,9 @@ export class GithubService {
   // https://developer.github.com/v3/git/refs/#create-a-reference
   async createBranch(data: {
     fullName: string;
-    refName: string;
+    branchName: string;
     githubToken: string;
-  }) {
+  }): Promise<any> {
     const branchesRes = await this.httpService
       .get(`https://api.github.com/repos/${data.fullName}/git/refs/heads`, {
         headers: {
@@ -81,46 +83,6 @@ export class GithubService {
       })
       .toPromise();
     const masterSHA = branchesRes.data[0].object.sha;
-
-    // const commitsRes = await this.httpService
-    //   .get(`https://api.github.com/repos/${data.fullName}/commits`, {
-    //     headers: {
-    //       Authorization: `token ${data.githubToken}`,
-    //     },
-    //   })
-    //   .toPromise();
-    // const treeSha = commitsRes.data[0].commit.tree.sha;
-    // console.log(
-    //   'commitsRes.data[0].commit.tree',
-    //   commitsRes.data[0].commit.tree,
-    // );
-
-    // const masterTreeRes = await this.httpService
-    //   .get(
-    //     `https://api.github.com/repos/${data.fullName}/git/trees/${masterSHA}`,
-    //     {
-    //       headers: {
-    //         Authorization: `token ${data.githubToken}`,
-    //       },
-    //     },
-    //   )
-    //   .toPromise();
-
-    // const packageJsonBlob = await this.httpService
-    //   .post(`https://api.github.com/repos/${data.fullName}/git/blobs`, {
-    //     headers: {
-    //       Authorization: `token ${data.githubToken}`,
-    //     },
-    //     data: {
-    //       content: 'my new content',
-    //       encoding: 'utf-8',
-    //     },
-    //   })
-    //   .toPromise()
-    //   .catch(e => {
-    //     console.log(e.response.data);
-    //   });
-    // console.log('packageJsonBlob', packageJsonBlob);
 
     // const newTreeRes = await this.httpService
     //   .post(`https://api.github.com/repos/${data.fullName}/git/trees`, {
@@ -144,22 +106,76 @@ export class GithubService {
     //   });
     // console.log('newTreeRes', newTreeRes);
 
-    const newRefRes = await this.httpService
-      .post(`https://api.github.com/repos/${data.fullName}/git/refs`, {
-        headers: {
-          Authorization: `token ${data.githubToken}`,
-        },
-        data: {
-          ref: 'refs/heads/' + data.refName,
+    return await this.httpService
+      .post(
+        `https://api.github.com/repos/${data.fullName}/git/refs`,
+        {
+          ref: 'refs/heads/' + data.branchName,
           sha: masterSHA,
         },
-      })
+        {
+          headers: {
+            Authorization: `token ${data.githubToken}`,
+          },
+        },
+      )
+      .toPromise();
+  }
+
+  // https://developer.github.com/v3/git/refs/#get-a-single-reference
+  async getSingleRef(data: {
+    fullName: string;
+    branchName: string;
+    token: string;
+  }) {
+    return this.httpService
+      .get(
+        `https://api.github.com/repos/${data.fullName}/git/ref/heads/${data.branchName}`,
+        {
+          headers: {
+            Authorization: `token ${data.token}`,
+          },
+        },
+      )
+      .toPromise();
+  }
+
+  async commitFile(data: {
+    message: string;
+    content: string;
+
+    name: string;
+    path: string;
+    branch: string;
+    token: string;
+    fileName: string;
+  }) {
+    let fileSHA = null;
+    try {
+      const fileRes = await this.getFile(data);
+      fileSHA = fileRes.data.sha;
+    } catch (error) {}
+
+    const updatedFileRes = await this.httpService
+      .put(
+        `https://api.github.com/repos/${data.name}/contents/${data.fileName}?ref=${data.branch}`,
+        {
+          message: data.message,
+          content: data.content,
+          sha: fileSHA ? fileSHA : '',
+        },
+        {
+          headers: {
+            Authorization: `token ${data.token}`,
+          },
+        },
+      )
       .toPromise()
       .catch(e => {
-        console.warn(e.response.config);
-        console.warn(e.response.data);
+        // console.warn(e.response.config);
+        // console.warn(e.response.data);
       });
-    console.log('newRefRes', newRefRes);
+    console.log('GithubService -> updatedFile', updatedFileRes);
   }
 
   // async createCommit(data: { fullName: string; token: string }) {
