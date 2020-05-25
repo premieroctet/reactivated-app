@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
+import { readFileSync } from 'fs';
 import { BullQueueEvents, OnQueueEvent, Process, Processor } from 'nest-bull';
 import { GithubService } from '../github/github.service';
 import { RepositoryService } from '../repository/repository.service';
@@ -153,56 +154,70 @@ export class DependenciesQueue {
 
     const bufferLock = Buffer.from(responseLock.data.content, 'base64');
 
-    // if (hasYarnLock) {
-    //   await asyncWriteFile(`${path}/yarn.lock`, bufferLock.toString('utf-8'));
-    // } else {
-    //   await asyncWriteFile(
-    //     `${path}/package-lock.json`,
-    //     bufferLock.toString('utf-8'),
-    //   );
-    //   execSync(`cd ${path} && yarn import`);
-    //   fs.unlinkSync(`${path}/package-lock.json`);
-    // }
-
-    // // Install all dependencies
-    // execSync(`cd ${path} && yarn install --force`);
-    // // Upgrade the selected dependencies
-    // execSync(
-    //   `cd ${path} && yarn upgrade ${
-    //     job.data.isDev ? '--dev' : ''
-    //   } ${job.data.updatedDependencies.join(' ')}`,
-    // );
-
-    // Commit the new package.json and yarn.lock and create new PR
-    const newBranchName = 'test';
-    let newBranchSHA = null;
-    try {
-      const newBranchRes = await this.githubService.createBranch({
-        fullName: job.data.repositoryFullName,
-        githubToken: job.data.githubToken,
-        branchName: newBranchName,
-      });
-      newBranchSHA = newBranchRes.data.object.sha;
-    } catch (error) {
-      if (error.response.status === 422) {
-        this.logger.error('Reference already exists');
-        const branchRefRes = await this.githubService.getSingleRef({
-          fullName: job.data.repositoryFullName,
-          branchName: newBranchName,
-          token: job.data.githubToken,
-        });
-        newBranchSHA = branchRefRes.data.object.sha;
-      }
+    if (hasYarnLock) {
+      await asyncWriteFile(`${path}/yarn.lock`, bufferLock.toString('utf-8'));
+    } else {
+      await asyncWriteFile(
+        `${path}/package-lock.json`,
+        bufferLock.toString('utf-8'),
+      );
+      execSync(`cd ${path} && yarn import`);
+      fs.unlinkSync(`${path}/package-lock.json`);
     }
 
-    // await this.githubService.commitFile({
-    //   name: job.data.repositoryFullName,
-    //   path: job.data.path,
-    //   branch: newBranchName,
-    //   token: job.data.githubToken,
-    //   fileName: 'package.json',
-    //   message: job.data.updatedDependencies.join(' '),
-    //   content: Buffer.from('{"name":"npmlock"}').toString('base64'),
+    // Install all dependencies
+    execSync(`cd ${path} && yarn install --force`);
+    // Upgrade the selected dependencies
+    execSync(
+      `cd ${path} && yarn upgrade ${job.data.updatedDependencies.join(' ')}`,
+      { stdio: 'inherit' },
+    );
+
+    // // Commit the new package.json and yarn.lock and create new PR
+    // const newBranchName = 'test';
+    // let newBranchSHA = null;
+    // try {
+    //   const newBranchRes = await this.githubService.createBranch({
+    //     fullName: job.data.repositoryFullName,
+    //     githubToken: job.data.githubToken,
+    //     branchName: newBranchName,
+    //   });
+    //   newBranchSHA = newBranchRes.data.object.sha;
+    // } catch (error) {
+    //   if (error.response.status === 422) {
+    //     // this.logger.error('Reference already exists');
+    //     const branchRefRes = await this.githubService.getSingleRef({
+    //       fullName: job.data.repositoryFullName,
+    //       branchName: newBranchName,
+    //       token: job.data.githubToken,
+    //     });
+    //     newBranchSHA = branchRefRes.data.object.sha;
+    //   }
+    // }
+
+    // // Update the files on new branch
+    // const files = ['package.json', 'yarn.lock'];
+    // for (const file of files) {
+    //   const bufferContent = readFileSync(`${path}/${file}`, {
+    //     encoding: 'base64',
+    //   });
+    //   await this.githubService.commitFile({
+    //     name: job.data.repositoryFullName,
+    //     path: job.data.path,
+    //     branch: newBranchName,
+    //     token: job.data.githubToken,
+    //     fileName: file,
+    //     message: `Upgrade ${file}`,
+    //     content: bufferContent,
+    //   });
+    // }
+
+    // this.githubService.createPullRequest({
+    //   baseBranch: job.data.branch,
+    //   fullName: job.data.repositoryFullName,
+    //   githubToken: job.data.githubToken,
+    //   headBranch: newBranchName,
+    //   updatedDependencies: job.data.updatedDependencies,
     // });
 
     // Delete the yarn.lock, package.json, node_modules

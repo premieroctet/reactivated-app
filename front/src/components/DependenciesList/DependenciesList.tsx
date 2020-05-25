@@ -20,13 +20,12 @@ const DependenciesList: React.FC<IProps> = ({ dependencies, isDev, repo }) => {
     (key) => `${key}${packages[key] === 'latest' ? `@${packages[key]}` : ''}`,
   )
 
-  const commandeLine = `yarn upgrade ${isDev ? `--dev` : ``} ${items.join(' ')}`
+  const commandeLine = `yarn upgrade ${items.join(' ')}`
   const { onCopy, hasCopied } = useClipboard(commandeLine)
   const createPR = async () => {
     const res = await createUpgradePR(fullName, {
       updatedDependencies: items,
       repoId: repo.id,
-      isDev: isDev ? true : false,
     })
     console.log('createPR -> res', res)
   }
@@ -42,7 +41,7 @@ const DependenciesList: React.FC<IProps> = ({ dependencies, isDev, repo }) => {
       >
         {Object.keys(packages).length
           ? commandeLine
-          : `yarn upgrade ${isDev ? `--dev` : ``} [pick some dependencies]`}
+          : `yarn upgrade [pick some dependencies]`}
         <Button
           size="xs"
           variantColor="secondary"

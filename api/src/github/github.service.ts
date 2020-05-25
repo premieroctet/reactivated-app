@@ -19,6 +19,7 @@ export class GithubService {
 
   constructor(private readonly httpService: HttpService) {}
 
+  // https://developer.github.com/v3/repos/contents/#get-contents
   async getFile(data: IDependenciesData) {
     return this.httpService
       .get(
@@ -27,6 +28,20 @@ export class GithubService {
           headers: {
             Authorization: `token ${data.token}`,
             Accept: 'application/vnd.github.machine-man-preview+json',
+          },
+        },
+      )
+      .toPromise();
+  }
+
+  // https://developer.github.com/v3/git/blobs/#get-a-blob
+  async getBlob(data: { name: string; fileSHA: string; token: string }) {
+    return this.httpService
+      .get(
+        `https://api.github.com/repos/${data.name}/git/blobs/${data.fileSHA}`,
+        {
+          headers: {
+            Authorization: `token ${data.token}`,
           },
         },
       )
@@ -47,25 +62,29 @@ export class GithubService {
   async createPullRequest(data: {
     githubToken: string;
     fullName: string;
-    branch: string;
+    baseBranch: string;
+    headBranch: string;
     updatedDependencies: string[];
   }) {
     return this.httpService
-      .post(`https://api.github.com/repos/${data.fullName}/pulls`, {
-        headers: {
-          Authorization: `token ${data.githubToken}`,
-          Accept: 'application/vnd.github.machine-man-preview+json',
-        },
-        data: {
+      .post(
+        `https://api.github.com/repos/${data.fullName}/pulls`,
+        {
           title: `Upgrade ${data.updatedDependencies.join(' ')}`,
           body: 'Please pull these awesome changes in!',
-          head: 'myPRBranch',
-          base: data.branch,
+          head: data.headBranch,
+          base: data.baseBranch,
         },
-      })
+        {
+          headers: {
+            Authorization: `token ${data.githubToken}`,
+            Accept: 'application/vnd.github.machine-man-preview+json',
+          },
+        },
+      )
       .toPromise()
       .catch(e => {
-        console.warn(e.response.config);
+        this.logger.debug(e.response.data);
       });
   }
 
@@ -83,28 +102,6 @@ export class GithubService {
       })
       .toPromise();
     const masterSHA = branchesRes.data[0].object.sha;
-
-    // const newTreeRes = await this.httpService
-    //   .post(`https://api.github.com/repos/${data.fullName}/git/trees`, {
-    //     headers: {
-    //       Authorization: `token ${data.githubToken}`,
-    //     },
-    //     data: {
-    //       base_tree: masterSHA,
-    //       // base_tree: treeSha,
-    //       tree: {
-    //         path: 'package.json',
-    //         mode: '100644',
-    //         type: 'blob',
-    //         content: 'my content',
-    //       },
-    //     },
-    //   })
-    //   .toPromise()
-    //   .catch(e => {
-    //     console.log('e', e.response.data);
-    //   });
-    // console.log('newTreeRes', newTreeRes);
 
     return await this.httpService
       .post(
@@ -140,29 +137,39 @@ export class GithubService {
       .toPromise();
   }
 
+  // https://developer.github.com/v3/repos/contents/#create-or-update-a-file
   async commitFile(data: {
     message: string;
     content: string;
-
     name: string;
     path: string;
     branch: string;
     token: string;
     fileName: string;
   }) {
-    let fileSHA = null;
+    let sha = '';
     try {
+      // If existing file
       const fileRes = await this.getFile(data);
-      fileSHA = fileRes.data.sha;
-    } catch (error) {}
-
+      const fileSHA = fileRes.data.sha;
+      const fileBlobRes = await this.getBlob({
+        fileSHA,
+        name: data.name,
+        token: data.token,
+      });
+      sha = fileBlobRes.data.sha;
+    } catch (error) {
+      this.logger.debug(error.response.data);
+      // No existing file
+    }
     const updatedFileRes = await this.httpService
       .put(
-        `https://api.github.com/repos/${data.name}/contents/${data.fileName}?ref=${data.branch}`,
+        `https://api.github.com/repos/${data.name}/contents/${data.fileName}`,
         {
           message: data.message,
           content: data.content,
-          sha: fileSHA ? fileSHA : '',
+          branch: data.branch,
+          sha,
         },
         {
           headers: {
@@ -170,27 +177,6 @@ export class GithubService {
           },
         },
       )
-      .toPromise()
-      .catch(e => {
-        // console.warn(e.response.config);
-        // console.warn(e.response.data);
-      });
-    console.log('GithubService -> updatedFile', updatedFileRes);
+      .toPromise();
   }
-
-  // async createCommit(data: { fullName: string; token: string }) {
-  //   return this.httpService.post(
-  //     `https://api.github.com/repos/${data.fullName}/git/commits`,
-  //     {
-  //       headers: {
-  //         Authorization: `token ${data.token}`,
-  //         Accept: 'application/vnd.github.machine-man-preview+json',
-  //       },
-  //       data: {
-  //         message: 'my commit message',
-  //         tree: '827efc6d56897b048c772eb4087f854f46256132',
-  //       },
-  //     },
-  //   );
-  // }
 }

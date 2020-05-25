@@ -201,7 +201,6 @@ export class RepositoryController implements CrudController<Repository> {
     repoInfo: {
       updatedDependencies: string[];
       repoId: string;
-      isDev: boolean;
     },
   ) {
     const { githubToken } = req.user;
@@ -219,7 +218,6 @@ export class RepositoryController implements CrudController<Repository> {
       branch: repository.branch,
       path: repository.path,
       updatedDependencies: repoInfo.updatedDependencies,
-      isDev: repoInfo.isDev,
     });
   }
 }
