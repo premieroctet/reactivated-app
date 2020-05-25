@@ -73,16 +73,78 @@ export class GithubService {
     refName: string;
     githubToken: string;
   }) {
-    const revisionHashRes = await this.httpService
+    const branchesRes = await this.httpService
       .get(`https://api.github.com/repos/${data.fullName}/git/refs/heads`, {
         headers: {
           Authorization: `token ${data.githubToken}`,
         },
       })
       .toPromise();
-    const masterSHA = revisionHashRes.data[0].object.sha;
+    const masterSHA = branchesRes.data[0].object.sha;
 
-    const createRefRes = await this.httpService
+    // const commitsRes = await this.httpService
+    //   .get(`https://api.github.com/repos/${data.fullName}/commits`, {
+    //     headers: {
+    //       Authorization: `token ${data.githubToken}`,
+    //     },
+    //   })
+    //   .toPromise();
+    // const treeSha = commitsRes.data[0].commit.tree.sha;
+    // console.log(
+    //   'commitsRes.data[0].commit.tree',
+    //   commitsRes.data[0].commit.tree,
+    // );
+
+    // const masterTreeRes = await this.httpService
+    //   .get(
+    //     `https://api.github.com/repos/${data.fullName}/git/trees/${masterSHA}`,
+    //     {
+    //       headers: {
+    //         Authorization: `token ${data.githubToken}`,
+    //       },
+    //     },
+    //   )
+    //   .toPromise();
+
+    // const packageJsonBlob = await this.httpService
+    //   .post(`https://api.github.com/repos/${data.fullName}/git/blobs`, {
+    //     headers: {
+    //       Authorization: `token ${data.githubToken}`,
+    //     },
+    //     data: {
+    //       content: 'my new content',
+    //       encoding: 'utf-8',
+    //     },
+    //   })
+    //   .toPromise()
+    //   .catch(e => {
+    //     console.log(e.response.data);
+    //   });
+    // console.log('packageJsonBlob', packageJsonBlob);
+
+    // const newTreeRes = await this.httpService
+    //   .post(`https://api.github.com/repos/${data.fullName}/git/trees`, {
+    //     headers: {
+    //       Authorization: `token ${data.githubToken}`,
+    //     },
+    //     data: {
+    //       base_tree: masterSHA,
+    //       // base_tree: treeSha,
+    //       tree: {
+    //         path: 'package.json',
+    //         mode: '100644',
+    //         type: 'blob',
+    //         content: 'my content',
+    //       },
+    //     },
+    //   })
+    //   .toPromise()
+    //   .catch(e => {
+    //     console.log('e', e.response.data);
+    //   });
+    // console.log('newTreeRes', newTreeRes);
+
+    const newRefRes = await this.httpService
       .post(`https://api.github.com/repos/${data.fullName}/git/refs`, {
         headers: {
           Authorization: `token ${data.githubToken}`,
@@ -94,9 +156,10 @@ export class GithubService {
       })
       .toPromise()
       .catch(e => {
-        console.log(e.response.config);
-        console.log(e.response.data);
+        console.warn(e.response.config);
+        console.warn(e.response.data);
       });
+    console.log('newRefRes', newRefRes);
   }
 
   // async createCommit(data: { fullName: string; token: string }) {

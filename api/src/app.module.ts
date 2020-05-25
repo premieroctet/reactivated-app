@@ -26,7 +26,7 @@ import { GithubModule } from './github/github.module';
         database: configService.get('TYPEORM_DATABASE'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: Boolean(configService.get('TYPEORM_SYNCHRONIZE')),
-        logging: process.env.NODE_ENV === 'dev',
+        // logging: process.env.NODE_ENV === 'dev',
       }),
     }),
     ConfigModule,
