@@ -89,7 +89,9 @@ const DependenciesList: React.FC<IProps> = ({ dependencies, isDev, repo }) => {
       </Box>
 
       <Flex flexDir="row-reverse">
-        <Button onClick={createPR}>Create my Pull Request</Button>
+        <Button onClick={createPR} m={2}>
+          Create my Pull Request
+        </Button>
       </Flex>
     </Box>
   )
