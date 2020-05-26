@@ -27,97 +27,10 @@ export class DependenciesQueue {
 
   @Process({ name: 'compute_yarn_dependencies' })
   async computeYarnDependencies(job: Job) {
-    // const {
-    //   responsePackageJson,
-    //   responseLock,
-    //   hasYarnLock,
-    // } = await this.getDependenciesFiles(job);
-
-    // const path = `tmp/${job.data.repositoryId}`;
-    // if (!fs.existsSync(path)) {
-    //   fs.mkdirSync(path);
-    // }
-
-    // const bufferPackage = Buffer.from(
-    //   responsePackageJson.data.content,
-    //   'base64',
-    // );
-
-    // await asyncWriteFile(
-    //   `${path}/package.json`,
-    //   bufferPackage.toString('utf-8'),
-    // );
-
-    // const bufferLock = Buffer.from(responseLock.data.content, 'base64');
-
-    // if (hasYarnLock) {
-    //   await asyncWriteFile(`${path}/yarn.lock`, bufferLock.toString('utf-8'));
-    // } else {
-    //   await asyncWriteFile(
-    //     `${path}/package-lock.json`,
-    //     bufferLock.toString('utf-8'),
-    //   );
-    // }
-
-    // const repository = await this.repositoriesService.findRepo({
-    //   githubId: job.data.repositoryId,
-    // });
-
-    // if (!hasYarnLock) {
-    //   // Generate yarn.lock from package-lock.json
-    //   execSync(`cd ${path} && yarn import`);
-    // }
-
-    // exec(`cd ${path} && yarn outdated --json`, async (err, stdout) => {
-    //   const manifest = JSON.parse(stdout.split('\n')[1]);
-    //   const outdatedDeps = manifest.data.body;
-    //   const [nbOutdatedDeps, nbOutdatedDevDeps] = getNbOutdatedDeps(
-    //     outdatedDeps,
-    //   );
-
-    //   repository.packageJson = JSON.parse(bufferPackage.toString('utf-8'));
-    //   const totalDependencies = getDependenciesCount(repository.packageJson);
-
-    //   const score = Math.round(
-    //     101 - ((nbOutdatedDeps + nbOutdatedDevDeps) / totalDependencies) * 100,
-    //   );
-
-    //   const deps = getPrefixedDependencies(outdatedDeps);
-    //   repository.dependencies = {
-    //     deps,
-    //   };
-    //   repository.score = score;
-    //   repository.framework = getFrameworkFromPackageJson(
-    //     repository.packageJson,
-    //   );
-
-    //   await this.repositoriesService.updateRepo(
-    //     repository.id.toString(),
-    //     repository,
-    //   );
-    //   exec(`cd ${path} && cd .. && rm -rf ./${job.data.repositoryId}`);
-    // });
-    this.refreshDependencies(
-      //   {
-      //   repositoryFullName: job.data.repositoryFullName,
-      //   path: job.data.path,
-      //   branch: job.data.branch,
-      //   githubToken: job.data.githubToken,
-      //   repositoryId: job.data.repositoryId,
-      // }
-      job,
-    );
+    this.refreshDependencies(job);
   }
 
-  async refreshDependencies(
-    job: Job,
-    // data: {
-    // repositoryFullName: string;
-    // path: string;
-    // branch: string;
-    // githubToken: string;
-    // repositoryId: string;
-  ) {
+  async refreshDependencies(job: Job) {
     const { repositoryId } = job.data;
     const {
       responsePackageJson,
@@ -244,42 +157,28 @@ export class DependenciesQueue {
       hasYarnLock,
     } = await this.getDependenciesFiles(job);
 
-    const path = `tmp/${job.data.repositoryId}`;
-    if (!fs.existsSync(path)) {
-      fs.mkdirSync(path);
-    }
+    const tmpPath = `tmp/${job.data.repositoryId}`;
 
-    const bufferPackage = Buffer.from(
-      responsePackageJson.data.content,
-      'base64',
+    await this.createTemporaryFiles(
+      tmpPath,
+      responsePackageJson,
+      responseLock,
+      hasYarnLock,
     );
 
-    await asyncWriteFile(
-      `${path}/package.json`,
-      bufferPackage.toString('utf-8'),
-    );
-
-    const bufferLock = Buffer.from(responseLock.data.content, 'base64');
-
-    if (hasYarnLock) {
-      await asyncWriteFile(`${path}/yarn.lock`, bufferLock.toString('utf-8'));
-    } else {
-      await asyncWriteFile(
-        `${path}/package-lock.json`,
-        bufferLock.toString('utf-8'),
-      );
-      execSync(`cd ${path} && yarn import`);
-      fs.unlinkSync(`${path}/package-lock.json`);
+    if (!hasYarnLock) {
+      execSync(`cd ${tmpPath} && yarn import`);
+      fs.unlinkSync(`${tmpPath}/package-lock.json`);
     }
 
     // Install all dependencies
-    execSync(`cd ${path} && yarn install --force --ignore-scripts`);
+    execSync(`cd ${tmpPath} && yarn install --force --ignore-scripts`);
     // Upgrade the selected dependencies
     this.logger.log(
       `Running : yarn upgrade ${job.data.updatedDependencies.join(' ')}`,
     );
     execSync(
-      `cd ${path} && yarn upgrade ${job.data.updatedDependencies.join(' ')}`,
+      `cd ${tmpPath} && yarn upgrade ${job.data.updatedDependencies.join(' ')}`,
       // { stdio: 'inherit' },
     );
 
@@ -301,7 +200,7 @@ export class DependenciesQueue {
     try {
       const files = ['package.json', 'yarn.lock'];
       for (const file of files) {
-        const bufferContent = readFileSync(`${path}/${file}`, {
+        const bufferContent = readFileSync(`${tmpPath}/${file}`, {
           encoding: 'base64',
         });
         await this.githubService.commitFile({
@@ -327,7 +226,7 @@ export class DependenciesQueue {
     }
 
     // Delete the yarn.lock, package.json, node_modules
-    exec(`cd ${path} && cd .. && rm -rf ./${job.data.repositoryId}`);
+    exec(`cd ${tmpPath} && cd .. && rm -rf ./${job.data.repositoryId}`);
   }
 
   @OnQueueEvent(BullQueueEvents.COMPLETED)
