@@ -59,6 +59,7 @@ export class GithubService {
       .toPromise();
   }
 
+  // https://developer.github.com/v3/pulls/#create-a-pull-request
   async createPullRequest(data: {
     githubToken: string;
     fullName: string;
