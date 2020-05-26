@@ -1,4 +1,4 @@
-import { Box, Button, Code, Flex, useClipboard } from '@chakra-ui/core'
+import { Box, Button, Code, Flex, useClipboard, Text } from '@chakra-ui/core'
 import React, { useState } from 'react'
 import { createUpgradePR } from '../../api/repositories'
 import DependencyItem from './DependencyItem'
@@ -20,6 +20,7 @@ const DependenciesList: React.FC<IProps> = ({ dependencies, isDev, repo }) => {
     (key) => `${key}${packages[key] === 'latest' ? `@${packages[key]}` : ''}`,
   )
 
+  const [showSuccess, setShowSuccess] = React.useState(false)
   const commandeLine = `yarn upgrade ${items.join(' ')}`
   const { onCopy, hasCopied } = useClipboard(commandeLine)
   const createPR = async () => {
@@ -27,8 +28,11 @@ const DependenciesList: React.FC<IProps> = ({ dependencies, isDev, repo }) => {
       updatedDependencies: items,
       repoId: repo.id,
     })
+    setShowSuccess(true)
     console.log('createPR -> res', res)
   }
+
+  const createPRisDisabled = items.length === 0
   return (
     <Box overflowX="auto" whiteSpace="nowrap">
       <Code
@@ -88,9 +92,16 @@ const DependenciesList: React.FC<IProps> = ({ dependencies, isDev, repo }) => {
       </Box>
 
       <Flex flexDir="row-reverse">
-        <Button onClick={createPR} m={2}>
-          Create my Pull Request
-        </Button>
+        {!showSuccess && (
+          <Button onClick={createPR} m={2} isDisabled={createPRisDisabled}>
+            Create my Pull Request
+          </Button>
+        )}
+        {showSuccess && (
+          <Text color="green.500">
+            Generating the pull request, it will be opened soon
+          </Text>
+        )}
       </Flex>
     </Box>
   )
