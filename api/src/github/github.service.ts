@@ -145,6 +145,7 @@ export class GithubService {
       sha = fileBlobRes.data.sha;
     } catch (error) {
       this.logger.debug(error.response.data);
+      this.logger.debug('Creating the file');
       // No existing file
     }
     return this.httpService
