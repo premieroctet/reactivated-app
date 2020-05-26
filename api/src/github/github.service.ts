@@ -66,12 +66,39 @@ export class GithubService {
     headBranch: string;
     updatedDependencies: string[];
   }) {
+    const formatUpgrade = dep => {
+      return `#### ${dep}
+        ${'```diff\n'}
+
+        ${'```'}
+      `;
+    };
+    let updateDeps = '';
+    for (const dep of data.updatedDependencies) {
+      updateDeps += formatUpgrade(dep);
+    }
+    const bodyTemplate = `## 🔌 Reactivated App Update
+    <br/>
+    ✨ Your app has been reactivated!
+    <br/>
+    ### Dependencies updated
+
+    ${updateDeps}
+    `;
+
+    // #### @types/react-redux
+
+    // ```diff
+    // -"@types/react-redux": "^7.1.7",
+    // +"@types/react-redux": "^7.1.9",
+    // ```
+
     return this.httpService
       .post(
         `https://api.github.com/repos/${data.fullName}/pulls`,
         {
           title: `Upgrade ${data.updatedDependencies.join(' ')}`,
-          body: 'Please pull these awesome changes in!',
+          body: bodyTemplate,
           head: data.headBranch,
           base: data.baseBranch,
         },
