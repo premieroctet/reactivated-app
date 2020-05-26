@@ -122,27 +122,6 @@ export class GithubService {
       });
   }
 
-  // https://developer.github.com/v3/git/refs/#get-a-single-reference
-  async getSingleRef(data: {
-    fullName: string;
-    branchName: string;
-    token: string;
-  }) {
-    return this.httpService
-      .get(
-        `https://api.github.com/repos/${data.fullName}/git/ref/heads/${data.branchName}`,
-        {
-          headers: {
-            Authorization: `token ${data.token}`,
-          },
-        },
-      )
-      .toPromise()
-      .catch(e => {
-        console.log('getSingleRef', e.response.data);
-      });
-  }
-
   // https://developer.github.com/v3/repos/contents/#create-or-update-a-file
   async commitFile(data: {
     message: string;

@@ -177,24 +177,16 @@ export class DependenciesQueue {
     );
 
     // // Commit the new package.json and yarn.lock and create new PR
-    const newBranchName = 'test1';
-    // let newBranchSHA = null;
+    const newBranchName = 'test';
     try {
-      const newBranchRes = await this.githubService.createBranch({
+      await this.githubService.createBranch({
         fullName: job.data.repositoryFullName,
         githubToken: job.data.githubToken,
         branchName: newBranchName,
       });
-      // newBranchSHA = newBranchRes.data.object.sha;
     } catch (error) {
       if (error.response.status === 422) {
-        this.logger.error('Reference already exists');
-        // const branchRefRes = await this.githubService.getSingleRef({
-        //   fullName: job.data.repositoryFullName,
-        //   branchName: newBranchName,
-        //   token: job.data.githubToken,
-        // });
-        // newBranchSHA = branchRefRes.data.object.sha;
+        this.logger.error('Branch reference already exists');
       }
     }
 
