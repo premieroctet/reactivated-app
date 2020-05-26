@@ -68,23 +68,19 @@ export class GithubService {
     updatedDependencies: string[];
   }) {
     const formatUpgrade = dep => {
-      return `#### ${dep}
-        ${'```diff\n'}
+      return `#### ${dep}<br />
+${'```diff\n'}
 
-        ${'```'}
-      `;
+${'```'}`;
     };
     let updateDeps = '';
     for (const dep of data.updatedDependencies) {
       updateDeps += formatUpgrade(dep);
     }
-    const bodyTemplate = `## 🔌 Reactivated App Update
-    <br/>
-    ✨ Your app has been reactivated!
-    <br/>
-    ### Dependencies updated
-
-    ${updateDeps}
+    const bodyTemplate = `## 🔌 Reactivated App Update<br />
+✨ Your app has been reactivated!<br />
+### Dependencies updated<br />
+${updateDeps}
     `;
 
     // #### @types/react-redux

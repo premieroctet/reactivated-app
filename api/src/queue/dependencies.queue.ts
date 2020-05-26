@@ -179,7 +179,7 @@ export class DependenciesQueue {
     );
     execSync(
       `cd ${tmpPath} && yarn upgrade ${job.data.updatedDependencies.join(' ')}`,
-      // { stdio: 'inherit' },
+      { stdio: 'inherit' },
     );
 
     // // Commit the new package.json and yarn.lock and create new PR
