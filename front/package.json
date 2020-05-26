@@ -10,6 +10,7 @@
     "axios": "^0.19.2",
     "date-fns": "^2.14.0",
     "emotion-theming": "^10.0.27",
+    "framer-motion": "^2.0.0-beta.72",
     "jwt-decode": "^2.2.0",
     "node-sass": "^4.14.1",
     "query-string": "^6.12.1",

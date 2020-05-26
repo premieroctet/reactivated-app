@@ -1,28 +1,23 @@
-import { Progress } from '@chakra-ui/core'
+import { Text, Box } from '@chakra-ui/core'
 import React from 'react'
 
 interface Props extends Pick<Repository, 'score'> {}
 
 const HealthBar: React.FC<Props> = ({ score }) => {
-  const getHealthBarColor = (score: number) => {
-    let color = 'green'
-    if (score < 25) {
-      color = 'red'
-    } else if (score < 75) {
-      color = 'orange'
-    }
-    return color
-  }
-
   return (
-    <Progress
-      color={getHealthBarColor(score)}
-      size="md"
-      value={score}
-      width="100%"
-      hasStripe
-      isAnimated
-    />
+    <Box textAlign="center">
+      <Box>
+        <Text as="span" fontWeight="600" fontSize="4xl">
+          {score}
+        </Text>
+        <Text as="span" fontWeight="600" fontSize="md">
+          %
+        </Text>
+      </Box>
+      <Text opacity={0.6} fontSize="sm" mt={-2}>
+        Total Load
+      </Text>
+    </Box>
   )
 }
 

@@ -62,19 +62,7 @@ const AuthApp = () => {
         right={0}
       ></Box>
       <Box maxWidth="60rem" marginX="auto" position="relative">
-        <Flex
-          mb={10}
-          minHeight="20rem"
-          bg="white"
-          rounded={10}
-          shadow="md"
-          direction="column"
-          flex="1"
-          py={[5, 10]}
-          px={[0, 10]}
-        >
-          <Router />
-        </Flex>
+        <Router />
       </Box>
     </>
   )

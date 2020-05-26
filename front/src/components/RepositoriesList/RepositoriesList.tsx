@@ -1,5 +1,5 @@
 import React from 'react'
-import { List, Button, Text, Flex } from '@chakra-ui/core'
+import { Flex, Button, Text } from '@chakra-ui/core'
 import { Link } from 'react-router-dom'
 import RepositoryListItem from './RepositoryListItem'
 import { FaPlug } from 'react-icons/fa'
@@ -36,18 +36,13 @@ const RepositoriesList = ({ repositories }: Props) => {
   }
 
   return (
-    <List width="100%" cursor="pointer" rounded="lg" overflow="hidden">
+    <Flex flexDirection="column" width={500}>
       {repositories.map((repository) => (
         <Link key={repository.id} to={`/repo/${repository.id}`}>
-          <RepositoryListItem
-            repoImg={repository.repoImg}
-            name={repository.name}
-            score={repository.score}
-            framework={repository.framework}
-          />
+          <RepositoryListItem repository={repository} />
         </Link>
       ))}
-    </List>
+    </Flex>
   )
 }
 
