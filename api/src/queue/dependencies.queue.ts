@@ -183,7 +183,7 @@ export class DependenciesQueue {
     );
 
     // // Commit the new package.json and yarn.lock and create new PR
-    const newBranchName = 'test';
+    const newBranchName = job.data.name + '/' + new Date();
     try {
       await this.githubService.createBranch({
         fullName: job.data.repositoryFullName,
