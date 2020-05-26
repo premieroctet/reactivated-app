@@ -9,11 +9,13 @@ import { ConfigService } from './config/config.service';
 import { AuthModule } from './auth/auth.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
 import { GithubModule } from './github/github.module';
-
+import { CronModule } from './cron/cron.module';
+import { ScheduleModule } from '@nestjs/schedule';
 @Module({
   imports: [
     UsersModule,
     RepositoryModule,
+    ScheduleModule.forRoot(),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -33,6 +35,7 @@ import { GithubModule } from './github/github.module';
     AuthModule,
     WebhooksModule,
     GithubModule,
+    CronModule,
   ],
   controllers: [AppController],
   providers: [AppService],
