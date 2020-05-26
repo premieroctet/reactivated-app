@@ -177,9 +177,10 @@ export class DependenciesQueue {
     this.logger.log(
       `Running : yarn upgrade ${job.data.updatedDependencies.join(' ')}`,
     );
+
     execSync(
       `cd ${tmpPath} && yarn upgrade ${job.data.updatedDependencies.join(' ')}`,
-      { stdio: 'inherit' },
+      // { stdio: 'inherit' },
     );
 
     // // Commit the new package.json and yarn.lock and create new PR
@@ -197,13 +198,14 @@ export class DependenciesQueue {
     }
 
     // Update the files on new branch
+    let commitSHA = null;
     try {
       const files = ['package.json', 'yarn.lock'];
       for (const file of files) {
         const bufferContent = readFileSync(`${tmpPath}/${file}`, {
           encoding: 'base64',
         });
-        await this.githubService.commitFile({
+        const res = await this.githubService.commitFile({
           name: job.data.repositoryFullName,
           path: job.data.path,
           branch: newBranchName,
@@ -212,7 +214,19 @@ export class DependenciesQueue {
           message: `Upgrade ${file}`,
           content: bufferContent,
         });
+
+        if (file === 'package.json') {
+          commitSHA = res.data.commit.sha;
+          console.log('upgradeDependencies -> commitSHA', commitSHA);
+        }
       }
+
+      const diffRes = await this.githubService.getDiffUrl({
+        name: job.data.repositoryFullName,
+        token: job.data.githubToken,
+        commitSHA,
+      });
+      console.log('upgradeDependencies -> diffRes', diffRes);
 
       await this.githubService.createPullRequest({
         baseBranch: job.data.branch,

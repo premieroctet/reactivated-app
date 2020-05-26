@@ -155,7 +155,7 @@ ${updateDeps}
     branch: string;
     token: string;
     fileName: string;
-  }) {
+  }): Promise<any> {
     let sha = '';
     try {
       // If existing file
@@ -191,6 +191,21 @@ ${updateDeps}
       .toPromise()
       .catch(e => {
         console.log('commitFile', e.response.data);
+      });
+  }
+
+  async getDiffUrl(data: { name: string; token: string; commitSHA: string }) {
+    return this.httpService
+      .get(`https://github.com/${data.name}/commit/${data.commitSHA}.diff`, {
+        headers: {
+          Authorization: `token ${data.token}`,
+          Accept: 'application/vnd.github.v3.diff',
+        },
+      })
+      .toPromise()
+      .catch(e => {
+        console.log('e', e.response.config);
+        console.log('e', e.response.data);
       });
   }
 }
