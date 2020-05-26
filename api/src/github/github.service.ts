@@ -144,9 +144,8 @@ export class GithubService {
       });
       sha = fileBlobRes.data.sha;
     } catch (error) {
-      this.logger.debug(error.response.data);
-      this.logger.debug('Creating the file');
       // No existing file
+      this.logger.debug('File not found : ' + data.fileName);
     }
     return this.httpService
       .put(
