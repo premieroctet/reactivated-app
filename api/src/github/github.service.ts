@@ -84,7 +84,7 @@ export class GithubService {
       )
       .toPromise()
       .catch(e => {
-        this.logger.debug(e.response.data);
+        console.log('create PR', e.response.data);
       });
   }
 
@@ -116,7 +116,10 @@ export class GithubService {
           },
         },
       )
-      .toPromise();
+      .toPromise()
+      .catch(e => {
+        console.log('createBranch', e.response.data);
+      });
   }
 
   // https://developer.github.com/v3/git/refs/#get-a-single-reference
@@ -134,7 +137,10 @@ export class GithubService {
           },
         },
       )
-      .toPromise();
+      .toPromise()
+      .catch(e => {
+        console.log('getSingleRef', e.response.data);
+      });
   }
 
   // https://developer.github.com/v3/repos/contents/#create-or-update-a-file
@@ -162,9 +168,11 @@ export class GithubService {
       this.logger.debug(error.response.data);
       // No existing file
     }
-    const updatedFileRes = await this.httpService
+    return this.httpService
       .put(
-        `https://api.github.com/repos/${data.name}/contents/${data.fileName}`,
+        `https://api.github.com/repos/${data.name}/contents${
+          data.path === '/' ? data.path : '/' + data.path
+        }${data.fileName}`,
         {
           message: data.message,
           content: data.content,
@@ -177,6 +185,9 @@ export class GithubService {
           },
         },
       )
-      .toPromise();
+      .toPromise()
+      .catch(e => {
+        console.log('commitFile', e.response.data);
+      });
   }
 }

@@ -109,7 +109,6 @@ export class DependenciesQueue {
     });
     let responseLock = null;
     const hasYarnLock = job.data.hasYarnLock;
-    console.log('getDependenciesFiles -> hasYarnLock', hasYarnLock);
     if (hasYarnLock) {
       responseLock = await this.githubService.getFile({
         name: job.data.repositoryFullName,
@@ -132,72 +131,75 @@ export class DependenciesQueue {
 
   @Process({ name: 'upgrade_dependencies' })
   async upgradeDependencies(job: Job) {
-    try {
-      const {
-        responsePackageJson,
-        responseLock,
-        hasYarnLock,
-      } = await this.getDependenciesFiles(job);
+    const {
+      responsePackageJson,
+      responseLock,
+      hasYarnLock,
+    } = await this.getDependenciesFiles(job);
 
-      const path = `tmp/${job.data.repositoryId}`;
-      if (!fs.existsSync(path)) {
-        fs.mkdirSync(path);
-      }
+    const path = `tmp/${job.data.repositoryId}`;
+    if (!fs.existsSync(path)) {
+      fs.mkdirSync(path);
+    }
 
-      const bufferPackage = Buffer.from(
-        responsePackageJson.data.content,
-        'base64',
-      );
+    const bufferPackage = Buffer.from(
+      responsePackageJson.data.content,
+      'base64',
+    );
 
+    await asyncWriteFile(
+      `${path}/package.json`,
+      bufferPackage.toString('utf-8'),
+    );
+
+    const bufferLock = Buffer.from(responseLock.data.content, 'base64');
+
+    if (hasYarnLock) {
+      await asyncWriteFile(`${path}/yarn.lock`, bufferLock.toString('utf-8'));
+    } else {
       await asyncWriteFile(
-        `${path}/package.json`,
-        bufferPackage.toString('utf-8'),
+        `${path}/package-lock.json`,
+        bufferLock.toString('utf-8'),
       );
+      execSync(`cd ${path} && yarn import`);
+      fs.unlinkSync(`${path}/package-lock.json`);
+    }
 
-      const bufferLock = Buffer.from(responseLock.data.content, 'base64');
+    // Install all dependencies
+    execSync(`cd ${path} && yarn install --force --ignore-scripts`);
+    // Upgrade the selected dependencies
+    this.logger.log(
+      `Running : yarn upgrade ${job.data.updatedDependencies.join(' ')}`,
+    );
+    execSync(
+      `cd ${path} && yarn upgrade ${job.data.updatedDependencies.join(' ')}`,
+      // { stdio: 'inherit' },
+    );
 
-      if (hasYarnLock) {
-        await asyncWriteFile(`${path}/yarn.lock`, bufferLock.toString('utf-8'));
-      } else {
-        await asyncWriteFile(
-          `${path}/package-lock.json`,
-          bufferLock.toString('utf-8'),
-        );
-        execSync(`cd ${path} && yarn import`);
-        fs.unlinkSync(`${path}/package-lock.json`);
+    // // Commit the new package.json and yarn.lock and create new PR
+    const newBranchName = 'test1';
+    // let newBranchSHA = null;
+    try {
+      const newBranchRes = await this.githubService.createBranch({
+        fullName: job.data.repositoryFullName,
+        githubToken: job.data.githubToken,
+        branchName: newBranchName,
+      });
+      // newBranchSHA = newBranchRes.data.object.sha;
+    } catch (error) {
+      if (error.response.status === 422) {
+        this.logger.error('Reference already exists');
+        // const branchRefRes = await this.githubService.getSingleRef({
+        //   fullName: job.data.repositoryFullName,
+        //   branchName: newBranchName,
+        //   token: job.data.githubToken,
+        // });
+        // newBranchSHA = branchRefRes.data.object.sha;
       }
+    }
 
-      // Install all dependencies
-      execSync(`cd ${path} && yarn install --force`);
-      // Upgrade the selected dependencies
-      execSync(
-        `cd ${path} && yarn upgrade ${job.data.updatedDependencies.join(' ')}`,
-        { stdio: 'inherit' },
-      );
-
-      // // Commit the new package.json and yarn.lock and create new PR
-      const newBranchName = 'test';
-      let newBranchSHA = null;
-      try {
-        const newBranchRes = await this.githubService.createBranch({
-          fullName: job.data.repositoryFullName,
-          githubToken: job.data.githubToken,
-          branchName: newBranchName,
-        });
-        newBranchSHA = newBranchRes.data.object.sha;
-      } catch (error) {
-        if (error.response.status === 422) {
-          // this.logger.error('Reference already exists');
-          const branchRefRes = await this.githubService.getSingleRef({
-            fullName: job.data.repositoryFullName,
-            branchName: newBranchName,
-            token: job.data.githubToken,
-          });
-          newBranchSHA = branchRefRes.data.object.sha;
-        }
-      }
-
-      // Update the files on new branch
+    // Update the files on new branch
+    try {
       const files = ['package.json', 'yarn.lock'];
       for (const file of files) {
         const bufferContent = readFileSync(`${path}/${file}`, {
@@ -214,22 +216,19 @@ export class DependenciesQueue {
         });
       }
 
-      this.githubService.createPullRequest({
+      await this.githubService.createPullRequest({
         baseBranch: job.data.branch,
         fullName: job.data.repositoryFullName,
         githubToken: job.data.githubToken,
         headBranch: newBranchName,
         updatedDependencies: job.data.updatedDependencies,
       });
-
-      // Delete the yarn.lock, package.json, node_modules
-      exec(`cd ${path} && cd .. && rm -rf ./${job.data.repositoryId}`);
     } catch (error) {
-      this.logger.debug(
-        'upgradeDependencies -> error',
-        JSON.stringify(error, null, '	'),
-      );
+      this.logger.error('Commit files and create PR', error);
     }
+
+    // Delete the yarn.lock, package.json, node_modules
+    exec(`cd ${path} && cd .. && rm -rf ./${job.data.repositoryId}`);
   }
 
   @OnQueueEvent(BullQueueEvents.COMPLETED)
