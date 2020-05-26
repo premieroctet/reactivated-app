@@ -22,18 +22,17 @@
     "postinstall": "yarn build"
   },
   "dependencies": {
-    "@nestjs/common": "6.10.12",
-    "@nestjs/core": "6.10.12",
+    "@nestjs/common": "^6.10.1",
+    "@nestjs/core": "^6.10.1",
     "@nestjs/jwt": "^6.1.1",
     "@nestjs/passport": "^6.1.0",
     "@nestjs/platform-express": "^6.7.2",
-    "@nestjs/schedule": "^0.4.0",
     "@nestjs/swagger": "^4.0.0",
     "@nestjs/typeorm": "^6.2.0",
     "@nestjsx/crud": "4.3.0-beta.0",
     "@nestjsx/crud-typeorm": "^4.2.0",
     "@types/bull": "^3.10.6",
-    "bull": "^3.12.1",
+    "bull": "^3.14.0",
     "class-transformer": "^0.2.3",
     "class-validator": "^0.11.0",
     "crypto-js": "^3.1.9-1",
@@ -46,11 +45,11 @@
     "pg": "^7.12.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.0",
-    "rxjs": "^6.5.3",
+    "rxjs": "^6.5.5",
     "secure-compare": "^3.0.1",
     "swagger-ui-express": "^4.1.2",
     "ts-node-dev": "^1.0.0-pre.44",
-    "typeorm": "^0.2.20"
+    "typeorm": "^0.2.25"
   },
   "devDependencies": {
     "@nestjs/cli": "^6.9.0",
