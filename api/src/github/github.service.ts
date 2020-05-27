@@ -168,9 +168,9 @@ ${updateDeps}
       });
       sha = fileBlobRes.data.sha;
     } catch (error) {
-      // No existing file
-      this.logger.debug('File not found : ' + data.fileName);
+      this.logger.error('Get commit file error', error);
     }
+
     return this.httpService
       .put(
         `https://api.github.com/repos/${data.name}/contents${
