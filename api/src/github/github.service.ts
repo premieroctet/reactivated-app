@@ -112,10 +112,7 @@ ${updateDeps}
           },
         },
       )
-      .toPromise()
-      .catch(e => {
-        console.log('create PR', e.response.data);
-      });
+      .toPromise();
   }
 
   // https://developer.github.com/v3/git/refs/#create-a-reference
@@ -146,10 +143,7 @@ ${updateDeps}
           },
         },
       )
-      .toPromise()
-      .catch(e => {
-        console.log('createBranch', e.response.data);
-      });
+      .toPromise();
   }
 
   // https://developer.github.com/v3/repos/contents/#create-or-update-a-file
@@ -194,10 +188,7 @@ ${updateDeps}
           },
         },
       )
-      .toPromise()
-      .catch(e => {
-        console.log('commitFile', e.response.data);
-      });
+      .toPromise();
   }
 
   async getDiffUrl(data: { name: string; token: string; commitSHA: string }) {
