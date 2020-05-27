@@ -217,7 +217,6 @@ export class DependenciesQueue {
 
         if (file === 'package.json') {
           commitSHA = res.data.commit.sha;
-          console.log('upgradeDependencies -> commitSHA', commitSHA);
         }
       }
 
@@ -226,7 +225,32 @@ export class DependenciesQueue {
         token: job.data.githubToken,
         commitSHA,
       });
-      console.log('upgradeDependencies -> diffRes', diffRes);
+
+      const diff = diffRes.data.split('\n');
+
+      // Exemple:
+      /* 
+      diff --git a/package.json b/package.json
+      index b7b535b..10b3909 100644
+      --- a/package.json
+      +++ b/package.json
+      @@ -16,7 +16,7 @@
+        "@vue/cli-plugin-eslint": "^4.3.0",
+        "@vue/cli-service": "^4.3.0",
+      */
+      const upgradedDiff = {};
+      if (diff.length > 6) {
+        for (let i = 5; i < diff.length; i++) {
+          if (diff[i][0] === '+' || diff[i][0] === '-') {
+            const dep = diff[i].split('"')[1];
+            if (upgradedDiff[dep] === undefined) {
+              upgradedDiff[dep] = [diff[i]];
+            } else {
+              upgradedDiff[dep].push(diff[i]);
+            }
+          }
+        }
+      }
 
       await this.githubService.createPullRequest({
         baseBranch: job.data.branch,
@@ -234,6 +258,7 @@ export class DependenciesQueue {
         githubToken: job.data.githubToken,
         headBranch: newBranchName,
         updatedDependencies: job.data.updatedDependencies,
+        upgradedDiff,
       });
     } catch (error) {
       this.logger.error('Commit files and create PR', error);

@@ -66,29 +66,33 @@ export class GithubService {
     baseBranch: string;
     headBranch: string;
     updatedDependencies: string[];
+    upgradedDiff: object;
   }) {
-    const formatUpgrade = dep => {
-      return `#### ${dep}<br />
-${'```diff\n'}
+    const formatUpgrade = (dep: string) => {
+      let lastIdx = dep.lastIndexOf('@');
+      if (lastIdx === -1) {
+        lastIdx = dep.length;
+      }
+      const depName = dep.slice(0, lastIdx);
 
-${'```'}`;
+      return `#### ${dep}<br />
+${'```diff'}
+${data.upgradedDiff[depName] ? data.upgradedDiff[depName].join('\n') : ''}
+${'```'}
+  
+  
+  `;
     };
+
     let updateDeps = '';
     for (const dep of data.updatedDependencies) {
       updateDeps += formatUpgrade(dep);
     }
-    const bodyTemplate = `## 🔌 Reactivated App Update<br />
-✨ Your app has been reactivated!<br />
-### Dependencies updated<br />
+    const bodyTemplate = `## 🔌 Reactivated App Update<br/>
+✨ Your app has been reactivated!<br/>
+### Dependencies updated<br/>
 ${updateDeps}
-    `;
-
-    // #### @types/react-redux
-
-    // ```diff
-    // -"@types/react-redux": "^7.1.7",
-    // +"@types/react-redux": "^7.1.9",
-    // ```
+`;
 
     return this.httpService
       .post(
@@ -196,16 +200,15 @@ ${updateDeps}
 
   async getDiffUrl(data: { name: string; token: string; commitSHA: string }) {
     return this.httpService
-      .get(`https://github.com/${data.name}/commit/${data.commitSHA}.diff`, {
-        headers: {
-          Authorization: `token ${data.token}`,
-          Accept: 'application/vnd.github.v3.diff',
+      .get(
+        `https://api.github.com/repos/${data.name}/commits/${data.commitSHA}`,
+        {
+          headers: {
+            Authorization: `token ${data.token}`,
+            Accept: 'application/vnd.github.v3.diff',
+          },
         },
-      })
-      .toPromise()
-      .catch(e => {
-        console.log('e', e.response.config);
-        console.log('e', e.response.data);
-      });
+      )
+      .toPromise();
   }
 }
