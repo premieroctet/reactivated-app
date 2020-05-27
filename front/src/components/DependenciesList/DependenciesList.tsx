@@ -1,25 +1,38 @@
-import { Box, Button, Code, useClipboard } from '@chakra-ui/core'
+import { Box, Button, Code, Flex, useClipboard, Text } from '@chakra-ui/core'
 import React, { useState } from 'react'
+import { createUpgradePR } from '../../api/repositories'
 import DependencyItem from './DependencyItem'
 import PrefixAccordion from './PrefixAccordion'
 
 interface IProps {
   dependencies: (Dependency | PrefixedDependency)[]
   isDev?: boolean
+  repo: Repository
 }
 
-const DependenciesList: React.FC<IProps> = ({ dependencies, isDev }) => {
+const DependenciesList: React.FC<IProps> = ({ dependencies, isDev, repo }) => {
   const [packages, setPackages] = useState<{
     [key: string]: 'stable' | 'latest'
   }>({})
 
+  const { fullName } = repo
   const items = Object.keys(packages).map(
     (key) => `${key}${packages[key] === 'latest' ? `@${packages[key]}` : ''}`,
   )
 
-  const commandeLine = `yarn upgrade ${isDev ? `--dev` : ``} ${items.join(' ')}`
+  const [showSuccess, setShowSuccess] = React.useState(false)
+  const commandeLine = `yarn upgrade ${items.join(' ')}`
   const { onCopy, hasCopied } = useClipboard(commandeLine)
+  const createPR = async () => {
+    const res = await createUpgradePR(fullName, {
+      updatedDependencies: items,
+      repoId: repo.id,
+    })
+    setShowSuccess(true)
+    console.log('createPR -> res', res)
+  }
 
+  const createPRisDisabled = items.length === 0
   return (
     <Box overflowX="auto" whiteSpace="nowrap">
       <Code
@@ -32,7 +45,7 @@ const DependenciesList: React.FC<IProps> = ({ dependencies, isDev }) => {
       >
         {Object.keys(packages).length
           ? commandeLine
-          : `yarn upgrade ${isDev ? `--dev` : ``} [pick some dependencies]`}
+          : `yarn upgrade [pick some dependencies]`}
         <Button
           size="xs"
           variantColor="secondary"
@@ -77,6 +90,19 @@ const DependenciesList: React.FC<IProps> = ({ dependencies, isDev }) => {
           )
         })}
       </Box>
+
+      <Flex flexDir="row-reverse">
+        {!showSuccess && (
+          <Button onClick={createPR} m={2} isDisabled={createPRisDisabled}>
+            Create my Pull Request
+          </Button>
+        )}
+        {showSuccess && (
+          <Text color="green.500">
+            Generating the pull request, it will be opened soon
+          </Text>
+        )}
+      </Flex>
     </Box>
   )
 }

@@ -1,17 +1,16 @@
 import { Module } from '@nestjs/common';
-import { ScheduleModule } from '@nestjs/schedule';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersModule } from './users/users.module';
+import { RepositoryModule } from './repository/repository.module';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
-import { CronModule } from './cron/cron.module';
-import { GithubModule } from './github/github.module';
-import { RepositoryModule } from './repository/repository.module';
-import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
-
+import { GithubModule } from './github/github.module';
+import { CronModule } from './cron/cron.module';
+import { ScheduleModule } from '@nestjs/schedule';
 @Module({
   imports: [
     UsersModule,

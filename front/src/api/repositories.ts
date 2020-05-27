@@ -44,3 +44,10 @@ export const recomputeDeps = (repoId: Repository['id']) => {
 export const syncRepository = (fullName: string) => {
   return API.get<Repository>(`/repositories/sync/${fullName}`)
 }
+
+export const createUpgradePR = (
+  fullName: string,
+  data: { updatedDependencies: string[]; repoId: number },
+) => {
+  return API.post(`repositories/${fullName}/pulls`, data)
+}

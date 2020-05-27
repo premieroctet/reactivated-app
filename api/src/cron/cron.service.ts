@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression, Timeout } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { Queue } from 'bull';
 import { InjectQueue } from 'nest-bull';
 import { RepositoryService } from '../repository/repository.service';

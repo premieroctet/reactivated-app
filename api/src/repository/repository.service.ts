@@ -16,6 +16,7 @@ export class RepositoryService extends TypeOrmCrudService<Repository> {
   async getRepos() {
     return this.repositoryContent.find({ relations: ['users'] });
   }
+
   async findRepo(criteria: Partial<Repository>) {
     return this.repositoryContent.findOne({
       where: criteria,

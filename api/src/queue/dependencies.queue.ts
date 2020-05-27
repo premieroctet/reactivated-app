@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
-import { execSync } from 'child_process';
+import { readFileSync } from 'fs';
 import { BullQueueEvents, OnQueueEvent, Process, Processor } from 'nest-bull';
 import { GithubService } from '../github/github.service';
 import { RepositoryService } from '../repository/repository.service';
@@ -9,12 +9,12 @@ import {
   getFrameworkFromPackageJson,
   getNbOutdatedDeps,
   getPrefixedDependencies,
+  getUpgradedDiff,
 } from '../utils/dependencies';
 
-const { exec } = require('child_process');
+const { exec, execSync } = require('child_process');
 const fs = require('fs');
 const { promisify } = require('util');
-
 const asyncWriteFile = promisify(fs.writeFile);
 
 @Processor({ name: 'dependencies' })
@@ -28,55 +28,21 @@ export class DependenciesQueue {
 
   @Process({ name: 'compute_yarn_dependencies' })
   async computeYarnDependencies(job: Job) {
-    this.refreshDependencies({
-      repositoryFullName: job.data.repositoryFullName,
-      path: job.data.path,
-      branch: job.data.branch,
-      githubToken: job.data.githubToken,
-      repositoryId: job.data.repositoryId,
-    });
+    this.refreshDependencies(job);
   }
 
-  async refreshDependencies(data: {
-    repositoryFullName: string;
-    path: string;
-    branch: string;
-    githubToken: string;
-    repositoryId: string;
-  }) {
+  async refreshDependencies(job: Job) {
+    const { repositoryId } = job.data;
+    const {
+      responsePackageJson,
+      responseLock,
+      hasYarnLock,
+    } = await this.getDependenciesFiles(job);
     const repository = await this.repositoriesService.findRepo({
-      githubId: data.repositoryId,
+      githubId: repositoryId,
     });
 
-    const responsePackageJson = await this.githubService.getFile({
-      name: data.repositoryFullName,
-      path: data.path,
-      branch: data.branch,
-      token: data.githubToken,
-      fileName: 'package.json',
-    });
-
-    let responseLock = null;
-    const hasYarnLock = repository.hasYarnLock;
-    if (hasYarnLock) {
-      responseLock = await this.githubService.getFile({
-        name: data.repositoryFullName,
-        path: data.path,
-        branch: data.branch,
-        token: data.githubToken,
-        fileName: 'yarn.lock',
-      });
-    } else {
-      responseLock = await this.githubService.getFile({
-        name: data.repositoryFullName,
-        path: data.path,
-        branch: data.branch,
-        token: data.githubToken,
-        fileName: 'package-lock.json',
-      });
-    }
-
-    const tmpPath = `tmp/${data.repositoryId}`;
+    const tmpPath = `tmp/${repositoryId}`;
     const { bufferPackage } = await this.createTemporaryFiles(
       tmpPath,
       responsePackageJson,
@@ -118,7 +84,7 @@ export class DependenciesQueue {
         repository.id.toString(),
         repository,
       );
-      exec(`cd ${tmpPath} && cd .. && rm -rf ./${data.repositoryId}`);
+      exec(`cd ${tmpPath} && cd .. && rm -rf ./${repositoryId}`);
     });
   }
 
@@ -152,6 +118,132 @@ export class DependenciesQueue {
       );
     }
     return { bufferPackage };
+  }
+
+  async getDependenciesFiles(job: Job) {
+    const responsePackageJson = await this.githubService.getFile({
+      name: job.data.repositoryFullName,
+      path: job.data.path,
+      branch: job.data.branch,
+      token: job.data.githubToken,
+      fileName: 'package.json',
+    });
+    let responseLock = null;
+    const hasYarnLock = job.data.hasYarnLock;
+    if (hasYarnLock) {
+      responseLock = await this.githubService.getFile({
+        name: job.data.repositoryFullName,
+        path: job.data.path,
+        branch: job.data.branch,
+        token: job.data.githubToken,
+        fileName: 'yarn.lock',
+      });
+    } else {
+      responseLock = await this.githubService.getFile({
+        name: job.data.repositoryFullName,
+        path: job.data.path,
+        branch: job.data.branch,
+        token: job.data.githubToken,
+        fileName: 'package-lock.json',
+      });
+    }
+    return { responsePackageJson, responseLock, hasYarnLock };
+  }
+
+  @Process({ name: 'upgrade_dependencies' })
+  async upgradeDependencies(job: Job) {
+    const {
+      responsePackageJson,
+      responseLock,
+      hasYarnLock,
+    } = await this.getDependenciesFiles(job);
+
+    const tmpPath = `tmp/${job.data.repositoryId}`;
+
+    await this.createTemporaryFiles(
+      tmpPath,
+      responsePackageJson,
+      responseLock,
+      hasYarnLock,
+    );
+
+    if (!hasYarnLock) {
+      execSync(`cd ${tmpPath} && yarn import`);
+      fs.unlinkSync(`${tmpPath}/package-lock.json`);
+    }
+
+    // Install all dependencies
+    execSync(`cd ${tmpPath} && yarn install --force --ignore-scripts`);
+    // Upgrade the selected dependencies
+    this.logger.log(
+      `Running : yarn upgrade ${job.data.updatedDependencies.join(' ')}`,
+    );
+
+    execSync(
+      `cd ${tmpPath} && yarn upgrade ${job.data.updatedDependencies.join(' ')}`,
+      // { stdio: 'inherit' },
+    );
+
+    // // Commit the new package.json and yarn.lock and create new PR
+    const newBranchName = 'reactivatedapp/' + Date.now();
+    try {
+      await this.githubService.createBranch({
+        fullName: job.data.repositoryFullName,
+        githubToken: job.data.githubToken,
+        branchName: newBranchName,
+      });
+    } catch (error) {
+      if (error.response.status === 422) {
+        this.logger.error('Branch reference already exists');
+      }
+    }
+
+    // Update the files on new branch
+    let commitSHA = null;
+    try {
+      const files = ['package.json', 'yarn.lock'];
+      for (const file of files) {
+        const bufferContent = readFileSync(`${tmpPath}/${file}`, {
+          encoding: 'base64',
+        });
+        const res = await this.githubService.commitFile({
+          name: job.data.repositoryFullName,
+          path: job.data.path,
+          branch: newBranchName,
+          token: job.data.githubToken,
+          fileName: file,
+          message: `Upgrade ${file}`,
+          content: bufferContent,
+        });
+
+        if (file === 'package.json') {
+          commitSHA = res.data.commit.sha;
+        }
+      }
+
+      const diffRes = await this.githubService.getDiffUrl({
+        name: job.data.repositoryFullName,
+        token: job.data.githubToken,
+        commitSHA,
+      });
+
+      const diffLines = diffRes.data.split('\n');
+      const upgradedDiff = getUpgradedDiff(diffLines);
+
+      await this.githubService.createPullRequest({
+        baseBranch: job.data.branch,
+        fullName: job.data.repositoryFullName,
+        githubToken: job.data.githubToken,
+        headBranch: newBranchName,
+        updatedDependencies: job.data.updatedDependencies,
+        upgradedDiff,
+      });
+    } catch (error) {
+      this.logger.error('Commit files and create PR', error);
+    }
+
+    // Delete the yarn.lock, package.json, node_modules
+    exec(`cd ${tmpPath} && cd .. && rm -rf ./${job.data.repositoryId}`);
   }
 
   @OnQueueEvent(BullQueueEvents.COMPLETED)
