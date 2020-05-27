@@ -211,7 +211,6 @@ export class RepositoryController implements CrudController<Repository> {
       id: parseInt(repoInfo.repoId, 10),
     });
 
-    this.logger.debug('upgrade_dependencies message to queue');
     this.queue.add('upgrade_dependencies', {
       repositoryFullName: fullName,
       repositoryId: repository.githubId,
