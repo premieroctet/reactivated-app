@@ -228,9 +228,7 @@ export class DependenciesQueue {
       });
 
       const diffLines = diffRes.data.split('\n');
-      console.log('upgradeDependencies -> diffLines', diffLines);
       const upgradedDiff = getUpgradedDiff(diffLines);
-      console.log('upgradeDependencies -> upgradedDiff', upgradedDiff);
 
       await this.githubService.createPullRequest({
         baseBranch: job.data.branch,
