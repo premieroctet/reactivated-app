@@ -220,7 +220,6 @@ export class RepositoryController implements CrudController<Repository> {
       path: repository.path,
       updatedDependencies: repoInfo.updatedDependencies,
       hasYarnLock: repository.hasYarnLock,
-      name: repository.name,
     });
   }
 }
