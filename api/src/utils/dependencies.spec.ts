@@ -1,4 +1,4 @@
-import { getPrefixedDependencies } from './dependencies';
+import { getPrefixedDependencies, getUpgradedDiff } from './dependencies';
 
 describe('Utils dependencies', () => {
   const outdatedDepsNoPrefix = [
@@ -82,6 +82,44 @@ describe('Utils dependencies', () => {
     ],
   ];
 
+  const diff1 = [
+    'diff --git a/package.json b/package.json',
+    'index 5bc80e6..5a6f483 100644',
+    '--- a/package.json',
+    '+++ b/package.json',
+    '@@ -9,7 +9,7 @@',
+    '   },',
+    '   "dependencies": {',
+    '     "core-js": "^3.6.4",',
+    '-    "date-fns": "^2.0.0",',
+    '+    "date-fns": "^2.14.0",',
+    '     "vue": "^2.6.11"',
+    '   },',
+    '   "devDependencies": {',
+    '',
+  ];
+  const diff2 = [
+    'diff --git a/package.json b/package.json',
+    'index 5bc80e6..5f64d63 100644',
+    '--- a/package.json',
+    '+++ b/package.json',
+    '@@ -14,10 +14,10 @@',
+    '   },',
+    '   "devDependencies": {',
+    '     "@vue/cli-plugin-babel": "^4.3.0",',
+    '-    "@vue/cli-plugin-eslint": "^4.3.0",',
+    '-    "@vue/cli-service": "^4.3.0",',
+    '+    "@vue/cli-plugin-eslint": "^4.4.1",',
+    '+    "@vue/cli-service": "^4.4.1",',
+    '     "babel-eslint": "^10.1.0",',
+    '-    "eslint": "^6.7.2",',
+    '+    "eslint": "^7.1.0",',
+    '     "eslint-plugin-vue": "^6.2.2",',
+    '     "vue-template-compiler": "^2.6.11"',
+    '   },',
+    '',
+  ];
+
   describe('getPrefixedDependencies', () => {
     it('should return array of outdated deps with no common prefix ', () => {
       const result = getPrefixedDependencies(outdatedDepsNoPrefix);
@@ -120,6 +158,25 @@ describe('Utils dependencies', () => {
         dependencies.forEach(dependency => {
           expect(dependency[0].split('/')[0] + '/').toEqual(prefix);
         });
+      }
+    });
+  });
+
+  describe('Get upgraded diff', () => {
+    it('ugprade 1 dependency', () => {
+      const upgradedDiff = getUpgradedDiff(diff1);
+      const deps = Object.keys(upgradedDiff);
+      expect(deps.length).toEqual(1);
+      expect(upgradedDiff[deps[0]]).toBeInstanceOf(Array);
+      expect(upgradedDiff[deps[0]].length).toEqual(2);
+    });
+    it('ugprade multiples dependencies', () => {
+      const upgradedDiff = getUpgradedDiff(diff2);
+      const deps = Object.keys(upgradedDiff);
+      expect(deps.length).toEqual(3);
+      for (const dep of deps) {
+        expect(upgradedDiff[dep]).toBeInstanceOf(Array);
+        expect(upgradedDiff[dep].length).toEqual(2);
       }
     });
   });

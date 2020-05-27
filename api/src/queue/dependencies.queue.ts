@@ -9,6 +9,7 @@ import {
   getFrameworkFromPackageJson,
   getNbOutdatedDeps,
   getPrefixedDependencies,
+  getUpgradedDiff,
 } from '../utils/dependencies';
 
 const { exec, execSync } = require('child_process');
@@ -226,31 +227,10 @@ export class DependenciesQueue {
         commitSHA,
       });
 
-      const diff = diffRes.data.split('\n');
-
-      // Exemple:
-      /* 
-      diff --git a/package.json b/package.json
-      index b7b535b..10b3909 100644
-      --- a/package.json
-      +++ b/package.json
-      @@ -16,7 +16,7 @@
-        "@vue/cli-plugin-eslint": "^4.3.0",
-        "@vue/cli-service": "^4.3.0",
-      */
-      const upgradedDiff = {};
-      if (diff.length > 6) {
-        for (let i = 5; i < diff.length; i++) {
-          if (diff[i][0] === '+' || diff[i][0] === '-') {
-            const dep = diff[i].split('"')[1];
-            if (upgradedDiff[dep] === undefined) {
-              upgradedDiff[dep] = [diff[i]];
-            } else {
-              upgradedDiff[dep].push(diff[i]);
-            }
-          }
-        }
-      }
+      const diffLines = diffRes.data.split('\n');
+      console.log('upgradeDependencies -> diffLines', diffLines);
+      const upgradedDiff = getUpgradedDiff(diffLines);
+      console.log('upgradeDependencies -> upgradedDiff', upgradedDiff);
 
       await this.githubService.createPullRequest({
         baseBranch: job.data.branch,

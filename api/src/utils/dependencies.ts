@@ -164,3 +164,30 @@ export const getPrefixedDependencies = outdatedDeps => {
 
   return prefixedDependencies;
 };
+
+// Exemple:
+/* 
+    diff --git a/package.json b/package.json
+    index b7b535b..10b3909 100644
+    --- a/package.json
+    +++ b/package.json
+    @@ -16,7 +16,7 @@
+      "@vue/cli-plugin-eslint": "^4.3.0",
+      "@vue/cli-service": "^4.3.0",
+    */
+export const getUpgradedDiff = diffLines => {
+  const upgradedDiff = {};
+  if (diffLines.length > 6) {
+    for (let i = 5; i < diffLines.length; i++) {
+      if (diffLines[i][0] === '+' || diffLines[i][0] === '-') {
+        const dep = diffLines[i].split('"')[1];
+        if (upgradedDiff[dep] === undefined) {
+          upgradedDiff[dep] = [diffLines[i]];
+        } else {
+          upgradedDiff[dep].push(diffLines[i]);
+        }
+      }
+    }
+  }
+  return upgradedDiff;
+};

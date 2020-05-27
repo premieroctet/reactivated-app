@@ -98,7 +98,9 @@ ${updateDeps}
       .post(
         `https://api.github.com/repos/${data.fullName}/pulls`,
         {
-          title: `Upgrade ${data.updatedDependencies.join(' ')}`,
+          title: `Reactivated App update (${
+            data.updatedDependencies.length
+          } dependenc${data.updatedDependencies.length > 1 ? 'ies' : 'y'})`,
           body: bodyTemplate,
           head: data.headBranch,
           base: data.baseBranch,
