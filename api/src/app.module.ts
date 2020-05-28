@@ -1,21 +1,29 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { BullModule } from 'nest-bull';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from './users/users.module';
-import { RepositoryModule } from './repository/repository.module';
+import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
-import { AuthModule } from './auth/auth.module';
-import { WebhooksModule } from './webhooks/webhooks.module';
-import { GithubModule } from './github/github.module';
 import { CronModule } from './cron/cron.module';
-import { ScheduleModule } from '@nestjs/schedule';
+import { GithubModule } from './github/github.module';
+import { RepositoryModule } from './repository/repository.module';
+import { UsersModule } from './users/users.module';
+import { WebhooksModule } from './webhooks/webhooks.module';
+import { join } from 'path';
 @Module({
   imports: [
     UsersModule,
     RepositoryModule,
     ScheduleModule.forRoot(),
+
+    BullModule.register({
+      name: 'dependencies',
+      processors: [join(__dirname, 'queue/worker.js')],
+      options: { redis: 'redis://127.0.0.1' },
+    }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -28,7 +36,7 @@ import { ScheduleModule } from '@nestjs/schedule';
         database: configService.get('TYPEORM_DATABASE'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: Boolean(configService.get('TYPEORM_SYNCHRONIZE')),
-        logging: process.env.NODE_ENV === 'dev',
+        // logging: process.env.NODE_ENV === 'dev',
       }),
     }),
     ConfigModule,
@@ -40,4 +48,8 @@ import { ScheduleModule } from '@nestjs/schedule';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements OnModuleInit {
+  onModuleInit() {
+    console.log('MAIN: ', process.pid);
+  }
+}

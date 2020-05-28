@@ -1,7 +1,13 @@
 import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
 import { readFileSync } from 'fs';
-import { BullQueueEvents, OnQueueEvent, Process, Processor } from 'nest-bull';
+import {
+  BullQueueEvents,
+  OnQueueEvent,
+  Process,
+  Processor,
+  OnQueueActive,
+} from 'nest-bull';
 import { GithubService } from '../github/github.service';
 import { RepositoryService } from '../repository/repository.service';
 import {
@@ -244,6 +250,15 @@ export class DependenciesQueue {
 
     // Delete the yarn.lock, package.json, node_modules
     exec(`cd ${tmpPath} && cd .. && rm -rf ./${job.data.repositoryId}`);
+  }
+
+  @OnQueueActive()
+  onActive(job: Job) {
+    this.logger.log(
+      `[${process.pid}] Processing job ${job.id} of type ${
+        job.name
+      } with data ${JSON.stringify(job.data, null, '	')}...`,
+    );
   }
 
   @OnQueueEvent(BullQueueEvents.COMPLETED)
