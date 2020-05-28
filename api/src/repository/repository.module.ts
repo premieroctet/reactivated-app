@@ -1,4 +1,4 @@
-import { Module, HttpModule } from '@nestjs/common';
+import { Module, HttpModule, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RepositoryService } from './repository.service';
 import { RepositoryController } from './repository.controller';
@@ -13,7 +13,7 @@ import { UsersModule } from '../users/users.module';
     HttpModule,
     GithubModule,
     TypeOrmModule.forFeature([Repository]),
-    QueueModule,
+    forwardRef(() => QueueModule),
     UsersModule,
   ],
   exports: [RepositoryService],
