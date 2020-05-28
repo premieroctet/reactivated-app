@@ -15,6 +15,10 @@ const redisOptions = (configService: ConfigService) => {
       settings: {
         lockDuration: 30000 * 3,
       },
+      limiter: {
+        duration: 1000,
+        max: Number(configService.get('MAX_JOBS_NUMBER')),
+      },
     },
     processors: [
       (job: Job, done: DoneCallback) => {

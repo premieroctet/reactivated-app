@@ -13,16 +13,23 @@ import { RepositoryModule } from './repository/repository.module';
 import { UsersModule } from './users/users.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
 import { join } from 'path';
+import { config } from 'rxjs';
 @Module({
   imports: [
     UsersModule,
     RepositoryModule,
     ScheduleModule.forRoot(),
 
-    BullModule.register({
+    BullModule.registerAsync({
       name: 'dependencies',
-      processors: [join(__dirname, 'queue/worker.js')],
-      options: { redis: 'redis://127.0.0.1' },
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        options: {
+          redis: configService.get('REDIS_URL'),
+          processors: [join(__dirname, 'queue/worker.js')],
+        },
+      }),
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
