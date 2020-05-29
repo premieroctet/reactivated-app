@@ -50,6 +50,7 @@
     "rxjs": "^6.5.3",
     "secure-compare": "^3.0.1",
     "swagger-ui-express": "^4.1.2",
+    "throng": "^4.0.0",
     "ts-node-dev": "^1.0.0-pre.44",
     "typeorm": "^0.2.20"
   },

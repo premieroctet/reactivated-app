@@ -2,6 +2,7 @@ import { Module, OnModuleInit } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from 'nest-bull';
+import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -12,8 +13,6 @@ import { GithubModule } from './github/github.module';
 import { RepositoryModule } from './repository/repository.module';
 import { UsersModule } from './users/users.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
-import { join } from 'path';
-import { config } from 'rxjs';
 @Module({
   imports: [
     UsersModule,
@@ -27,7 +26,8 @@ import { config } from 'rxjs';
       useFactory: (configService: ConfigService) => ({
         options: {
           redis: configService.get('REDIS_URL'),
-          processors: [join(__dirname, 'queue/worker.js')],
+          // processors: [join(__dirname, 'queue/worker.js')],
+          processors: [],
         },
       }),
     }),
@@ -43,7 +43,7 @@ import { config } from 'rxjs';
         database: configService.get('TYPEORM_DATABASE'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: Boolean(configService.get('TYPEORM_SYNCHRONIZE')),
-        // logging: process.env.NODE_ENV === 'dev',
+        logging: process.env.NODE_ENV === 'dev',
       }),
     }),
     ConfigModule,

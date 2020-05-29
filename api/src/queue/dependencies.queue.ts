@@ -28,7 +28,7 @@ export class DependenciesQueue {
   private readonly logger = new Logger(this.constructor.name);
 
   constructor(
-    private repositoriesService: RepositoryService,
+    private readonly repositoriesService: RepositoryService,
     private readonly githubService: GithubService,
   ) {}
 

@@ -1,12 +1,15 @@
-import { BullModule, BullModuleOptions } from 'nest-bull';
 import { Module, OnModuleInit, forwardRef } from '@nestjs/common';
-import { ConfigService } from '../config/config.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { DoneCallback, Job } from 'bull';
+import { BullModule, BullModuleOptions } from 'nest-bull';
 import { ConfigModule } from '../config/config.module';
-import { Job, DoneCallback } from 'bull';
-import { DependenciesQueue } from './dependencies.queue';
-import { Repository } from 'typeorm';
-import { RepositoryModule } from '../repository/repository.module';
+import { ConfigService } from '../config/config.service';
 import { GithubModule } from '../github/github.module';
+import { RepositoryModule } from '../repository/repository.module';
+import { DependenciesQueue } from './dependencies.queue';
+import { Repository } from '../repository/repository.entity';
+import { RepositoryService } from '../repository/repository.service';
+import { GithubService } from '../github/github.service';
 
 const redisOptions = (configService: ConfigService) => {
   const config: BullModuleOptions = {
@@ -40,7 +43,7 @@ const BullQueueModule = BullModule.registerAsync([
 ]);
 
 @Module({
-  imports: [BullQueueModule, forwardRef(() => RepositoryModule), GithubModule],
+  imports: [BullQueueModule, GithubModule, forwardRef(() => RepositoryModule)],
   exports: [BullQueueModule],
   providers: [DependenciesQueue],
 })
