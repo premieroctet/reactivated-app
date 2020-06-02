@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, Injectable } from '@nestjs/common';
 import { Job } from 'bull';
 import { readFileSync } from 'fs';
 import {
@@ -24,6 +24,7 @@ const { promisify } = require('util');
 const asyncWriteFile = promisify(fs.writeFile);
 
 @Processor({ name: 'dependencies' })
+@Injectable()
 export class DependenciesQueue {
   private readonly logger = new Logger(this.constructor.name);
 

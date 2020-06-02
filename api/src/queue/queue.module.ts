@@ -1,15 +1,12 @@
 import { Module, OnModuleInit, forwardRef } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { DoneCallback, Job } from 'bull';
 import { BullModule, BullModuleOptions } from 'nest-bull';
 import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
 import { GithubModule } from '../github/github.module';
+import { OrmModule } from '../orm.module';
 import { RepositoryModule } from '../repository/repository.module';
 import { DependenciesQueue } from './dependencies.queue';
-import { Repository } from '../repository/repository.entity';
-import { RepositoryService } from '../repository/repository.service';
-import { GithubService } from '../github/github.service';
 
 const redisOptions = (configService: ConfigService) => {
   const config: BullModuleOptions = {
@@ -43,12 +40,12 @@ const BullQueueModule = BullModule.registerAsync([
 ]);
 
 @Module({
-  imports: [BullQueueModule, GithubModule, forwardRef(() => RepositoryModule)],
+  imports: [
+    BullQueueModule,
+    GithubModule,
+    forwardRef(() => RepositoryModule),
+    OrmModule,
+  ],
   exports: [BullQueueModule],
-  providers: [DependenciesQueue],
 })
-export class QueueModule implements OnModuleInit {
-  onModuleInit() {
-    console.log('WORKER: ', process.pid);
-  }
-}
+export class QueueModule {}

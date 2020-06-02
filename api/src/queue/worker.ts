@@ -2,32 +2,21 @@ import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import * as dotenv from 'dotenv';
 import * as throng from 'throng';
-import { QueueModule } from './queue.module';
-import * as Queue from 'bull';
+import { WorkerModule } from './worker.module';
 dotenv.config();
 
-const WORKERS = process.env.WEB_CONCURRENCY;
+const WORKERS = Number(process.env.WEB_CONCURRENCY);
 
 async function bootstrap() {
-  const worker = await NestFactory.create(QueueModule);
+  const worker = await NestFactory.create(WorkerModule);
   Logger.log('Worker ' + process.pid);
   worker.init();
 }
 
-// function bootstrap() {
-//   const dependenciesQueue = new Queue('dependencies', process.env.REDIS_URL);
+throng({
+  workers: WORKERS,
+  lifetime: Infinity, // Respawn worker if it dies
+  start: bootstrap,
+});
 
-//   dependenciesQueue.process(
-//     process.env.MAX_JOBS_NUMBER,
-//     async (job: Queue.Job) => {},
-//   );
-// }
-
-// throng(
-//   {
-//     workers: WORKERS,
-//     lifetime: Infinity, // Respawn if it dies
-//   },
-//   bootstrap,
-// );
-bootstrap();
+// bootstrap();

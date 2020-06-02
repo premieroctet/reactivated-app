@@ -13,6 +13,7 @@ import { GithubModule } from './github/github.module';
 import { RepositoryModule } from './repository/repository.module';
 import { UsersModule } from './users/users.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
+import { OrmModule } from './orm.module';
 @Module({
   imports: [
     UsersModule,
@@ -31,21 +32,8 @@ import { WebhooksModule } from './webhooks/webhooks.module';
         },
       }),
     }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        type: configService.get('TYPEORM_CONNECTION') as 'postgres',
-        host: configService.get('TYPEORM_HOST'),
-        port: Number(configService.get('TYPEORM_PORT')),
-        username: configService.get('TYPEORM_USERNAME'),
-        password: configService.get('TYPEORM_PASSWORD'),
-        database: configService.get('TYPEORM_DATABASE'),
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: Boolean(configService.get('TYPEORM_SYNCHRONIZE')),
-        logging: process.env.NODE_ENV === 'dev',
-      }),
-    }),
+
+    OrmModule,
     ConfigModule,
     AuthModule,
     WebhooksModule,
@@ -55,8 +43,4 @@ import { WebhooksModule } from './webhooks/webhooks.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule implements OnModuleInit {
-  onModuleInit() {
-    console.log('MAIN: ', process.pid);
-  }
-}
+export class AppModule {}
