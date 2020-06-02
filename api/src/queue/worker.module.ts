@@ -1,4 +1,4 @@
-import { Module, OnModuleInit, forwardRef } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { DoneCallback, Job } from 'bull';
 import { BullModule, BullModuleOptions } from 'nest-bull';
 import { ConfigModule } from '../config/config.module';
@@ -40,12 +40,12 @@ const BullQueueModule = BullModule.registerAsync([
 ]);
 
 @Module({
-  imports: [
-    BullQueueModule,
-    GithubModule,
-    forwardRef(() => RepositoryModule),
-    OrmModule,
-  ],
+  imports: [BullQueueModule, GithubModule, RepositoryModule, OrmModule],
   exports: [BullQueueModule],
+  providers: [DependenciesQueue],
 })
-export class QueueModule {}
+export class WorkerModule implements OnModuleInit {
+  onModuleInit() {
+    console.log('WORKER: ', process.pid);
+  }
+}

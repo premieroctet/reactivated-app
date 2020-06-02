@@ -1,23 +1,22 @@
-import { Module, HttpModule } from '@nestjs/common';
+import { forwardRef, HttpModule, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RepositoryService } from './repository.service';
+import { GithubModule } from '../github/github.module';
+import { QueueModule } from '../queue/queue.module';
+import { UsersModule } from '../users/users.module';
 import { RepositoryController } from './repository.controller';
 import { Repository } from './repository.entity';
-import { DependenciesQueue } from '../queue/dependencies.queue';
-import { QueueModule } from '../queue/queue.module';
-import { GithubModule } from '../github/github.module';
-import { UsersModule } from '../users/users.module';
+import { RepositoryService } from './repository.service';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([Repository]),
     HttpModule,
     GithubModule,
-    TypeOrmModule.forFeature([Repository]),
-    QueueModule,
     UsersModule,
+    forwardRef(() => QueueModule),
   ],
   exports: [RepositoryService],
-  providers: [RepositoryService, DependenciesQueue],
+  providers: [RepositoryService],
   controllers: [RepositoryController],
 })
 export class RepositoryModule {}

@@ -1,12 +1,12 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
-  Entity,
   Column,
-  PrimaryGeneratedColumn,
-  ManyToMany,
+  Entity,
   JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from '../users/user.entity';
-import { ApiProperty } from '@nestjs/swagger';
 
 export type FrameworkTag =
   | 'react'
