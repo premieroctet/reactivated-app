@@ -1,21 +1,26 @@
-import React from 'react'
-import { SafeAreaView, StatusBar, Image, Button } from 'react-native'
-import { ThemeProvider, Text, Div, Icon } from 'react-native-magnus'
-import { theme } from './theme'
+import { NavigationContainer } from '@react-navigation/native';
+import React from 'react';
+import { SafeAreaView, StatusBar } from 'react-native';
+import 'react-native-gesture-handler';
+import { ThemeProvider } from 'react-native-magnus';
+import AuthStack from './navigators/AuthStack';
+import { theme } from './theme';
 
 const App = () => {
   return (
     <>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar translucent backgroundColor="#24294e" barStyle="light-content" />
+      {/* <_StatusBar /> */}
+
       <ThemeProvider theme={theme}>
         <SafeAreaView style={{ flex: 1 }}>
-          <Div flex={1} bg="brand50">
-            <Text>OKOSKD</Text>
-          </Div>
+          <NavigationContainer>
+            <AuthStack />
+          </NavigationContainer>
         </SafeAreaView>
       </ThemeProvider>
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;

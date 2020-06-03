@@ -1,6 +1,8 @@
 export const theme = {
   colors: {
-    brand50: 'rgba(71,253,167,0.1)',
+    mainBg: '#24294e',
+
+    // brand50: 'rgba(71,253,167,0.1)',
     brand100: '#affed8',
     brand200: '#51fdaa',
     brand300: '#43ee9c',
@@ -11,7 +13,7 @@ export const theme = {
     brand800: '#227b50',
     brand900: '#14482f',
 
-    secondary50: '#8f92a7',
+    // secondary50: '#8f92a7',
     secondary100: '#7a7d95',
     secondary200: '#646883',
     secondary300: '#4f5371',
@@ -22,4 +24,4 @@ export const theme = {
     secondary800: '#191d42',
     secondary900: '#16193e',
   },
-}
+};
