@@ -3,6 +3,7 @@ import React from 'react';
 import { SafeAreaView, StatusBar } from 'react-native';
 import 'react-native-gesture-handler';
 import { ThemeProvider } from 'react-native-magnus';
+import { AuthProvider } from './contexts/AuthContext';
 import AuthStack from './navigators/AuthStack';
 import { theme } from './theme';
 
@@ -13,11 +14,13 @@ const App = () => {
       {/* <_StatusBar /> */}
 
       <ThemeProvider theme={theme}>
-        <SafeAreaView style={{ flex: 1 }}>
-          <NavigationContainer>
-            <AuthStack />
-          </NavigationContainer>
-        </SafeAreaView>
+        <AuthProvider>
+          <SafeAreaView style={{ flex: 1 }}>
+            <NavigationContainer>
+              <AuthStack />
+            </NavigationContainer>
+          </SafeAreaView>
+        </AuthProvider>
       </ThemeProvider>
     </>
   );

@@ -1,40 +1,57 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
 import { Button, Div, Icon, Text } from 'react-native-magnus';
+import LoadingIndicator from '../components/Ui/LoadingIndicator';
 import MainBackground from '../components/Ui/MainBackground';
 
 const Home = () => {
+  const [loading, setLoading] = React.useState(false);
+  const onSignInGithub = () => {
+    setLoading(true);
+
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+  };
+
   return (
     <MainBackground>
-      <Icon name="slack" color="yellow700" fontSize="title" />
+      <Div flex={1} justifyContent="space-between" p="xl">
+        <Div flexDir="row" alignItems="center">
+          <Icon name="plug" fontFamily="FontAwesome5" color="brand500" px="sm" />
+          <Text fontSize="3xl" color="brand500">
+            React
+          </Text>
+          <Text fontSize="3xl" color="white">
+            ivated
+          </Text>
+          <Div rounded="circle" bg="white" h={10} w={10} mx="sm" />
+          <Text fontSize="3xl" color="white">
+            app
+          </Text>
+        </Div>
 
-      <Div flexDir="row" alignItems="center">
-        <Text color="brand500">React</Text>
-        <Text color="white">ivated</Text>
-        <Div rounded="circle" bg="white" h={10} w={10} mx="sm" />
-        <Text color="white">app</Text>
+        <Text color="white">Keep your JS app up to date</Text>
+        <Div px="2xl">
+          <Button
+            mt="md"
+            py="lg"
+            rounded="circle"
+            bg="mainBackground"
+            block
+            borderWidth={1}
+            borderColor="brand500"
+            color="brand500"
+            prefix={<Icon fontSize="title" fontFamily="FontAwesome5" mr="md" name="github" color="brand500" />}
+            onPress={onSignInGithub}
+          >
+            Sign-in with Github
+          </Button>
+        </Div>
       </Div>
 
-      <Button
-        mt="md"
-        py="lg"
-        rounded="lg"
-        bg="mainBackground"
-        block
-        color="brand500"
-        prefix={<Icon fontSize="title" fontFamily="FontAwesome5" mr="md" name="plug" color="white" />}
-      >
-        Sign-in with Facebook
-      </Button>
+      <LoadingIndicator loading={loading} />
     </MainBackground>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
 export default Home;

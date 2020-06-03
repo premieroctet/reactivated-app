@@ -2,16 +2,20 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import React from 'react';
 import { Div, Text } from 'react-native-magnus';
 import Row from '../components/Row';
-import { AuthStackParamList } from '../navigators/AuthStack';
 import MainBackground from '../components/Ui/MainBackground';
+import { AuthStackParamList } from '../navigators/AuthStack';
+import { useAuthContext } from '../contexts/AuthContext';
 
 type SplashProps = {
   navigation: StackNavigationProp<AuthStackParamList, 'Home'>;
 };
 
 const Splash: React.FC<SplashProps> = ({ navigation }) => {
+  const { getToken } = useAuthContext();
+
   React.useEffect(() => {
     setTimeout(() => {
+      getToken();
       navigation.reset({
         index: 0,
         routes: [{ name: 'Home' }],
