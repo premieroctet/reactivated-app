@@ -2,11 +2,7 @@ import API from './api'
 import GithubAPI from './github'
 
 export const getRepositories = () => {
-  return API.get<Repository[]>(`/repositories`, {
-    params: {
-      filter: 'isConfigured||eq||true',
-    },
-  })
+  return API.get<Repository[]>(`/repositories`)
 }
 
 export const getRepository = (repositoryId: string) => {
