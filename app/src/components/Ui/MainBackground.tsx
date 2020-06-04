@@ -7,7 +7,7 @@ type MainBackgroundProps = {
 
 const MainBackground: React.FC<MainBackgroundProps> = ({ children }) => {
   return (
-    <Div flex={1} bg="mainBg" alignItems="center" justifyContent="center">
+    <Div flex={1} bg="mainBg" alignItems="center" justifyContent="center" p="xl">
       {children}
     </Div>
   );

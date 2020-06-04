@@ -1,22 +1,39 @@
 import React from 'react';
-import { Div, Icon, Button } from 'react-native-magnus';
-import MainBackground from '../components/Ui/MainBackground';
 import { FlatList } from 'react-native';
-import { useAuthContext } from '../contexts/AuthContext';
+import { Button, Div, Icon, Text } from 'react-native-magnus';
+import Header from '../components/Header';
+import RepoItem from '../components/Repository/RepoItem';
+import MainBackground from '../components/Ui/MainBackground';
+import { useAxiosRequest } from '../hooks/useRequest';
+import { getRepositories } from '../services/apiRepositories';
 
 type DashboardProps = {
   children: React.ReactNode;
 };
 
 const Dashboard: React.FC<DashboardProps> = ({ children }) => {
+  const { data: repositories } = useAxiosRequest('/repositories', { fetcher: getRepositories });
+
   return (
     <MainBackground>
-      <Div flex={1} bg="white" shadow="sm" w="80%" my="2xl" rounded="2xl">
-        <FlatList data={null} renderItem={() => null} contentContainerStyle={{ flex: 1 }} />
+      <Header />
+      <Text color="white">My Reactivated Apps</Text>
+      <Div flex={1} bg="white" shadow="sm" w="80%" my="md" rounded="2xl">
+        {repositories?.length > 0 ? (
+          <FlatList
+            data={repositories}
+            renderItem={({ item }) => <RepoItem repo={item} key={item.id.toString()} />}
+            contentContainerStyle={{ flex: 1 }}
+          />
+        ) : (
+          <Text mb={5} textAlign="center" fontSize="2xl" color="gray.400">
+            You have no reactivated app yet! Start now by adding yout from a GitHub repository
+          </Text>
+        )}
       </Div>
       <Div px="2xl">
         <Button
-          mt="md"
+          mt="lg"
           py="lg"
           rounded="circle"
           bg="mainBackground"

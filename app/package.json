@@ -7,7 +7,8 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "postinstall": "rndebugger-open"
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.11.0",
@@ -23,6 +24,7 @@
     "react-native-gesture-handler": "^1.6.1",
     "react-native-magnus": "^1.0.38",
     "react-native-modal": "^11.5.6",
+    "react-native-progress": "^4.1.2",
     "react-native-reanimated": "^1.9.0",
     "react-native-safe-area-context": "^3.0.2",
     "react-native-screens": "^2.8.0",
@@ -45,6 +47,7 @@
     "jest": "^24.9.0",
     "metro-react-native-babel-preset": "^0.58.0",
     "prettier": "^2.0.4",
+    "react-native-debugger-open": "^0.3.24",
     "react-test-renderer": "16.11.0",
     "typescript": "^3.8.3"
   },

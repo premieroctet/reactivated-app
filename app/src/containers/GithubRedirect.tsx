@@ -4,14 +4,14 @@ import { useAuthContext } from '../contexts/AuthContext';
 import { AppStackParamList } from '../navigators/AppStack';
 import apiAuth from '../services/apiAuth';
 import { storeData } from '../utils/AsyncStorage';
+import LoadingIndicator from '../components/Ui/LoadingIndicator';
 
 type GithubRedirectProps = {
-  children: React.ReactNode;
   route: RouteProp<AppStackParamList, 'redirect'>;
   navigation: NavigationProp<AppStackParamList, 'Dashboard' | 'Home'>;
 };
 
-const GithubRedirect: React.FC<GithubRedirectProps> = ({ children, route, navigation }) => {
+const GithubRedirect: React.FC<GithubRedirectProps> = ({ route, navigation }) => {
   const { getCurrentToken: getToken, token } = useAuthContext();
 
   React.useEffect(() => {
@@ -28,7 +28,7 @@ const GithubRedirect: React.FC<GithubRedirectProps> = ({ children, route, naviga
     connectGithub();
   }, []);
 
-  return <></>;
+  return <LoadingIndicator loading={true} />;
 };
 
 export default GithubRedirect;

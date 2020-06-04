@@ -18,9 +18,7 @@ const Stack = createStackNavigator<AppStackParamList>();
 
 const AppStack = () => {
   return (
-    <Stack.Navigator
-    // headerMode="none"
-    >
+    <Stack.Navigator headerMode="none">
       <Stack.Screen name="Splash" component={Splash} />
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="Login" component={Login} />

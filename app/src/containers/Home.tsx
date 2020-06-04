@@ -1,46 +1,23 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import React from 'react';
 import { Button, Div, Icon, Text } from 'react-native-magnus';
-import LoadingIndicator from '../components/Ui/LoadingIndicator';
+import Header from '../components/Header';
 import MainBackground from '../components/Ui/MainBackground';
 import { AppStackParamList } from '../navigators/AppStack';
-import { storeData } from '../utils/AsyncStorage';
 
 type HomeProps = {
   navigation: StackNavigationProp<AppStackParamList, 'Login'>;
 };
 
 const Home: React.FC<HomeProps> = ({ navigation }) => {
-  const [loading, setLoading] = React.useState(false);
-
-  React.useEffect(() => {
-    storeData('token', '');
-  }, []);
   const onSignInGithub = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 2000);
-
     navigation.navigate('Login');
   };
 
   return (
     <MainBackground>
-      <Div flex={1} justifyContent="space-between" p="xl">
-        <Div flexDir="row" alignItems="center">
-          <Icon name="plug" fontFamily="FontAwesome5" color="brand500" px="sm" />
-          <Text fontSize="3xl" color="brand500">
-            React
-          </Text>
-          <Text fontSize="3xl" color="white">
-            ivated
-          </Text>
-          <Div rounded="circle" bg="white" h={10} w={10} mx="sm" />
-          <Text fontSize="3xl" color="white">
-            app
-          </Text>
-        </Div>
+      <Div flex={1} justifyContent="space-between">
+        <Header />
 
         <Text fontSize="4xl" color="white">
           Keep your JS app up to date
@@ -62,8 +39,6 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
           </Button>
         </Div>
       </Div>
-
-      <LoadingIndicator loading={loading} />
     </MainBackground>
   );
 };

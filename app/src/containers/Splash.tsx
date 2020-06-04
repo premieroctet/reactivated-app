@@ -4,23 +4,34 @@ import { Div, Text } from 'react-native-magnus';
 import Row from '../components/Row';
 import MainBackground from '../components/Ui/MainBackground';
 import { AppStackParamList } from '../navigators/AppStack';
-import { useAuthContext } from '../contexts/AuthContext';
+import { getData, storeData } from '../utils/AsyncStorage';
 
 type SplashProps = {
   navigation: StackNavigationProp<AppStackParamList, 'Home'>;
 };
 
 const Splash: React.FC<SplashProps> = ({ navigation }) => {
-  const { getCurrentToken: getToken } = useAuthContext();
-
   React.useEffect(() => {
-    setTimeout(() => {
-      getToken();
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Home' }],
-      });
-    }, 2000);
+    async function startup() {
+      // await storeData('token', '');
+      const token = await getData('token');
+
+      setTimeout(() => {
+        if (token) {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Dashboard' }],
+          });
+        } else {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Home' }],
+          });
+        }
+      }, 2000);
+    }
+
+    startup();
   }, []);
 
   return (

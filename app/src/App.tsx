@@ -18,11 +18,9 @@ const App = () => {
 
       <ThemeProvider theme={theme}>
         <AuthProvider>
-          <SafeAreaView style={{ flex: 1 }}>
-            <NavigationContainer linking={linking}>
-              <AppStack />
-            </NavigationContainer>
-          </SafeAreaView>
+          <NavigationContainer linking={linking}>
+            <AppStack />
+          </NavigationContainer>
         </AuthProvider>
       </ThemeProvider>
     </>
