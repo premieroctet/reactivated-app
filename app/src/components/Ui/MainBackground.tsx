@@ -1,5 +1,6 @@
 import React from 'react';
 import { Div } from 'react-native-magnus';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type MainBackgroundProps = {
   children: React.ReactNode;
@@ -7,9 +8,11 @@ type MainBackgroundProps = {
 
 const MainBackground: React.FC<MainBackgroundProps> = ({ children }) => {
   return (
-    <Div flex={1} bg="mainBg" alignItems="center" justifyContent="center" p="xl">
-      {children}
-    </Div>
+    <SafeAreaView style={{ flex: 1 }}>
+      <Div flex={1} bg="mainBg" alignItems="center" justifyContent="center" p="xl">
+        {children}
+      </Div>
+    </SafeAreaView>
   );
 };
 

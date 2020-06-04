@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { Config } from '../config';
-import { getData } from '../utils/AsyncStorage';
+import { getData, storeData } from '../utils/AsyncStorage';
+import { useNavigation } from '@react-navigation/native';
 
 const apiClient = axios.create({
   baseURL: Config.API_URL,
@@ -16,10 +17,10 @@ apiClient.interceptors.request.use(
 
 apiClient.interceptors.response.use(undefined, (error) => {
   if (error.response.status === 401) {
-    console.error('error.response.status', error.response.status);
-    // const navigation = useNavigation();
-    // storeData('token', '');
-    // navigation.navigate('Home');
+    console.warn('error.response.status', error.response.data);
+    const navigation = useNavigation();
+    storeData('token', '');
+    navigation.navigate('Home');
   }
   return Promise.reject(error);
 });

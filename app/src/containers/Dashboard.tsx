@@ -1,11 +1,12 @@
 import React from 'react';
 import { FlatList } from 'react-native';
-import { Button, Div, Icon, Text } from 'react-native-magnus';
+import { Avatar, Button, Div, Icon, Text } from 'react-native-magnus';
 import Header from '../components/Header';
 import RepoItem from '../components/Repository/RepoItem';
 import MainBackground from '../components/Ui/MainBackground';
 import { useAxiosRequest } from '../hooks/useRequest';
 import { getRepositories } from '../services/apiRepositories';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type DashboardProps = {
   children: React.ReactNode;
@@ -14,12 +15,24 @@ type DashboardProps = {
 const Dashboard: React.FC<DashboardProps> = ({ children }) => {
   const { data: repositories } = useAxiosRequest('/repositories', { fetcher: getRepositories });
 
+  if (!repositories) {
+    return null;
+  }
+
   return (
     <MainBackground>
       <Header />
-      <Text color="white">My Reactivated Apps</Text>
-      <Div flex={1} bg="white" shadow="sm" w="80%" my="md" rounded="2xl">
-        {repositories?.length > 0 ? (
+      <Div row alignItems="center">
+        <Text color="white">My Reactivated Apps</Text>
+        {repositories.length > 0 && (
+          <Avatar bg="brand500" color="brand900" size={20} mx={4}>
+            {repositories.length.toString()}
+          </Avatar>
+        )}
+      </Div>
+
+      <Div flex={1} bg="white" shadow="sm" w="95%" my="xl" rounded="2xl">
+        {repositories.length > 0 ? (
           <FlatList
             data={repositories}
             renderItem={({ item }) => <RepoItem repo={item} key={item.id.toString()} />}
