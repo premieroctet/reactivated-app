@@ -1,16 +1,21 @@
+import { StackNavigationProp } from '@react-navigation/stack';
 import React from 'react';
 import { Button, Div, Icon, Text } from 'react-native-magnus';
 import LoadingIndicator from '../components/Ui/LoadingIndicator';
 import MainBackground from '../components/Ui/MainBackground';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { AuthStackParamList } from '../navigators/AuthStack';
+import { AppStackParamList } from '../navigators/AppStack';
+import { storeData } from '../utils/AsyncStorage';
 
 type HomeProps = {
-  navigation: StackNavigationProp<AuthStackParamList, 'Login'>;
+  navigation: StackNavigationProp<AppStackParamList, 'Login'>;
 };
 
 const Home: React.FC<HomeProps> = ({ navigation }) => {
   const [loading, setLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    storeData('token', '');
+  }, []);
   const onSignInGithub = () => {
     setLoading(true);
     setTimeout(() => {
@@ -37,7 +42,9 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
           </Text>
         </Div>
 
-        <Text color="white">Keep your JS app up to date</Text>
+        <Text fontSize="4xl" color="white">
+          Keep your JS app up to date
+        </Text>
         <Div px="2xl">
           <Button
             mt="md"

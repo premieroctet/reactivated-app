@@ -3,15 +3,15 @@ import React from 'react';
 import { Div, Text } from 'react-native-magnus';
 import Row from '../components/Row';
 import MainBackground from '../components/Ui/MainBackground';
-import { AuthStackParamList } from '../navigators/AuthStack';
+import { AppStackParamList } from '../navigators/AppStack';
 import { useAuthContext } from '../contexts/AuthContext';
 
 type SplashProps = {
-  navigation: StackNavigationProp<AuthStackParamList, 'Home'>;
+  navigation: StackNavigationProp<AppStackParamList, 'Home'>;
 };
 
 const Splash: React.FC<SplashProps> = ({ navigation }) => {
-  const { getToken } = useAuthContext();
+  const { getCurrentToken: getToken } = useAuthContext();
 
   React.useEffect(() => {
     setTimeout(() => {
@@ -22,6 +22,7 @@ const Splash: React.FC<SplashProps> = ({ navigation }) => {
       });
     }, 2000);
   }, []);
+
   return (
     <MainBackground>
       <Row>

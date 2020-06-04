@@ -4,10 +4,13 @@ import { SafeAreaView, StatusBar } from 'react-native';
 import 'react-native-gesture-handler';
 import { ThemeProvider } from 'react-native-magnus';
 import { AuthProvider } from './contexts/AuthContext';
-import AuthStack from './navigators/AuthStack';
+import AppStack from './navigators/AppStack';
 import { theme } from './theme';
 
 const App = () => {
+  const linking = {
+    prefixes: ['reactivatedapp://'],
+  };
   return (
     <>
       <StatusBar translucent backgroundColor="#24294e" barStyle="light-content" />
@@ -16,8 +19,8 @@ const App = () => {
       <ThemeProvider theme={theme}>
         <AuthProvider>
           <SafeAreaView style={{ flex: 1 }}>
-            <NavigationContainer>
-              <AuthStack />
+            <NavigationContainer linking={linking}>
+              <AppStack />
             </NavigationContainer>
           </SafeAreaView>
         </AuthProvider>

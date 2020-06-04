@@ -15,9 +15,31 @@ export class AppController {
   }
 
   @ApiTags('auth')
+  @UseGuards(AuthGuard('github-app'))
+  @Get('app/auth/github')
+  async appLogin(@Request() req) {
+    return {};
+  }
+
+  @ApiTags('auth')
   @UseGuards(AuthGuard('github'))
   @Get('/auth/github/callback')
   async redirect(@Request() req) {
+    const { githubToken, username, githubId, id } = req.user;
+    const jwt = this.authService.createToken({
+      githubToken: githubToken,
+      userName: username,
+      githubId: githubId,
+      userId: id,
+    });
+
+    return { token: jwt };
+  }
+
+  @ApiTags('auth')
+  @UseGuards(AuthGuard('github-app'))
+  @Get('app/auth/github/callback')
+  async appRedirect(@Request() req) {
     const { githubToken, username, githubId, id } = req.user;
     const jwt = this.authService.createToken({
       githubToken: githubToken,
