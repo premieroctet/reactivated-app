@@ -3,7 +3,7 @@ import React from 'react'
 
 interface Props extends Pick<Repository, 'score'> {}
 
-const HealthBar: React.FC<Props> = ({ score }) => {
+const LoadScore: React.FC<Props> = ({ score }) => {
   return (
     <Box textAlign="center">
       <Box>
@@ -21,4 +21,4 @@ const HealthBar: React.FC<Props> = ({ score }) => {
   )
 }
 
-export default HealthBar
+export default LoadScore

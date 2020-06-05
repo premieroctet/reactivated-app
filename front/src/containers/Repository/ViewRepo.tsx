@@ -26,7 +26,7 @@ import {
 } from '@chakra-ui/core'
 import DependenciesList from '@components/DependenciesList'
 import { FaGithub } from 'react-icons/fa'
-import HealthBar from '@components/HealthBar/HealthBar'
+import LoadScore from '@components/LoadScore'
 import RepoConfigForm from '@components/RepoConfigForm'
 import useChakraToast from '@hooks/useChakraToast'
 import { useAxiosRequest } from '@hooks/useRequest'
@@ -38,6 +38,7 @@ import { mutate } from 'swr'
 import FrameworkTag from '../../components/FrameworkTag/FrameworkTag'
 import ViewRepoSkeleton from './ViewRepoSkeleton'
 import Container from '@components/Container'
+import LoadBar from '@components/LoadBar'
 
 const AlertError = () => {
   const history = useHistory()
@@ -164,38 +165,7 @@ function ViewRepo() {
         <>
           <Container>
             <Flex pr={10} justifyContent="space-between" my={4}>
-              <Box
-                bg="brand.50"
-                position="absolute"
-                bottom={0}
-                height={1}
-                left={0}
-                right={0}
-                zIndex={0}
-              >
-                <Box
-                  bg="brand.500"
-                  position="absolute"
-                  bottom={0}
-                  height={1}
-                  left={0}
-                  transition="width 300ms"
-                  width={`${data.score}%`}
-                  zIndex={0}
-                />
-                <Box
-                  shadow="lg"
-                  position="absolute"
-                  bottom={0}
-                  height={1}
-                  width={2}
-                  bg="brand.500"
-                  boxShadow="2px 1px 6px 3px rgba(71,253,167,0.6)"
-                  left={`${data.score}%`}
-                  zIndex={20}
-                />
-              </Box>
-
+              <LoadBar score={data.score} />
               <Stack isInline spacing={4}>
                 <ChakraLink isExternal href={data.repoUrl}>
                   <Image
@@ -233,7 +203,7 @@ function ViewRepo() {
                   </ChakraLink>
                 </Box>
               </Stack>
-              <HealthBar score={data.score} />
+              <LoadScore score={data.score} />
             </Flex>
           </Container>
 

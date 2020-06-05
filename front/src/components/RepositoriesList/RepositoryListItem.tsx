@@ -1,8 +1,9 @@
 import React, { memo } from 'react'
-import { IconButton, Image, Text, Box, Flex } from '@chakra-ui/core'
+import { IconButton, Image, Text, Flex } from '@chakra-ui/core'
 import { Column, Row } from '@components/Flex'
 import FrameworkTag from '../FrameworkTag/FrameworkTag'
-import HealthBar from '@components/HealthBar/HealthBar'
+import LoadScore from '@components/LoadScore'
+import LoadBar from '@components/LoadBar'
 
 interface IProps {
   repository: Repository
@@ -21,37 +22,7 @@ const RepositoryListItem = memo(({ repository }: IProps) => {
       py={8}
       overflow="hidden"
     >
-      <Box
-        bg="brand.50"
-        position="absolute"
-        bottom={0}
-        height={1}
-        left={0}
-        right={0}
-        zIndex={0}
-      >
-        <Box
-          bg="brand.500"
-          position="absolute"
-          bottom={0}
-          height={1}
-          left={0}
-          transition="width 300ms"
-          width={`${repository.score}%`}
-          zIndex={0}
-        />
-        <Box
-          shadow="lg"
-          position="absolute"
-          bottom={0}
-          height={1}
-          width={2}
-          bg="brand.500"
-          boxShadow="2px 1px 6px 3px rgba(71,253,167,0.6)"
-          left={`${repository.score}%`}
-          zIndex={20}
-        />
-      </Box>
+      <LoadBar score={repository.score} />
       <Flex flexDirection="column" width="100%">
         <Flex
           zIndex={10}
@@ -78,7 +49,7 @@ const RepositoryListItem = memo(({ repository }: IProps) => {
           </Row>
 
           <Row alignItems="center">
-            {repository.score && <HealthBar score={repository.score} />}
+            {repository.score && <LoadScore score={repository.score} />}
 
             <IconButton
               variant="ghost"
