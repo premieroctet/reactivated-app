@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '../config/config.service';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/user.entity';
+import { authStrategy } from '../utils/github';
 
 @Injectable()
 export class GitHubStrategy extends PassportStrategy(Strategy) {
@@ -16,22 +17,7 @@ export class GitHubStrategy extends PassportStrategy(Strategy) {
       },
 
       async (accessToken, tokenSecret, profile, done) => {
-        let user = await userService.getUser(profile.username);
-
-        if (!user) {
-          let newUser: User = {
-            username: profile.username,
-            githubId: profile.id,
-            githubToken: accessToken,
-          };
-          user = await userService.createUser(newUser);
-        } else {
-          await userService.updateUser({
-            ...user,
-            githubToken: accessToken,
-          });
-        }
-
+        let user = await userService.githubAuth(accessToken, profile);
         return done(null, user);
       },
     );

@@ -19,23 +19,7 @@ export class GitHubAppStrategy extends PassportStrategy(
       },
 
       async (accessToken, tokenSecret, profile, done) => {
-        console.log('constructor -> accessToken', accessToken);
-        let user = await userService.getUser(profile.username);
-
-        if (!user) {
-          let newUser: User = {
-            username: profile.username,
-            githubId: profile.id,
-            githubToken: accessToken,
-          };
-          user = await userService.createUser(newUser);
-        } else {
-          await userService.updateUser({
-            ...user,
-            githubToken: accessToken,
-          });
-        }
-
+        let user = await userService.githubAuth(accessToken, profile);
         return done(null, user);
       },
     );

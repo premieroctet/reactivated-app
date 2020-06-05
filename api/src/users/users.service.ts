@@ -40,4 +40,24 @@ export class UsersService extends TypeOrmCrudService<User> {
   async deleteUser(user: User) {
     this.usersRepository.delete(user);
   }
+
+  async githubAuth(accessToken, profile): Promise<User> {
+    let user = await this.getUser(profile.username);
+
+    if (!user) {
+      let newUser: User = {
+        username: profile.username,
+        githubId: profile.id,
+        githubToken: accessToken,
+      };
+      user = await this.createUser(newUser);
+    } else {
+      await this.updateUser({
+        ...user,
+        githubToken: accessToken,
+      });
+    }
+
+    return user;
+  }
 }
