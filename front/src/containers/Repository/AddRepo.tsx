@@ -9,6 +9,7 @@ import RepoConfigForm from '@components/RepoConfigForm/RepoConfigForm'
 import { useHistory } from 'react-router'
 import { useRequest } from '@hooks/useRequest'
 import useChakraToast from '@hooks/useChakraToast'
+import Container from '@components/Container'
 
 enum Step {
   PROVIDER_SELECTION = 0,
@@ -28,7 +29,7 @@ const Wrapper: React.FC<IWrapperProps> = ({
   children,
 }) => {
   return (
-    <Box>
+    <Container>
       <Text fontSize="3xl">
         <IconButton
           onClick={onBack}
@@ -46,7 +47,7 @@ const Wrapper: React.FC<IWrapperProps> = ({
       <Box ml={10} mt={8}>
         {children}
       </Box>
-    </Box>
+    </Container>
   )
 }
 

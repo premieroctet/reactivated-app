@@ -1,4 +1,4 @@
-import { Badge, Box } from '@chakra-ui/core'
+import { Box, Flex, Text } from '@chakra-ui/core'
 import React from 'react'
 
 interface FrameworkTagProps extends Pick<Repository, 'framework'> {}
@@ -8,26 +8,31 @@ const FrameworkTag: React.FC<FrameworkTagProps> = ({ framework }) => {
     switch (framework) {
       case 'react':
       case 'react native':
-        return 'blue'
+        return '#61dafb'
 
       case 'vue':
-        return 'green'
+        return '#4fc08d'
 
       case 'angular':
       case 'nest.js':
-        return 'red'
+        return 'red.500'
 
       default:
-        return 'black'
+        return '#000'
     }
   }
 
   return (
-    <Box>
-      <Badge variant="subtle" variantColor={getFrameworkColor(framework)}>
-        {framework.toUpperCase()}
-      </Badge>
-    </Box>
+    <Flex justifyItems="center" alignItems="center">
+      <Box
+        mr={1}
+        height="10px"
+        width="10px"
+        rounded={10}
+        bg={getFrameworkColor(framework)}
+      />
+      <Text fontSize="sm">{framework}</Text>
+    </Flex>
   )
 }
 

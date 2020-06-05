@@ -25,8 +25,8 @@ import {
   useDisclosure,
 } from '@chakra-ui/core'
 import DependenciesList from '@components/DependenciesList'
-import { Column } from '@components/Flex'
-import HealthBar from '@components/HealthBar/HealthBar'
+import { FaGithub } from 'react-icons/fa'
+import LoadScore from '@components/LoadScore'
 import RepoConfigForm from '@components/RepoConfigForm'
 import useChakraToast from '@hooks/useChakraToast'
 import { useAxiosRequest } from '@hooks/useRequest'
@@ -37,6 +37,8 @@ import { Link, useHistory, useRouteMatch } from 'react-router-dom'
 import { mutate } from 'swr'
 import FrameworkTag from '../../components/FrameworkTag/FrameworkTag'
 import ViewRepoSkeleton from './ViewRepoSkeleton'
+import Container from '@components/Container'
+import LoadBar from '@components/LoadBar'
 
 const AlertError = () => {
   const history = useHistory()
@@ -132,81 +134,102 @@ function ViewRepo() {
 
   return (
     <>
-      <Column px={[4, 0]}>
-        {!data ? (
+      <Flex justifyContent="space-between">
+        <Link to="/">
+          <Button
+            leftIcon="chevron-left"
+            variant="ghost"
+            variantColor="brand"
+            mb={4}
+          >
+            Dashboard
+          </Button>
+        </Link>
+        <Button
+          leftIcon="settings"
+          variant="ghost"
+          variantColor="brand"
+          onClick={openConfigModal}
+          isDisabled={!!branchesError}
+          isLoading={!branches}
+        >
+          Settings
+        </Button>
+      </Flex>
+
+      {!data ? (
+        <Container>
           <ViewRepoSkeleton />
-        ) : (
-          <>
-            <Flex justifyContent="space-between">
-              <Link to="/">
-                <Button
-                  leftIcon="chevron-left"
-                  variant="ghost"
-                  variantColor="gray"
-                  mb={4}
-                >
-                  Dashboard
-                </Button>
-              </Link>
-              <Button
-                leftIcon="settings"
-                variantColor="gray"
-                variant="ghost"
-                onClick={openConfigModal}
-                isDisabled={!!branchesError}
-                isLoading={!branches}
-              >
-                Settings
-              </Button>
+        </Container>
+      ) : (
+        <>
+          <Container>
+            <Flex pr={10} justifyContent="space-between" my={4}>
+              <LoadBar score={data.score} />
+              <Stack isInline spacing={4}>
+                <ChakraLink isExternal href={data.repoUrl}>
+                  <Image
+                    rounded={100}
+                    src={data.repoImg}
+                    alt={data.name}
+                    size={[16, 24]}
+                  />
+                </ChakraLink>
+                <Box backgroundColor="yellow">
+                  <Heading fontSize="2xl">{data.name}</Heading>
+
+                  <Text
+                    mb={2}
+                    fontSize="sm"
+                    display="flex"
+                    justifyContent="space-between"
+                  >
+                    {data?.framework !== null && (
+                      <FrameworkTag framework={data.framework} />
+                    )}
+                  </Text>
+
+                  <ChakraLink
+                    borderTop="1px dashed"
+                    borderTopColor="gray.300"
+                    pt={2}
+                    fontSize="sm"
+                    display="flex"
+                    alignItems="center"
+                    isExternal
+                    href={`https://github.com/${data.fullName}`}
+                  >
+                    <Box as={FaGithub} mr={1} /> {data.fullName}
+                  </ChakraLink>
+                </Box>
+              </Stack>
+              <LoadScore score={data.score} />
             </Flex>
+          </Container>
 
-            <Stack isInline spacing={4} my={4}>
-              <ChakraLink isExternal href={data.repoUrl}>
-                <Image
-                  rounded="lg"
-                  src={data.repoImg}
-                  alt={data.name}
-                  size={[16, 24]}
-                />
-              </ChakraLink>
-              <Box backgroundColor="yellow">
-                <Heading fontSize="2xl">{data.name}</Heading>
-                <Text
-                  mb={4}
-                  fontSize="sm"
-                  display="flex"
-                  justifyContent="space-between"
-                >
-                  <b>@{data.author}</b>
-                  {data?.framework !== null && (
-                    <FrameworkTag framework={data.framework} />
-                  )}
-                </Text>
-
-                {data?.score !== null && totalDependencies !== null && (
-                  <>
-                    <HealthBar score={data.score} />
-                    <Text as="small" color={'red.500'} display="inline">
-                      {dependencies.length + devDependencies.length} (outdated)
-                    </Text>
-                    <Text as="small" display="inline">
-                      {' '}
-                      / {totalDependencies} libraries
-                    </Text>
-                  </>
-                )}
-              </Box>
-              <Flex alignItems="center" justifyContent="center" flex="1"></Flex>
-            </Stack>
-
+          <Container py={3}>
             <Heading mt={10} as="h3" fontSize="xl">
               Outdated Dependencies
             </Heading>
-            <Text fontSize="xs">
-              Refreshed{' '}
-              {formatDistance(new Date(data.dependenciesUpdatedAt), new Date())}{' '}
-              ago
-            </Text>
+            {data?.score !== null && totalDependencies !== null && (
+              <>
+                <Text fontSize="xs">
+                  Refreshed{' '}
+                  {formatDistance(
+                    new Date(data.dependenciesUpdatedAt),
+                    new Date(),
+                  )}{' '}
+                  ago
+                </Text>
+                <Text as="small" color={'red.500'} display="inline">
+                  {dependencies.length + devDependencies.length} (outdated)
+                </Text>
+                <Text as="small" display="inline">
+                  {' '}
+                  / {totalDependencies} libraries
+                </Text>
+              </>
+            )}
 
             {data.dependencies && data.dependencies.deps && (
               <Box w={['100%', 'unset']} minW={['100%']} mt={4}>
@@ -259,34 +282,34 @@ function ViewRepo() {
                 </Stack>
               </Alert>
             )}
-          </>
-        )}
+          </Container>
+        </>
+      )}
 
-        {error && <AlertError />}
-        {data && (
-          <Modal
-            isOpen={configModalOpen}
-            onClose={closeConfigModal}
-            isCentered
-            closeOnOverlayClick={false}
-          >
-            <ModalOverlay />
-            <ModalContent pb={4} rounded={10}>
-              <ModalHeader>Update repository configuration</ModalHeader>
-              <ModalCloseButton />
-              <ModalBody>
-                <RepoConfigForm
-                  repoName={data.fullName}
-                  initialBranch={data.branch}
-                  initialPath={data.path}
-                  onSubmit={onUpdateConfig}
-                  branches={branches?.map((branch) => branch.name) || []}
-                />
-              </ModalBody>
-            </ModalContent>
-          </Modal>
-        )}
-      </Column>
+      {error && <AlertError />}
+      {data && (
+        <Modal
+          isOpen={configModalOpen}
+          onClose={closeConfigModal}
+          isCentered
+          closeOnOverlayClick={false}
+        >
+          <ModalOverlay />
+          <ModalContent pb={4} rounded={10}>
+            <ModalHeader>Update repository configuration</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <RepoConfigForm
+                repoName={data.fullName}
+                initialBranch={data.branch}
+                initialPath={data.path}
+                onSubmit={onUpdateConfig}
+                branches={branches?.map((branch) => branch.name) || []}
+              />
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+      )}
     </>
   )
 }

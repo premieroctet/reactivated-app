@@ -98,8 +98,9 @@ const RepoConfigForm: React.FC<Props> = ({
         </FormInput>
         <Button
           size="lg"
-          variantColor="teal"
+          variantColor="secondary"
           type="submit"
+          rightIcon="check"
           isLoading={submitLoading}
         >
           Finish configuration
