@@ -1,6 +1,7 @@
 import { forwardRef, HttpModule, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GithubModule } from '../github/github.module';
+import { PullRequestModule } from '../pull-request/pull-request.module';
 import { QueueModule } from '../queue/queue.module';
 import { UsersModule } from '../users/users.module';
 import { RepositoryController } from './repository.controller';
@@ -14,6 +15,7 @@ import { RepositoryService } from './repository.service';
     GithubModule,
     UsersModule,
     forwardRef(() => QueueModule),
+    PullRequestModule,
   ],
   exports: [RepositoryService],
   providers: [RepositoryService],
