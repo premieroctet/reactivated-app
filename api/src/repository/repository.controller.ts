@@ -27,6 +27,7 @@ import { Queue } from 'bull';
 import { InjectQueue } from 'nest-bull';
 import { GithubService } from '../github/github.service';
 import { UsersService } from '../users/users.service';
+import { User } from 'users/user.entity';
 
 @Crud({
   model: {
@@ -43,11 +44,11 @@ import { UsersService } from '../users/users.service';
 })
 @CrudAuth({
   property: 'user',
-  filter: user => {
-    return {
-      userId: { $eq: user.id },
-    };
-  },
+  filter: (user: User) => ({
+    'users.id': {
+      $in: [user.id],
+    },
+  }),
 })
 @UseGuards(AuthGuard('jwt'))
 @ApiTags('repositories')

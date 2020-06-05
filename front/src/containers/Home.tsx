@@ -19,11 +19,12 @@ interface Props {
 interface ICardProps {
   title: string
   bullet: number
+  picture: string
 }
 
-const Card: React.FC<ICardProps> = ({ title, bullet }) => (
+const Card: React.FC<ICardProps> = ({ title, bullet, picture }) => (
   <Stack spacing={4} direction="column">
-    <Flex>
+    <Flex fontWeight="600">
       <Box
         mr={2}
         bg="brand.500"
@@ -37,7 +38,15 @@ const Card: React.FC<ICardProps> = ({ title, bullet }) => (
       </Box>
       {title}
     </Flex>
-    <Box height={40} rounded={10} bg="#b4b5bc" width="100%"></Box>
+    <Box
+      overflow="hidden"
+      border="1px solid white"
+      height={40}
+      rounded={10}
+      bg="#b4b5bc"
+      width="100%"
+      bgImage={`url(${picture})`}
+    ></Box>
   </Stack>
 )
 
@@ -68,9 +77,9 @@ const Home = ({ loading = false }: Props) => {
             </Button>
           </Header>
 
-          <Box mt={10} as="main">
-            <SimpleGrid columns={2}>
-              <Flex alignItems="flex-end" direction="column">
+          <Box as="main">
+            <SimpleGrid columns={[1, 1, 2]}>
+              <Flex alignItems="center" direction="row">
                 <Flex direction="column" fontSize="6xl">
                   <Text fontWeight="extrabold" color="white">
                     <Text as="span" color="brand.500">
@@ -91,29 +100,45 @@ const Home = ({ loading = false }: Props) => {
                       app
                     </Text>
                   </Flex>
+                  <Text textAlign="right" color="white" fontSize="2xl">
+                    Keep your JS app <b>up to date</b>
+                  </Text>
                 </Flex>
-                <Text color="white" fontSize="xl">
-                  Keep your JS app <b>up to date</b>
-                </Text>
+              </Flex>
+              <Flex p={[5, 10, 0]}>
+                <img alt="Reactivated App" height={100} src="/hero.svg" />
               </Flex>
             </SimpleGrid>
           </Box>
+
           <SimpleGrid
             columns={[1, 2, 3]}
-            mt={40}
+            mt={[15, 15, 40]}
             spacingX={5}
             spacingY={5}
             as="section"
             textAlign="center"
             color="white"
           >
-            <Card bullet={1} title="Connect you repo" />
-            <Card bullet={2} title="Get improvements" />
-            <Card bullet={3} title="Create PR with ease" />
+            <Card
+              bullet={1}
+              title="Connect you repo"
+              picture="/feat-repo.png"
+            />
+            <Card
+              bullet={2}
+              title="Get improvements"
+              picture="/feat-improvement.png"
+            />
+            <Card
+              bullet={3}
+              title="Create PR with ease"
+              picture="/feat-pr.png"
+            />
           </SimpleGrid>
         </Box>
 
-        <Box mt={20} as="section" textAlign="center" color="brand.500">
+        <Box my={20} as="section" textAlign="center" color="brand.500">
           <Text color="white" fontSize="3xl" fontWeight="bolder" mb={5}>
             Your app deserves fresh dependencies
           </Text>
