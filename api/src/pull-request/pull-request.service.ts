@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import { PullRequest, Status } from './pull-request.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Repository } from 'typeorm';
+import { PullRequest } from './pull-request.entity';
 
 @Injectable()
 export class PullRequestService extends TypeOrmCrudService<PullRequest> {

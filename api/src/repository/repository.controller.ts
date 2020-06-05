@@ -213,12 +213,13 @@ export class RepositoryController implements CrudController<Repository> {
       id: parseInt(repoInfo.repoId, 10),
     });
 
-    const branchName = 'reactivatedapp/' + new Date().getTime();
+    const branchTimestamp = new Date().getTime().toString();
+    const branchName = `reactivatedapp/${branchTimestamp}`;
+
     const pullRequest = new PullRequest();
     pullRequest.repository = repository;
     pullRequest.status = 'pending';
     pullRequest.branchName = branchName;
-    console.log('yo', branchName);
     await this.pullRequestService.createPullRequest(pullRequest);
 
     this.queue.add('upgrade_dependencies', {

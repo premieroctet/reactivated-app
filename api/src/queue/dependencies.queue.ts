@@ -191,14 +191,17 @@ export class DependenciesQueue {
       // { stdio: 'inherit' },
     );
 
-    // // Commit the new package.json and yarn.lock and create new PR
-
+    // Commit the new package.json and yarn.lock and create new PR
     try {
       await this.githubService.createBranch({
         fullName: job.data.repositoryFullName,
         githubToken: job.data.githubToken,
         branchName: job.data.branchName,
       });
+      console.log(
+        'upgradeDependencies -> job.data.branchName',
+        job.data.branchName,
+      );
     } catch (error) {
       if (error.response.status === 422) {
         this.logger.error('Branch reference already exists');

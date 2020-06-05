@@ -9,6 +9,7 @@
     "build": "NODE_ENV=prod yarn prebuild && tsc -p tsconfig.build.json",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
+    "smee": "smee --url https://smee.io/BVk7Sqmgj7fXXcV --path /webhooks/consume --port 3000",
     "start:dev": "NODE_ENV=dev nest start --watch",
     "start:worker": "node -r ts-node/register src/queue/worker.ts",
     "start:debug": "nest start --debug --watch",
