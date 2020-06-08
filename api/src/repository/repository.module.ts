@@ -15,7 +15,7 @@ import { RepositoryService } from './repository.service';
     GithubModule,
     UsersModule,
     forwardRef(() => QueueModule),
-    PullRequestModule,
+    forwardRef(() => PullRequestModule),
   ],
   exports: [RepositoryService],
   providers: [RepositoryService],

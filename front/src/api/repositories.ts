@@ -51,3 +51,7 @@ export const createUpgradePR = (
 ) => {
   return API.post(`repositories/${fullName}/pulls`, data)
 }
+
+export const getPullRequests = (repoId: string) => {
+  return API.get(`repositories/${repoId}/pull-requests`)
+}

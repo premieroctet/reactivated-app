@@ -88,9 +88,6 @@ export class WebhooksController {
           const branchName = body.pull_request.head.ref;
           const url = body.pull_request.html_url;
 
-          console.log('WebhooksController -> branchName', branchName);
-          console.log('WebhooksController -> url', url);
-
           await this.pullRequestService.updatePullRequest(branchName, {
             status: 'done',
             url,

@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Repository } from '../repository/repository.entity';
 
 export type Status = 'pending' | 'done';
@@ -19,6 +25,7 @@ export class PullRequest {
 
   @ApiProperty()
   @ManyToOne(() => Repository, (repository) => repository.pullRequests)
+  @JoinColumn({ name: 'repositoryId' })
   repository: Repository;
 
   @ApiProperty()

@@ -233,4 +233,9 @@ export class RepositoryController implements CrudController<Repository> {
       branchName,
     });
   }
+
+  @Get(':id/pull-requests')
+  async getPullRequests(@Param('id') repoId: string) {
+    return await this.pullRequestService.getPullRequestsFromRepository(repoId);
+  }
 }

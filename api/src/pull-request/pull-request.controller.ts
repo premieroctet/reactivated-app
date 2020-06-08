@@ -16,7 +16,5 @@ import { PullRequestService } from './pull-request.service';
 })
 @Controller('pull-requests')
 export class PullRequestController implements CrudController<PullRequest> {
-  private readonly logger = new Logger(this.constructor.name);
-
   constructor(public service: PullRequestService) {}
 }

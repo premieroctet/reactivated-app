@@ -198,10 +198,6 @@ export class DependenciesQueue {
         githubToken: job.data.githubToken,
         branchName: job.data.branchName,
       });
-      console.log(
-        'upgradeDependencies -> job.data.branchName',
-        job.data.branchName,
-      );
     } catch (error) {
       if (error.response.status === 422) {
         this.logger.error('Branch reference already exists');

@@ -1,14 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Repository } from 'typeorm';
 import { PullRequest } from './pull-request.entity';
+import { RepositoryService } from '../repository/repository.service';
 
 @Injectable()
 export class PullRequestService extends TypeOrmCrudService<PullRequest> {
   constructor(
     @InjectRepository(PullRequest)
     private readonly repository: Repository<PullRequest>,
+    private readonly repoService: RepositoryService,
   ) {
     super(repository);
   }
@@ -27,5 +29,18 @@ export class PullRequestService extends TypeOrmCrudService<PullRequest> {
       },
     });
     return await this.repository.save({ ...pullRequest, ...data });
+  }
+
+  async getPullRequestsFromRepository(repositoryId) {
+    const repo = await this.repoService.findRepo({ id: repositoryId });
+
+    if (!repo) {
+      throw new NotFoundException('Repository not found');
+    }
+
+    return await this.repository.find({
+      where: { repositoryId: repo.id },
+      relations: ['repository'],
+    });
   }
 }
