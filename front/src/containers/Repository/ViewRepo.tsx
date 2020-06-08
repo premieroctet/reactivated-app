@@ -24,8 +24,9 @@ import {
   Text,
   useDisclosure,
 } from '@chakra-ui/core'
+import Container from '@components/Container'
 import DependenciesList from '@components/DependenciesList'
-import { FaGithub } from 'react-icons/fa'
+import LoadBar from '@components/LoadBar'
 import LoadScore from '@components/LoadScore'
 import RepoConfigForm from '@components/RepoConfigForm'
 import useChakraToast from '@hooks/useChakraToast'
@@ -33,12 +34,12 @@ import { useAxiosRequest } from '@hooks/useRequest'
 import { getDependenciesCount } from '@utils/dependencies'
 import { formatDistance } from 'date-fns'
 import React, { useCallback } from 'react'
+import { FaGithub } from 'react-icons/fa'
 import { Link, useHistory, useRouteMatch } from 'react-router-dom'
 import { mutate } from 'swr'
 import FrameworkTag from '../../components/FrameworkTag/FrameworkTag'
 import ViewRepoSkeleton from './ViewRepoSkeleton'
-import Container from '@components/Container'
-import LoadBar from '@components/LoadBar'
+import PullRequestItem from '../../components/PullRequest/PullRequestItem'
 
 const AlertError = () => {
   const history = useHistory()
@@ -74,6 +75,14 @@ function ViewRepo() {
     fetcher: () => RepositoriesAPI.getRepositoryBranches(data!.fullName),
     revalidateOnFocus: false,
   })
+
+  const { data: pullRequests } = useAxiosRequest<PullRequest[]>(
+    `repositories/${id}/pull-requests`,
+    {
+      fetcher: () =>
+        RepositoriesAPI.getPullRequests(id, { params: { limit: 3 } }),
+    },
+  )
 
   const {
     isOpen: configModalOpen,
@@ -228,6 +237,20 @@ function ViewRepo() {
                   {' '}
                   / {totalDependencies} libraries
                 </Text>
+              </>
+            )}
+
+            {/* Pull Requests list */}
+            {pullRequests && pullRequests.length > 0 && (
+              <>
+                <Heading mt={10} as="h3" fontSize="xl">
+                  Pull Requests
+                </Heading>
+                <Box w="100%" py={4}>
+                  {pullRequests.map((pullRequest) => (
+                    <PullRequestItem pullRequest={pullRequest} />
+                  ))}
+                </Box>
               </>
             )}
 

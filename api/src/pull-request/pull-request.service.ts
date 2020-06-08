@@ -31,7 +31,7 @@ export class PullRequestService extends TypeOrmCrudService<PullRequest> {
     return await this.repository.save({ ...pullRequest, ...data });
   }
 
-  async getPullRequestsFromRepository(repositoryId) {
+  async getPullRequestsFromRepository(repositoryId, limit?) {
     const repo = await this.repoService.findRepo({ id: repositoryId });
 
     if (!repo) {
@@ -41,6 +41,8 @@ export class PullRequestService extends TypeOrmCrudService<PullRequest> {
     return await this.repository.find({
       where: { repositoryId: repo.id },
       relations: ['repository'],
+      order: { id: 'DESC' },
+      take: limit,
     });
   }
 }

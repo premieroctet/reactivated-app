@@ -1,5 +1,6 @@
 import API from './api'
 import GithubAPI from './github'
+import { AxiosRequestConfig } from 'axios'
 
 export const getRepositories = () => {
   return API.get<Repository[]>(`/repositories`, {
@@ -52,6 +53,9 @@ export const createUpgradePR = (
   return API.post(`repositories/${fullName}/pulls`, data)
 }
 
-export const getPullRequests = (repoId: string) => {
-  return API.get(`repositories/${repoId}/pull-requests`)
+export const getPullRequests = (
+  repoId: string,
+  config?: AxiosRequestConfig,
+) => {
+  return API.get(`repositories/${repoId}/pull-requests`, config)
 }

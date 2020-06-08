@@ -10,6 +10,7 @@ import {
   Put,
   Request,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -235,7 +236,10 @@ export class RepositoryController implements CrudController<Repository> {
   }
 
   @Get(':id/pull-requests')
-  async getPullRequests(@Param('id') repoId: string) {
-    return await this.pullRequestService.getPullRequestsFromRepository(repoId);
+  async getPullRequests(@Param('id') repoId: string, @Query() query) {
+    return await this.pullRequestService.getPullRequestsFromRepository(
+      repoId,
+      query.limit,
+    );
   }
 }

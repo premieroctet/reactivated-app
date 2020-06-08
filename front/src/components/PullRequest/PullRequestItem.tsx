@@ -9,7 +9,7 @@ const PullRequestItem: React.FC<PullRequestItemProps> = ({ pullRequest }) => {
   const getColorFromStatus = (status: Status) => {
     switch (status) {
       case 'done':
-        return 'red.200'
+        return 'green.300'
       case 'pending':
         return 'yellow.300'
     }

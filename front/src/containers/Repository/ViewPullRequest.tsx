@@ -8,16 +8,16 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/core'
-import { FaGithub } from 'react-icons/fa'
 import React from 'react'
+import { FaGithub } from 'react-icons/fa'
 import { Link, useRouteMatch } from 'react-router-dom'
-import { getPullRequests } from '../../api/repositories'
 import Container from '../../components/Container'
-import LoadBar from '../../components/LoadBar'
-import { useAxiosRequest } from '../../hooks/useRequest'
 import FrameworkTag from '../../components/FrameworkTag/FrameworkTag'
+import LoadBar from '../../components/LoadBar'
 import LoadScore from '../../components/LoadScore'
 import PullRequestItem from '../../components/PullRequest/PullRequestItem'
+import { useAxiosRequest } from '../../hooks/useRequest'
+import { getPullRequests } from '../../api/repositories'
 
 const ViewPullRequest = () => {
   const {
