@@ -39,6 +39,7 @@ import FrameworkTag from '../../components/FrameworkTag/FrameworkTag'
 import ViewRepoSkeleton from './ViewRepoSkeleton'
 import Container from '@components/Container'
 import LoadBar from '@components/LoadBar'
+import { Repository } from '../../typings/entities'
 
 const AlertError = () => {
   const history = useHistory()
@@ -108,7 +109,7 @@ function ViewRepo() {
     return RepositoriesAPI.recomputeDeps(parseInt(id, 10))
   }, [id])
 
-  const onUpdateConfig = async (config: { branch: string; path?: string }) => {
+  const onUpdateConfig = async (config: { branch: string; path: string }) => {
     try {
       const { data: configData } = await RepositoriesAPI.configureRepository({
         id: parseInt(id, 10),

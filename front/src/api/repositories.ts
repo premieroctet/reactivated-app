@@ -1,5 +1,6 @@
 import API from './api'
 import GithubAPI from './github'
+import { Repository } from '../typings/entities'
 
 export const getRepositories = () => {
   return API.get<Repository[]>(`/repositories`, {

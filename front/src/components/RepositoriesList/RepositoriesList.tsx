@@ -3,6 +3,7 @@ import { Flex, Button, Text } from '@chakra-ui/core'
 import { Link } from 'react-router-dom'
 import RepositoryListItem from './RepositoryListItem'
 import { FaPlug } from 'react-icons/fa'
+import { Repository } from '../../typings/entities'
 
 interface Props {
   repositories: Repository[]
