@@ -191,13 +191,12 @@ export class DependenciesQueue {
       // { stdio: 'inherit' },
     );
 
-    // // Commit the new package.json and yarn.lock and create new PR
-    const newBranchName = 'reactivatedapp/' + Date.now();
+    // Commit the new package.json and yarn.lock and create new PR
     try {
       await this.githubService.createBranch({
         fullName: job.data.repositoryFullName,
         githubToken: job.data.githubToken,
-        branchName: newBranchName,
+        branchName: job.data.branchName,
       });
     } catch (error) {
       if (error.response.status === 422) {
@@ -216,7 +215,7 @@ export class DependenciesQueue {
         const res = await this.githubService.commitFile({
           name: job.data.repositoryFullName,
           path: job.data.path,
-          branch: newBranchName,
+          branch: job.data.branchName,
           token: job.data.githubToken,
           fileName: file,
           message: `Upgrade ${file}`,
@@ -241,7 +240,7 @@ export class DependenciesQueue {
         baseBranch: job.data.branch,
         fullName: job.data.repositoryFullName,
         githubToken: job.data.githubToken,
-        headBranch: newBranchName,
+        headBranch: job.data.branchName,
         updatedDependencies: job.data.updatedDependencies,
         upgradedDiff,
       });
@@ -265,9 +264,9 @@ export class DependenciesQueue {
   @OnQueueEvent(BullQueueEvents.COMPLETED)
   onCompleted(job: Job) {
     this.logger.log(
-      `Completed job ${job.id} of type ${
-        job.name
-      } with result (${job.finishedOn - job.processedOn} ms)`,
+      `Completed job ${job.id} of type ${job.name} with result (${
+        job.finishedOn - job.processedOn
+      } ms)`,
     );
   }
 

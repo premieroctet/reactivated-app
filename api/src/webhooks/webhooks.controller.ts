@@ -9,6 +9,7 @@ import { RepositoryService } from '../repository/repository.service';
 import { UsersService } from '../users/users.service';
 import { ApiTags } from '@nestjs/swagger';
 import { WebhookInterceptor } from './webhooks.interceptor';
+import { PullRequestService } from '../pull-request/pull-request.service';
 
 @ApiTags('webhooks')
 @Controller('webhooks')
@@ -16,6 +17,7 @@ export class WebhooksController {
   constructor(
     private readonly repositoryService: RepositoryService,
     private readonly userService: UsersService,
+    private readonly pullRequestService: PullRequestService,
   ) {}
 
   @UseInterceptors(WebhookInterceptor)
@@ -39,7 +41,7 @@ export class WebhooksController {
         }
 
         await Promise.all(
-          repositories.map(repoAdd => {
+          repositories.map((repoAdd) => {
             const newRepo = {
               name: repoAdd.name,
               fullName: repoAdd.full_name,
@@ -57,7 +59,7 @@ export class WebhooksController {
         );
 
         await Promise.all(
-          repositoriesRemoved.map(repoAdd => {
+          repositoriesRemoved.map((repoAdd) => {
             return this.repositoryService.deleteRepo(
               {
                 githubId: repoAdd.id,
@@ -78,6 +80,21 @@ export class WebhooksController {
       }
 
       return {};
+    }
+
+    if (xGitHubEvent === 'pull_request') {
+      switch (body.action) {
+        case 'opened':
+          const branchName = body.pull_request.head.ref;
+          const url = body.pull_request.html_url;
+
+          await this.pullRequestService.updatePullRequest(branchName, {
+            status: 'done',
+            url,
+          });
+        default:
+          return {};
+      }
     }
   }
 }

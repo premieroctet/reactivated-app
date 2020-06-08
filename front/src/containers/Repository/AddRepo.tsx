@@ -10,6 +10,7 @@ import { useHistory } from 'react-router'
 import { useRequest } from '@hooks/useRequest'
 import useChakraToast from '@hooks/useChakraToast'
 import Container from '@components/Container'
+import { Repository } from '../../typings/entities'
 
 enum Step {
   PROVIDER_SELECTION = 0,
@@ -125,7 +126,7 @@ const AddRepo = () => {
         id: selectedRepo!.id,
         data: {
           branch: data.branch,
-          path: data.path,
+          path: data.path || '/',
           fullName: selectedRepo!.fullName,
         },
       })
