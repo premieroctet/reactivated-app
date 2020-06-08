@@ -25,12 +25,15 @@ const DependenciesList: React.FC<IProps> = ({ dependencies, isDev, repo }) => {
   const commandeLine = `yarn upgrade ${items.join(' ')}`
   const { onCopy, hasCopied } = useClipboard(commandeLine)
   const createPR = async () => {
-    const res = await createUpgradePR(fullName, {
+    await createUpgradePR(fullName, {
       updatedDependencies: items,
       repoId: repo.id,
     })
     setShowSuccess(true)
-    console.log('createPR -> res', res)
+
+    setTimeout(() => {
+      window.location.reload()
+    }, 1000)
   }
 
   const createPRisDisabled = items.length === 0

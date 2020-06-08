@@ -1,33 +1,36 @@
 import {
-  Controller,
-  UseGuards,
-  Put,
   Body,
-  Param,
-  Request,
-  Get,
+  Controller,
   ForbiddenException,
-  NotFoundException,
-  Post,
+  Get,
   Logger,
+  NotFoundException,
+  Param,
+  Post,
+  Put,
+  Request,
+  UseGuards,
+  Query,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { RepositoryService } from './repository.service';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   Crud,
+  CrudAuth,
   CrudController,
+  CrudRequest,
   Override,
   ParsedRequest,
-  CrudRequest,
-  CrudAuth,
 } from '@nestjsx/crud';
-import { Repository } from './repository.entity';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { Queue } from 'bull';
 import { InjectQueue } from 'nest-bull';
 import { GithubService } from '../github/github.service';
+import { PullRequest } from '../pull-request/pull-request.entity';
+import { PullRequestService } from '../pull-request/pull-request.service';
 import { UsersService } from '../users/users.service';
-import { User } from 'users/user.entity';
+import { Repository } from './repository.entity';
+import { RepositoryService } from './repository.service';
+import { User } from '../users/user.entity';
 
 @Crud({
   model: {
@@ -59,6 +62,7 @@ export class RepositoryController implements CrudController<Repository> {
     public service: RepositoryService,
     private readonly githubService: GithubService,
     private readonly usersService: UsersService,
+    private readonly pullRequestService: PullRequestService,
     @InjectQueue('dependencies') private readonly queue: Queue,
   ) {}
 
@@ -210,6 +214,15 @@ export class RepositoryController implements CrudController<Repository> {
       id: parseInt(repoInfo.repoId, 10),
     });
 
+    const branchTimestamp = new Date().getTime().toString();
+    const branchName = `reactivatedapp/${branchTimestamp}`;
+
+    const pullRequest = new PullRequest();
+    pullRequest.repository = repository;
+    pullRequest.status = 'pending';
+    pullRequest.branchName = branchName;
+    await this.pullRequestService.createPullRequest(pullRequest);
+
     this.queue.add('upgrade_dependencies', {
       repositoryFullName: fullName,
       repositoryId: repository.githubId,
@@ -218,6 +231,15 @@ export class RepositoryController implements CrudController<Repository> {
       path: repository.path,
       updatedDependencies: repoInfo.updatedDependencies,
       hasYarnLock: repository.hasYarnLock,
+      branchName,
     });
+  }
+
+  @Get(':id/pull-requests')
+  async getPullRequests(@Param('id') repoId: string, @Query() query) {
+    return await this.pullRequestService.getPullRequestsFromRepository(
+      repoId,
+      query.limit,
+    );
   }
 }

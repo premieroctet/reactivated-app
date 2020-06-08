@@ -46,3 +46,12 @@ interface GithubInstallation {
 interface GithubBranch {
   name: string
 }
+
+type Status = 'pending' | 'done'
+interface PullRequest {
+  id: number
+  status: Status
+  repository: Repository
+  branchName: string
+  url: string
+}
