@@ -1,4 +1,4 @@
-import { Box, Stack, Tag, Flex, Text, Link } from '@chakra-ui/core'
+import { Box, Stack, Tag, Flex, Text, Link, Spinner } from '@chakra-ui/core'
 import React from 'react'
 
 type PullRequestItemProps = {
@@ -34,7 +34,11 @@ const PullRequestItem: React.FC<PullRequestItemProps> = ({ pullRequest }) => {
             rounded={20}
           />
           <Tag variantColor="gray" size="sm">
-            {pullRequest.status}
+            {pullRequest.status === 'pending' ? (
+              <Spinner size="sm" speed="1.15s" />
+            ) : (
+              pullRequest.status
+            )}
           </Tag>
         </Stack>
 
