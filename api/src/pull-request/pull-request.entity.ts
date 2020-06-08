@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { Repository } from '../repository/repository.entity';
 
-export type Status = 'pending' | 'done';
+export type Status = 'pending' | 'done' | 'merged';
 
 @Entity()
 export class PullRequest {

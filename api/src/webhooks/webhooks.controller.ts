@@ -92,6 +92,8 @@ export class WebhooksController {
             status: 'done',
             url,
           });
+        case 'merged':
+          console.log('WebhooksController -> body.action', body.action);
         default:
           return {};
       }
