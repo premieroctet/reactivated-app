@@ -1,6 +1,7 @@
 import API from './api'
 import GithubAPI from './github'
 import { AxiosRequestConfig } from 'axios'
+import { Repository } from '../typings/entities'
 
 export const getRepositories = () => {
   return API.get<Repository[]>(`/repositories`, {

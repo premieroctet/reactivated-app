@@ -40,6 +40,7 @@ import { mutate } from 'swr'
 import FrameworkTag from '../../components/FrameworkTag/FrameworkTag'
 import ViewRepoSkeleton from './ViewRepoSkeleton'
 import PullRequestItem from '../../components/PullRequest/PullRequestItem'
+import { Repository } from '../../typings/entities'
 
 const AlertError = () => {
   const history = useHistory()
@@ -117,7 +118,7 @@ function ViewRepo() {
     return RepositoriesAPI.recomputeDeps(parseInt(id, 10))
   }, [id])
 
-  const onUpdateConfig = async (config: { branch: string; path?: string }) => {
+  const onUpdateConfig = async (config: { branch: string; path: string }) => {
     try {
       const { data: configData } = await RepositoriesAPI.configureRepository({
         id: parseInt(id, 10),
