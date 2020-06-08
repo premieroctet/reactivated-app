@@ -4,6 +4,7 @@ import { Column, Row } from '@components/Flex'
 import FrameworkTag from '../FrameworkTag/FrameworkTag'
 import LoadScore from '@components/LoadScore'
 import LoadBar from '@components/LoadBar'
+import { Repository } from '../../typings/entities'
 
 interface IProps {
   repository: Repository

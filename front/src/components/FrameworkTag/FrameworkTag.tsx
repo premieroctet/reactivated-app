@@ -1,5 +1,6 @@
 import { Box, Flex, Text } from '@chakra-ui/core'
 import React from 'react'
+import { Repository } from '../../typings/entities'
 
 interface FrameworkTagProps extends Pick<Repository, 'framework'> {}
 

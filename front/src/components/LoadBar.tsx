@@ -1,5 +1,6 @@
 import { Box } from '@chakra-ui/core'
 import React from 'react'
+import { Repository } from '../typings/entities'
 
 interface Props extends Pick<Repository, 'score'> {}
 

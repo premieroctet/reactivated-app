@@ -41,23 +41,25 @@ export interface Repository {
   repoImg: string
 
   /** Create date of the repo */
-  createdAt: Date
-  dependenciesUpdatedAt: Date
+  createdAt: string
+  dependenciesUpdatedAt: string
 
   /** URL of the repo */
   repoUrl: string
-  users: string[]
+  users: User[]
 
   /** Package.json file of the repo */
-  packageJson: object
+  packageJson: PackageJson
 
   /** Outdated dependencies of the repo */
-  dependencies: object
+  dependencies: {
+    deps: (Dependency | PrefixedDependency)[]
+  } | null
   branch: string
   path: string
   isConfigured: boolean
   score: number
-  framework: string
+  framework: FrameworkTag
   hasYarnLock: boolean
 }
 

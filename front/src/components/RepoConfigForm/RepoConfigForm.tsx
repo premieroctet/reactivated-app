@@ -5,7 +5,7 @@ import { Select, Input, Stack, Link, Icon, Button } from '@chakra-ui/core'
 interface Props {
   branches: GithubBranch['name'][]
   repoName: string
-  onSubmit: (data: { branch: string; path?: string }) => void | Promise<void>
+  onSubmit: (data: { branch: string; path: string }) => void | Promise<void>
   initialBranch?: string
   initialPath?: string
 }
