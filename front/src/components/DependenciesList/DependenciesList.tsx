@@ -31,7 +31,7 @@ const DependenciesList: React.FC<IProps> = ({ dependencies, isDev, repo }) => {
     setShowSuccess(true)
 
     setTimeout(() => {
-      window.location.href = `${window.location.href}/pull-requests`
+      window.location.reload()
     }, 1000)
   }
 
