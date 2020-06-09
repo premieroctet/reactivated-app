@@ -25,6 +25,7 @@ export class CronService {
             branch: repo.branch,
             githubToken: user.githubToken,
             repositoryId: repo.githubId,
+            hasYarnLock: repo.hasYarnLock,
           });
           break;
         }
