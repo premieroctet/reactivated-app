@@ -1,6 +1,15 @@
 import React from 'react'
 import semver from 'semver'
-import { Box, Link, Switch, Stack, Tag, Flex, FormLabel } from '@chakra-ui/core'
+import {
+  Box,
+  Link,
+  Switch,
+  Stack,
+  Tag,
+  Flex,
+  FormLabel,
+  Text,
+} from '@chakra-ui/core'
 import { Tooltip } from '@chakra-ui/core'
 
 interface IProps {
@@ -16,9 +25,10 @@ const DependencyItem: React.FC<IProps> = ({
   isLatestChecked = false,
   isStableChecked = false,
 }) => {
-  const hasMinorUpdate = semver.satisfies(dependency[1], dependency[3])
+  const hasMinorUpdate = semver.satisfies(dependency.current, dependency.latest)
   const hasStableUpdate =
-    dependency[1] !== dependency[2] && dependency[2] !== dependency[3]
+    dependency.current !== dependency.wanted &&
+    dependency.wanted !== dependency.latest
 
   return (
     <Stack
@@ -60,14 +70,23 @@ const DependencyItem: React.FC<IProps> = ({
             mr={2}
             fontWeight="semibold"
             isExternal
-            href={`https://www.npmjs.com/package/${dependency[0]}`}
+            href={`https://www.npmjs.com/package/${dependency.name}`}
           >
-            {dependency[0]}
+            {dependency.prefix ? (
+              <>
+                <Text color="secondary.50" as="span">
+                  {dependency.prefix}
+                </Text>
+                {dependency.name.split(dependency.prefix)[1]}
+              </>
+            ) : (
+              <> {dependency.name}</>
+            )}
           </Link>
         </Stack>
 
-        <Tag variantColor="gray" size="sm">
-          {dependency[1]}
+        <Tag isTruncated variantColor="gray" size="sm">
+          {dependency.current}
         </Tag>
       </Flex>
 
@@ -75,18 +94,18 @@ const DependencyItem: React.FC<IProps> = ({
         <Box px={4} bg="white" zIndex={1}>
           <FormLabel
             cursor="pointer"
-            htmlFor={`${dependency[0]}-${dependency[2]}`}
+            htmlFor={`${dependency.name}-${dependency.wanted}`}
           >
             <Tag variantColor="green" size="sm">
-              {dependency[2]}
+              {dependency.wanted}
             </Tag>
           </FormLabel>
           <Switch
             isChecked={isStableChecked}
-            id={`${dependency[0]}-${dependency[2]}`}
+            id={`${dependency.name}-${dependency.wanted}`}
             size="sm"
             onChange={(e) => {
-              onSelect(e.currentTarget.checked, dependency[0], 'stable')
+              onSelect(e.currentTarget.checked, dependency.name, 'stable')
             }}
             color="secondary"
           />
@@ -96,18 +115,18 @@ const DependencyItem: React.FC<IProps> = ({
       <Box px={4} bg="white" zIndex={1}>
         <FormLabel
           cursor="pointer"
-          htmlFor={`${dependency[0]}-${dependency[3]}`}
+          htmlFor={`${dependency.name}-${dependency.latest}`}
         >
           <Tag variantColor="orange" size="sm">
-            {dependency[3]}
+            {dependency.latest}
           </Tag>
         </FormLabel>
         <Switch
           isChecked={isLatestChecked}
-          id={`${dependency[0]}-${dependency[3]}`}
+          id={`${dependency.name}-${dependency.latest}`}
           size="sm"
           onChange={(e) => {
-            onSelect(e.currentTarget.checked, dependency[0], 'latest')
+            onSelect(e.currentTarget.checked, dependency.name, 'latest')
           }}
           color="secondary"
         />
