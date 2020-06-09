@@ -39,7 +39,7 @@ export class PullRequestService extends TypeOrmCrudService<PullRequest> {
     }
 
     return await this.repository.find({
-      where: { repositoryId: repo.id },
+      where: { repository: { id: repo.id } },
       relations: ['repository'],
       order: { id: 'DESC' },
       take: limit,

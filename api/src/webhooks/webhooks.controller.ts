@@ -11,6 +11,8 @@ import { UsersService } from '../users/users.service';
 import { ApiTags } from '@nestjs/swagger';
 import { WebhookInterceptor } from './webhooks.interceptor';
 import { PullRequestService } from '../pull-request/pull-request.service';
+import { DependenciesQueue } from '../queue/dependencies.queue';
+import { InjectQueue } from 'nest-bull';
 
 @ApiTags('webhooks')
 @Controller('webhooks')
@@ -20,6 +22,7 @@ export class WebhooksController {
     private readonly repositoryService: RepositoryService,
     private readonly userService: UsersService,
     private readonly pullRequestService: PullRequestService,
+    @InjectQueue('dependencies') dependenciesQueue: DependenciesQueue,
   ) {}
 
   @UseInterceptors(WebhookInterceptor)
@@ -84,8 +87,10 @@ export class WebhooksController {
       return {};
     }
 
+    // https://developer.github.com/webhooks/event-payloads/#pull_request
     if (xGitHubEvent === 'pull_request') {
       const branchName = body.pull_request.head.ref;
+      const repoId = body.repository.id;
 
       try {
         switch (body.action) {
@@ -99,6 +104,18 @@ export class WebhooksController {
             });
           case 'closed':
             if (body.pull_request.merged === true) {
+              const repository = await this.repositoryService.findRepo({
+                githubId: repoId.toString(),
+              });
+              console.log('WebhooksController -> repository', repository);
+
+              // await this.queue.add('compute_yarn_dependencies', {
+              //   repositoryFullName: repository.fullName,
+              //   repositoryId: repository.githubId,
+              //   githubToken: req.user.githubToken,
+              //   branch: repository.branch,
+              //   path: repository.path,
+              // });
               return await this.pullRequestService.updatePullRequest(
                 branchName,
                 {
