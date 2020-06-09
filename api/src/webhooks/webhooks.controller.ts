@@ -13,6 +13,7 @@ import { WebhookInterceptor } from './webhooks.interceptor';
 import { PullRequestService } from '../pull-request/pull-request.service';
 import { DependenciesQueue } from '../queue/dependencies.queue';
 import { InjectQueue } from 'nest-bull';
+import { Queue } from 'bull';
 
 @ApiTags('webhooks')
 @Controller('webhooks')
@@ -22,7 +23,8 @@ export class WebhooksController {
     private readonly repositoryService: RepositoryService,
     private readonly userService: UsersService,
     private readonly pullRequestService: PullRequestService,
-    @InjectQueue('dependencies') dependenciesQueue: DependenciesQueue,
+    @InjectQueue('dependencies')
+    private readonly dependenciesQueue: Queue,
   ) {}
 
   @UseInterceptors(WebhookInterceptor)
@@ -107,15 +109,16 @@ export class WebhooksController {
               const repository = await this.repositoryService.findRepo({
                 githubId: repoId.toString(),
               });
-              console.log('WebhooksController -> repository', repository);
+              await this.dependenciesQueue.add('compute_yarn_dependencies', {
+                repositoryFullName: repository.fullName,
+                repositoryId: repository.githubId,
+                githubToken: repository.users[0].githubToken,
+                branch: repository.branch,
+                path: repository.path,
+                hasYarnLock: true, // only yarn.lock supported
+              });
 
-              // await this.queue.add('compute_yarn_dependencies', {
-              //   repositoryFullName: repository.fullName,
-              //   repositoryId: repository.githubId,
-              //   githubToken: req.user.githubToken,
-              //   branch: repository.branch,
-              //   path: repository.path,
-              // });
+              this.logger.log('Pull request merged : ' + branchName);
               return await this.pullRequestService.updatePullRequest(
                 branchName,
                 {
