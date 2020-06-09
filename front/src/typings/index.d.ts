@@ -47,7 +47,7 @@ interface GithubBranch {
   name: string
 }
 
-type Status = 'pending' | 'done'
+type Status = 'pending' | 'done' | 'merged' | 'closed'
 interface PullRequest {
   id: number
   status: Status
