@@ -24,7 +24,9 @@ export class PullRequest {
   status: Status;
 
   @ApiProperty()
-  @ManyToOne(() => Repository, (repository) => repository.pullRequests)
+  @ManyToOne(() => Repository, (repository) => repository.pullRequests, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'repositoryId' })
   repository: Repository;
 

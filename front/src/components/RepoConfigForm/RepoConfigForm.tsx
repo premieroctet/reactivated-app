@@ -1,6 +1,23 @@
-import React, { useState } from 'react'
+import {
+  Button,
+  Icon,
+  Input,
+  Link,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
+  Select,
+  Stack,
+  Text,
+} from '@chakra-ui/core'
 import FormInput from '@components/FormInput'
-import { Select, Input, Stack, Link, Icon, Button } from '@chakra-ui/core'
+import React, { useState } from 'react'
+import { deleteRepository } from '../../api/repositories'
+import { Row } from '../Flex'
 
 interface Props {
   branches: GithubBranch['name'][]
@@ -8,6 +25,8 @@ interface Props {
   onSubmit: (data: { branch: string; path: string }) => void | Promise<void>
   initialBranch?: string
   initialPath?: string
+  allowDelete?: boolean
+  repoId?: number
 }
 
 const RepoConfigForm: React.FC<Props> = ({
@@ -16,6 +35,8 @@ const RepoConfigForm: React.FC<Props> = ({
   onSubmit,
   initialBranch,
   initialPath,
+  allowDelete,
+  repoId,
 }) => {
   const [selectedBranch, setSelectedBranch] = useState<string>(() => {
     if (!initialBranch) {
@@ -41,6 +62,7 @@ const RepoConfigForm: React.FC<Props> = ({
     return ''
   })
   const [submitLoading, setSubmitLoading] = useState(false)
+  const [deleteLoading, setDeleteLoading] = React.useState(false)
 
   const onChangeBranch = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedBranch(e.target.value)
@@ -61,6 +83,19 @@ const RepoConfigForm: React.FC<Props> = ({
       })
     } finally {
       setSubmitLoading(false)
+    }
+  }
+
+  const onDeleteRepo = async () => {
+    if (repoId) {
+      const res = await deleteRepository(repoId)
+      if (res.status === 200) {
+        console.log('onDeleteRepo -> res.status', res.status)
+        setDeleteLoading(true)
+        setTimeout(() => {
+          window.location.assign('/')
+        }, 800)
+      }
     }
   }
 
@@ -105,6 +140,35 @@ const RepoConfigForm: React.FC<Props> = ({
         >
           Finish configuration
         </Button>
+
+        {allowDelete && (
+          <Popover>
+            <PopoverTrigger>
+              <Button variantColor="red" variant="link">
+                Delete
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent zIndex={4}>
+              <PopoverArrow />
+              <PopoverCloseButton />
+              <PopoverHeader>
+                <Text color="red.500">Confirm deletion</Text>
+              </PopoverHeader>
+              <PopoverBody>
+                Are you sure to delete <b>{repoName}</b>?
+                <Row justify="center" mt={5}>
+                  <Button
+                    variantColor="red"
+                    onClick={onDeleteRepo}
+                    isLoading={deleteLoading}
+                  >
+                    Confirm
+                  </Button>
+                </Row>
+              </PopoverBody>
+            </PopoverContent>
+          </Popover>
+        )}
       </Stack>
     </form>
   )
