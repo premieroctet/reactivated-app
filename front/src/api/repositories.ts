@@ -60,3 +60,7 @@ export const getPullRequests = (
 ) => {
   return API.get(`repositories/${repoId}/pull-requests`, config)
 }
+
+export const deleteRepository = (repoId: number) => {
+  return API.delete<Repository>(`repositories/${repoId.toString()}`)
+}

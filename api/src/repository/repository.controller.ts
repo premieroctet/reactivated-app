@@ -11,6 +11,8 @@ import {
   Request,
   UseGuards,
   Query,
+  Delete,
+  Req,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -241,5 +243,11 @@ export class RepositoryController implements CrudController<Repository> {
       repoId,
       query.limit,
     );
+  }
+
+  @Delete(':id')
+  async deleteRepo(@Param('id') repoId: string, @Req() req) {
+    const userId = req.user.id;
+    return await this.service.deleteRepo({ id: repoId }, userId);
   }
 }
