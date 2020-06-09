@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { createUpgradePR } from '../../api/repositories'
 import DependencyItem from './DependencyItem'
 import PrefixAccordion from './PrefixAccordion'
+import { Repository } from '../../typings/entities'
 
 interface IProps {
   dependencies: (Dependency | PrefixedDependency)[]
