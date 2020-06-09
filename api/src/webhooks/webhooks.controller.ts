@@ -4,6 +4,7 @@ import {
   Body,
   Headers,
   UseInterceptors,
+  Logger,
 } from '@nestjs/common';
 import { RepositoryService } from '../repository/repository.service';
 import { UsersService } from '../users/users.service';
@@ -14,6 +15,7 @@ import { PullRequestService } from '../pull-request/pull-request.service';
 @ApiTags('webhooks')
 @Controller('webhooks')
 export class WebhooksController {
+  private readonly logger = new Logger(this.constructor.name);
   constructor(
     private readonly repositoryService: RepositoryService,
     private readonly userService: UsersService,
@@ -83,19 +85,40 @@ export class WebhooksController {
     }
 
     if (xGitHubEvent === 'pull_request') {
-      switch (body.action) {
-        case 'opened':
-          const branchName = body.pull_request.head.ref;
-          const url = body.pull_request.html_url;
+      const branchName = body.pull_request.head.ref;
 
-          await this.pullRequestService.updatePullRequest(branchName, {
-            status: 'done',
-            url,
-          });
-        case 'merged':
-          console.log('WebhooksController -> body.action', body.action);
-        default:
-          return {};
+      try {
+        switch (body.action) {
+          case 'reopened':
+          case 'opened':
+            const url = body.pull_request.html_url;
+
+            return await this.pullRequestService.updatePullRequest(branchName, {
+              status: 'done',
+              url,
+            });
+          case 'closed':
+            if (body.pull_request.merged === true) {
+              return await this.pullRequestService.updatePullRequest(
+                branchName,
+                {
+                  status: 'merged',
+                },
+              );
+            } else {
+              return await this.pullRequestService.updatePullRequest(
+                branchName,
+                {
+                  status: 'closed',
+                },
+              );
+            }
+
+          default:
+            return {};
+        }
+      } catch (error) {
+        this.logger.error('Error Pull Request webhook : ' + error);
       }
     }
   }

@@ -21,7 +21,7 @@ export class PullRequestService extends TypeOrmCrudService<PullRequest> {
 
   async updatePullRequest(
     branchName: string,
-    data: Pick<PullRequest, 'status' | 'url'>,
+    data: Partial<Pick<PullRequest, 'status' | 'url'>>,
   ) {
     const pullRequest = await this.repository.findOneOrFail({
       where: {
