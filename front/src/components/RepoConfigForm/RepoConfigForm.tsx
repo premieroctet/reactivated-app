@@ -90,7 +90,6 @@ const RepoConfigForm: React.FC<Props> = ({
     if (repoId) {
       const res = await deleteRepository(repoId)
       if (res.status === 200) {
-        console.log('onDeleteRepo -> res.status', res.status)
         setDeleteLoading(true)
         setTimeout(() => {
           window.location.assign('/')
