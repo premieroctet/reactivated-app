@@ -13,8 +13,15 @@ export class RepositoryService extends TypeOrmCrudService<Repository> {
     super(repositoryContent);
   }
 
-  async getRepos() {
+  async getAllRepos() {
     return this.repositoryContent.find({ relations: ['users'] });
+  }
+
+  async findRepos(criteria: Partial<Repository>) {
+    return this.repositoryContent.find({
+      where: criteria,
+      relations: ['users'],
+    });
   }
 
   async findRepo(criteria: Partial<Repository>) {
@@ -40,7 +47,9 @@ export class RepositoryService extends TypeOrmCrudService<Repository> {
     if (
       repo.users &&
       users &&
-      !users.some(repoUser => repo.users.some(user => user.id === repoUser.id))
+      !users.some((repoUser) =>
+        repo.users.some((user) => user.id === repoUser.id),
+      )
     ) {
       users = [...repository.users, ...(repo.users || [])];
     }
@@ -63,13 +72,13 @@ export class RepositoryService extends TypeOrmCrudService<Repository> {
         (repo): Promise<DeleteResult | Repository | void> => {
           const users = repo.users;
 
-          if (users.some(user => user.id === userId)) {
+          if (users.some((user) => user.id === userId)) {
             if (users.length === 1) {
               return this.repositoryContent.delete(repo.id);
             } else {
               return this.repositoryContent.save({
                 ...repo,
-                users: users.filter(user => user.id !== userId),
+                users: users.filter((user) => user.id !== userId),
               });
             }
           }
