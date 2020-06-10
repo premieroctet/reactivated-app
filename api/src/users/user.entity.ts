@@ -24,5 +24,5 @@ export class User {
 
   @ApiProperty()
   @Column({ default: false })
-  validated: false;
+  validated: boolean;
 }

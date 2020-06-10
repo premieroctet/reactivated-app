@@ -13,7 +13,7 @@ type DependencyType = 'dependencies' | 'devDependencies'
 
 type PackageJson = {
   dependencies: object
-  devDependencies: objectp
+  devDependencies: object
 } | null
 
 type FrameworkTag =
