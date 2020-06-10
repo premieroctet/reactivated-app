@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, HttpModule } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { GitHubStrategy } from './github.strategy';
 import { ConfigModule } from '../config/config.module';
@@ -11,6 +11,7 @@ import { JwtStrategy } from './jwt.strategy';
   imports: [
     ConfigModule,
     UsersModule,
+    HttpModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
