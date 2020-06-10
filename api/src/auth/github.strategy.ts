@@ -31,8 +31,7 @@ export class GitHubStrategy extends PassportStrategy(Strategy) {
           };
           user = await userService.createUser(newUser);
 
-          const text = `New user registered : ${profile.username}`;
-
+          const text = `New user to validate registered : ${profile.username}`;
           await this.httpService
             .post(
               'https://hooks.slack.com/services/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',
