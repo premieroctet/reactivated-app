@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   ForbiddenException,
   Get,
   Logger,
@@ -8,11 +9,10 @@ import {
   Param,
   Post,
   Put,
+  Query,
+  Req,
   Request,
   UseGuards,
-  Query,
-  Delete,
-  Req,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -26,15 +26,14 @@ import {
 } from '@nestjsx/crud';
 import { Queue } from 'bull';
 import { InjectQueue } from 'nest-bull';
+import { ConfigService } from '../config/config.service';
 import { GithubService } from '../github/github.service';
 import { PullRequest } from '../pull-request/pull-request.entity';
 import { PullRequestService } from '../pull-request/pull-request.service';
+import { User } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
 import { Repository } from './repository.entity';
 import { RepositoryService } from './repository.service';
-import { User } from '../users/user.entity';
-import { In } from 'typeorm';
-import { ConfigService } from '../config/config.service';
 
 @Crud({
   model: {
