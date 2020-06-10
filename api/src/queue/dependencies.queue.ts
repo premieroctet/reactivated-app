@@ -75,6 +75,7 @@ export class DependenciesQueue {
       const score = Math.round(
         101 - ((nbOutdatedDeps + nbOutdatedDevDeps) / totalDependencies) * 100,
       );
+      this.logger.log('score : ' + score);
 
       const deps = getPrefixedDependencies(outdatedDeps);
       repository.dependencies = {
@@ -91,6 +92,8 @@ export class DependenciesQueue {
         repository.id.toString(),
         repository,
       );
+
+      this.logger.log('updated repo : ' + repository.fullName);
       exec(`cd ${tmpPath} && cd .. && rm -rf ./${repositoryId}`);
     });
   }

@@ -3,6 +3,7 @@ interface JwTokenData {
   githubId: string
   userName: string
   userId: User['id']
+  validated: boolean
 }
 
 type Dependency = [string, string, string, string, DependencyType, string]
@@ -47,7 +48,7 @@ interface GithubBranch {
   name: string
 }
 
-type Status = 'pending' | 'done'
+type Status = 'pending' | 'done' | 'merged' | 'closed'
 interface PullRequest {
   id: number
   status: Status

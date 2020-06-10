@@ -33,7 +33,7 @@ const DependenciesList: React.FC<IProps> = ({ dependencies, isDev, repo }) => {
 
     setTimeout(() => {
       window.location.reload()
-    }, 1000)
+    }, 1500)
   }
 
   const createPRisDisabled = items.length === 0

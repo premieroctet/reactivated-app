@@ -329,6 +329,8 @@ function ViewRepo() {
                 initialPath={data.path}
                 onSubmit={onUpdateConfig}
                 branches={branches?.map((branch) => branch.name) || []}
+                allowDelete
+                repoId={data.id}
               />
             </ModalBody>
           </ModalContent>

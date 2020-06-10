@@ -7,7 +7,7 @@ import { User } from '../users/user.entity';
 
 @Injectable()
 export class GitHubStrategy extends PassportStrategy(Strategy) {
-  constructor(config: ConfigService, userService: UsersService) {
+  constructor(private config: ConfigService, userService: UsersService) {
     super(
       {
         clientID: config.get('CLIENT_ID'),
@@ -23,6 +23,7 @@ export class GitHubStrategy extends PassportStrategy(Strategy) {
             username: profile.username,
             githubId: profile.id,
             githubToken: accessToken,
+            validated: this.config.get('IS_BETA') === 'true' ? false : true,
           };
           user = await userService.createUser(newUser);
         } else {

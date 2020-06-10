@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   ForbiddenException,
   Get,
   Logger,
@@ -8,9 +9,10 @@ import {
   Param,
   Post,
   Put,
+  Query,
+  Req,
   Request,
   UseGuards,
-  Query,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -24,13 +26,14 @@ import {
 } from '@nestjsx/crud';
 import { Queue } from 'bull';
 import { InjectQueue } from 'nest-bull';
+import { ConfigService } from '../config/config.service';
 import { GithubService } from '../github/github.service';
 import { PullRequest } from '../pull-request/pull-request.entity';
 import { PullRequestService } from '../pull-request/pull-request.service';
+import { User } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
 import { Repository } from './repository.entity';
 import { RepositoryService } from './repository.service';
-import { User } from '../users/user.entity';
 
 @Crud({
   model: {
@@ -60,6 +63,7 @@ export class RepositoryController implements CrudController<Repository> {
   private readonly logger = new Logger(RepositoryController.name);
   constructor(
     public service: RepositoryService,
+    private readonly configService: ConfigService,
     private readonly githubService: GithubService,
     private readonly usersService: UsersService,
     private readonly pullRequestService: PullRequestService,
@@ -80,6 +84,8 @@ export class RepositoryController implements CrudController<Repository> {
     @Param('id') repoId: string,
     @Request() req,
   ) {
+    const userId = req.user.id;
+
     let hasYarnLock = true;
 
     try {
@@ -113,7 +119,6 @@ export class RepositoryController implements CrudController<Repository> {
       throw new NotFoundException();
     }
 
-    const userId = req.user.id;
     const user = await this.usersService.getById(userId);
     const repository = await this.service.updateRepo(repoId, {
       ...repo,
@@ -171,7 +176,21 @@ export class RepositoryController implements CrudController<Repository> {
     @Param('name') name: string,
     @Request() req,
   ) {
-    const { user } = req;
+    const { user }: { user: User } = req;
+
+    const repositories = await this.service.getAllRepos();
+    const userRepos = repositories.filter((repo: Repository) =>
+      repo.users.some((repoUser) => repoUser.id === user.id),
+    );
+    const nbUserRepos = userRepos.length;
+
+    if (nbUserRepos >= Number(this.configService.get('MAX_REPOS'))) {
+      throw new ForbiddenException(
+        `Max repositories allowed ${Number(
+          this.configService.get('MAX_REPOS'),
+        )}`,
+      );
+    }
 
     const response = await this.githubService.getRepository({
       fullName: `${author}/${name}`,
@@ -241,5 +260,11 @@ export class RepositoryController implements CrudController<Repository> {
       repoId,
       query.limit,
     );
+  }
+
+  @Delete(':id')
+  async deleteRepo(@Param('id') repoId: string, @Req() req) {
+    const userId = req.user.id;
+    return await this.service.deleteRepo({ id: repoId }, userId);
   }
 }

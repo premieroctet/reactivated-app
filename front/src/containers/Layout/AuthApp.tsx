@@ -1,19 +1,20 @@
-import React from 'react'
 import {
-  Flex,
-  Box,
   Avatar,
+  Box,
+  Flex,
+  Icon,
   Menu,
   MenuButton,
-  MenuList,
   MenuItem,
-  Icon,
+  MenuList,
 } from '@chakra-ui/core'
-import Router from '@containers/Router'
-import { deleteFromStorage } from '@rehooks/local-storage'
 import Header from '@components/Header'
-import { Global } from '@emotion/core'
+import Router from '@containers/Router'
 import { useAuth } from '@contexts/AuthContext'
+import { Global } from '@emotion/core'
+import { deleteFromStorage } from '@rehooks/local-storage'
+import React from 'react'
+import WaitingBeta from '../WaitingBeta'
 
 const AuthApp = () => {
   const logOut = () => {
@@ -62,7 +63,12 @@ const AuthApp = () => {
         right={0}
       ></Box>
       <Box maxWidth="60rem" marginX="auto" position="relative">
-        <Router />
+        {process.env.REACT_APP_IS_BETA === 'true' &&
+        jwTokenData?.validated === false ? (
+          <WaitingBeta />
+        ) : (
+          <Router />
+        )}
       </Box>
     </>
   )

@@ -21,7 +21,7 @@ export class PullRequestService extends TypeOrmCrudService<PullRequest> {
 
   async updatePullRequest(
     branchName: string,
-    data: Pick<PullRequest, 'status' | 'url'>,
+    data: Partial<Pick<PullRequest, 'status' | 'url'>>,
   ) {
     const pullRequest = await this.repository.findOneOrFail({
       where: {
@@ -39,7 +39,7 @@ export class PullRequestService extends TypeOrmCrudService<PullRequest> {
     }
 
     return await this.repository.find({
-      where: { repositoryId: repo.id },
+      where: { repository: { id: repo.id } },
       relations: ['repository'],
       order: { id: 'DESC' },
       take: limit,
