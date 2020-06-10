@@ -52,6 +52,9 @@ function Home() {
               variantColor="green"
               variant="ghost"
               leftIcon="add"
+              isDisabled={
+                repositories.length >= Number(process.env.REACT_APP_MAX_REPOS)
+              }
             >
               Add app
             </Button>

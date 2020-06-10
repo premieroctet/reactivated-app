@@ -15,7 +15,7 @@ export class CronService {
 
   @Cron(CronExpression.EVERY_DAY_AT_1AM)
   async refreshAllRepositories() {
-    const repos = await this.repositoryService.getRepos();
+    const repos = await this.repositoryService.getAllRepos();
     for (const repo of repos) {
       for (const user of repo.users) {
         if (user.githubToken) {

@@ -7,6 +7,7 @@ import { UsersModule } from '../users/users.module';
 import { RepositoryController } from './repository.controller';
 import { Repository } from './repository.entity';
 import { RepositoryService } from './repository.service';
+import { ConfigModule } from '../config/config.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { RepositoryService } from './repository.service';
     UsersModule,
     forwardRef(() => QueueModule),
     forwardRef(() => PullRequestModule),
+    ConfigModule,
   ],
   exports: [RepositoryService],
   providers: [RepositoryService],

@@ -3,6 +3,7 @@ interface JwTokenData {
   githubId: string
   userName: string
   userId: User['id']
+  validated: boolean
 }
 
 type Dependency = [string, string, string, string, DependencyType, string]
