@@ -21,4 +21,8 @@ export class User {
   @ApiProperty()
   @Column()
   githubToken: string;
+
+  @ApiProperty()
+  @Column({ default: false })
+  validated: false;
 }

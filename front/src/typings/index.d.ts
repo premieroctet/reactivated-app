@@ -3,6 +3,7 @@ interface JwTokenData {
   githubId: string
   userName: string
   userId: User['id']
+  validated: boolean
 }
 
 type Dependency = [string, string, string, string, DependencyType, string]
@@ -12,7 +13,7 @@ type DependencyType = 'dependencies' | 'devDependencies'
 
 type PackageJson = {
   dependencies: object
-  devDependencies: object
+  devDependencies: objectp
 } | null
 
 type FrameworkTag =

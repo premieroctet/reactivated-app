@@ -19,6 +19,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       githubId: payload.githubId,
       githubToken: payload.githubToken,
       id: payload.userId,
+      validated: payload.validated,
     };
   }
 }

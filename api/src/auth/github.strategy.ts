@@ -23,6 +23,7 @@ export class GitHubStrategy extends PassportStrategy(Strategy) {
             username: profile.username,
             githubId: profile.id,
             githubToken: accessToken,
+            validated: false,
           };
           user = await userService.createUser(newUser);
         } else {
