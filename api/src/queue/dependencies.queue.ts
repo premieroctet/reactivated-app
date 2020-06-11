@@ -17,6 +17,7 @@ import {
   getPrefixedDependencies,
   getUpgradedDiff,
 } from '../utils/dependencies';
+import { LogService } from '../log/log.service';
 
 const { exec, execSync } = require('child_process');
 const fs = require('fs');
@@ -31,6 +32,7 @@ export class DependenciesQueue {
   constructor(
     private readonly repositoriesService: RepositoryService,
     private readonly githubService: GithubService,
+    private readonly logService: LogService,
   ) {}
 
   @Process({ name: 'compute_yarn_dependencies' })
@@ -274,7 +276,12 @@ export class DependenciesQueue {
   }
 
   @OnQueueEvent(BullQueueEvents.FAILED)
-  onFailed(job: Job) {
+  async onFailed(job: Job) {
+    await this.logService.saveLog({
+      name: 'Job failed : ' + job.name,
+      stackTrace: job.stacktrace.join('\n'),
+    });
+
     this.logger.log(
       `Failed job ${job.id} of type ${job.name}.\n${job.stacktrace}`,
     );
