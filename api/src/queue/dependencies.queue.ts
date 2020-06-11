@@ -1,13 +1,13 @@
-import { Logger, Injectable } from '@nestjs/common';
-import { Job } from 'bull';
-import { readFileSync } from 'fs';
 import {
   BullQueueEvents,
+  OnQueueActive,
   OnQueueEvent,
   Process,
   Processor,
-  OnQueueActive,
-} from 'nest-bull';
+} from '@nestjs/bull';
+import { Injectable, Logger } from '@nestjs/common';
+import { Job } from 'bull';
+import { readFileSync } from 'fs';
 import { GithubService } from '../github/github.service';
 import { RepositoryService } from '../repository/repository.service';
 import {
@@ -23,7 +23,7 @@ const fs = require('fs');
 const { promisify } = require('util');
 const asyncWriteFile = promisify(fs.writeFile);
 
-@Processor({ name: 'dependencies' })
+@Processor('dependencies')
 @Injectable()
 export class DependenciesQueue {
   private readonly logger = new Logger(this.constructor.name);
