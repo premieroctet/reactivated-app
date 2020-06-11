@@ -13,7 +13,7 @@ export class CronService {
     private readonly repositoryService: RepositoryService,
   ) {}
 
-  @Cron(CronExpression.EVERY_DAY_AT_1AM)
+  @Cron(CronExpression.EVERY_4_HOURS)
   async refreshAllRepositories() {
     const repos = await this.repositoryService.getAllRepos();
     for (const repo of repos) {
