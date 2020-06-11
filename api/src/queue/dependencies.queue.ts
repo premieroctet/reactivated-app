@@ -280,6 +280,8 @@ export class DependenciesQueue {
     await this.logService.saveLog({
       name: 'Job failed : ' + job.name,
       stackTrace: job.stacktrace.join('\n'),
+      failedReason: job.failedReason,
+      data: JSON.parse(job.data),
     });
 
     this.logger.log(

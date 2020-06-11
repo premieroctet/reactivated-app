@@ -10,9 +10,19 @@ export class Log {
   @PrimaryGeneratedColumn()
   id?: number;
 
+  @ApiProperty()
   @Column()
   stackTrace: string;
 
+  @ApiProperty()
   @Column()
   name: string;
+
+  @ApiProperty()
+  @Column()
+  failedReason: string;
+
+  @ApiProperty()
+  @Column({ type: 'json' })
+  data: object;
 }
