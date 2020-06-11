@@ -1,3 +1,4 @@
+import { InjectQueue } from '@nestjs/bull';
 import {
   Body,
   Controller,
@@ -25,7 +26,6 @@ import {
   ParsedRequest,
 } from '@nestjsx/crud';
 import { Queue } from 'bull';
-import { InjectQueue } from 'nest-bull';
 import { ConfigService } from '../config/config.service';
 import { GithubService } from '../github/github.service';
 import { PullRequest } from '../pull-request/pull-request.entity';

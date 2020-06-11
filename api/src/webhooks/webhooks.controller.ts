@@ -1,19 +1,18 @@
+import { InjectQueue } from '@nestjs/bull';
 import {
-  Controller,
-  Post,
   Body,
+  Controller,
   Headers,
-  UseInterceptors,
   Logger,
+  Post,
+  UseInterceptors,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import { Queue } from 'bull';
+import { PullRequestService } from '../pull-request/pull-request.service';
 import { RepositoryService } from '../repository/repository.service';
 import { UsersService } from '../users/users.service';
-import { ApiTags } from '@nestjs/swagger';
 import { WebhookInterceptor } from './webhooks.interceptor';
-import { PullRequestService } from '../pull-request/pull-request.service';
-import { DependenciesQueue } from '../queue/dependencies.queue';
-import { InjectQueue } from 'nest-bull';
-import { Queue } from 'bull';
 
 @ApiTags('webhooks')
 @Controller('webhooks')
