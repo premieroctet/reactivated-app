@@ -13,6 +13,7 @@ import { RepositoryModule } from './repository/repository.module';
 import { UsersModule } from './users/users.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
 import { BullModule } from '@nestjs/bull';
+import { LogModule } from './log/log.module';
 @Module({
   imports: [
     UsersModule,
@@ -36,6 +37,7 @@ import { BullModule } from '@nestjs/bull';
     GithubModule,
     CronModule,
     PullRequestModule,
+    LogModule,
   ],
   controllers: [AppController],
   providers: [AppService],
