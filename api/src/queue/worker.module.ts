@@ -7,6 +7,7 @@ import { GithubModule } from '../github/github.module';
 import { OrmModule } from '../orm.module';
 import { RepositoryModule } from '../repository/repository.module';
 import { DependenciesQueue } from './dependencies.queue';
+import { LogModule } from '../log/log.module';
 
 const redisOptions = (configService: ConfigService) => {
   const config: BullModuleOptions = {
@@ -36,7 +37,13 @@ const BullQueueModule = BullModule.registerQueueAsync({
 });
 
 @Module({
-  imports: [BullQueueModule, GithubModule, RepositoryModule, OrmModule],
+  imports: [
+    BullQueueModule,
+    GithubModule,
+    RepositoryModule,
+    OrmModule,
+    LogModule,
+  ],
   exports: [BullQueueModule],
   providers: [DependenciesQueue],
 })

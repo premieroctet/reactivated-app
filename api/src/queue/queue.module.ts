@@ -1,6 +1,5 @@
 import { BullModule, BullModuleOptions } from '@nestjs/bull';
 import { forwardRef, Module } from '@nestjs/common';
-import { QueueOptions } from 'bull';
 import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
 import { GithubModule } from '../github/github.module';
