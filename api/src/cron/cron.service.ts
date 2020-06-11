@@ -13,12 +13,16 @@ export class CronService {
     private readonly repositoryService: RepositoryService,
   ) {}
 
-  @Cron(CronExpression.EVERY_DAY_AT_1AM)
+  @Cron(CronExpression.EVERY_5_MINUTES)
   async refreshAllRepositories() {
     const repos = await this.repositoryService.getAllRepos();
     for (const repo of repos) {
       for (const user of repo.users) {
         if (user.githubToken) {
+          this.logger.log(
+            'CronService -> refreshAllRepositories -> repo updated',
+            repo.fullName,
+          );
           this.queue.add('compute_yarn_dependencies', {
             repositoryFullName: repo.fullName,
             path: repo.path,
