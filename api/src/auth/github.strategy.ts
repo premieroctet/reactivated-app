@@ -1,13 +1,17 @@
 import { Strategy } from 'passport-github';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpService } from '@nestjs/common';
 import { ConfigService } from '../config/config.service';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/user.entity';
 
 @Injectable()
 export class GitHubStrategy extends PassportStrategy(Strategy) {
-  constructor(private config: ConfigService, userService: UsersService) {
+  constructor(
+    private config: ConfigService,
+    userService: UsersService,
+    private readonly httpService: HttpService,
+  ) {
     super(
       {
         clientID: config.get('CLIENT_ID'),
@@ -26,6 +30,19 @@ export class GitHubStrategy extends PassportStrategy(Strategy) {
             validated: this.config.get('IS_BETA') === 'true' ? false : true,
           };
           user = await userService.createUser(newUser);
+
+          const text = `New user to validate registered : ${profile.username}`;
+          await this.httpService
+            .post(
+              this.config.get('SLACK_BETA_URL'),
+              { text },
+              {
+                headers: {
+                  'Content-type': 'application/json',
+                },
+              },
+            )
+            .toPromise();
         } else {
           await userService.updateUser({
             ...user,
