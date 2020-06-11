@@ -13,7 +13,8 @@ const redisOptions = (configService: ConfigService) => {
     options: {
       redis: configService.get('REDIS_URL'),
       settings: {
-        lockDuration: 30000 * 3,
+        lockDuration: 30000 * 10,
+        lockRenewTime: 5000,
       },
       limiter: {
         duration: 1000,

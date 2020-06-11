@@ -34,7 +34,7 @@ export class GitHubStrategy extends PassportStrategy(Strategy) {
           const text = `New user to validate registered : ${profile.username}`;
           await this.httpService
             .post(
-              'https://hooks.slack.com/services/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',
+              this.config.get('SLACK_BETA_URL'),
               { text },
               {
                 headers: {
