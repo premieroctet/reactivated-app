@@ -21,11 +21,6 @@ const redisOptions = (configService: ConfigService) => {
         max: Number(configService.get('MAX_JOBS_NUMBER')),
       },
     },
-    processors: [
-      (job: Job, done: DoneCallback) => {
-        done(null, job.data);
-      },
-    ],
   };
 
   return config;
