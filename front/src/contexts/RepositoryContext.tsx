@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { Repository } from '@typings/entities'
 
 interface RepositoryContextInterface {
@@ -22,6 +22,10 @@ interface Props {
 export function RepositoryProvider(props: Props) {
   const [repository, setRepository] = useState<Repository | undefined>()
   const [prCount, setCreatedCount] = useState<number>(0)
+
+  useEffect(() => {
+    setCreatedCount(0)
+  }, [repository])
 
   const increasePRCount = () => {
     setCreatedCount((prevCount) => prevCount + 1)
