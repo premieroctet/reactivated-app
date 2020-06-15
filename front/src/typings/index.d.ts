@@ -6,8 +6,18 @@ interface JwTokenData {
   validated: boolean
 }
 
-type Dependency = [string, string, string, string, DependencyType, string]
-type PrefixedDependency = { [prefix: string]: Dependency[] }
+type DependencyArray = [string, string, string, string, DependencyType, string]
+type Dependency = {
+  name: string
+  current: string
+  wanted: string
+  latest: string
+  type: DependencyType
+  url: string
+  prefix?: string
+}
+
+type PrefixedDependency = { [prefix: string]: DependencyArray[] }
 
 type DependencyType = 'dependencies' | 'devDependencies'
 
@@ -49,10 +59,3 @@ interface GithubBranch {
 }
 
 type Status = 'pending' | 'done' | 'merged' | 'closed'
-interface PullRequest {
-  id: number
-  status: Status
-  repository: Repository
-  branchName: string
-  url: string
-}

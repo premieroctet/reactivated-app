@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import RepositoryListItem from './RepositoryListItem'
 import { FaPlug } from 'react-icons/fa'
 import { Repository } from '../../typings/entities'
+import RepositoryListEmpty from './RepositoryListEmpty'
 
 interface Props {
   repositories: Repository[]
@@ -42,6 +43,13 @@ const RepositoriesList = ({ repositories }: Props) => {
         <Link key={repository.id} to={`/repo/${repository.id}`}>
           <RepositoryListItem repository={repository} />
         </Link>
+      ))}
+      {[
+        ...new Array(
+          Number(process.env.REACT_APP_MAX_REPOS) - repositories.length,
+        ),
+      ].map(() => (
+        <RepositoryListEmpty />
       ))}
     </Flex>
   )

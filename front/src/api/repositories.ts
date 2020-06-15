@@ -7,12 +7,15 @@ export const getRepositories = () => {
   return API.get<Repository[]>(`/repositories`, {
     params: {
       filter: 'isConfigured||eq||true',
+      sort: 'score,ASC',
     },
   })
 }
 
 export const getRepository = (repositoryId: string) => {
-  return API.get<Repository>(`/repositories/${repositoryId}`)
+  return API.get<Repository>(`/repositories/${repositoryId}`, {
+    params: { join: 'pullRequests' },
+  })
 }
 
 export const getRepositoryBranches = (fullName: string) => {

@@ -16,9 +16,9 @@ const RepositoryListItem = memo(({ repository }: IProps) => {
       position="relative"
       cursor="pointer"
       rounded={10}
-      shadow="lg"
+      shadow="md"
       bg="white"
-      mb={8}
+      mb={4}
       px={5}
       py={8}
       overflow="hidden"
@@ -33,7 +33,6 @@ const RepositoryListItem = memo(({ repository }: IProps) => {
         >
           <Row justifyContent="center">
             <Image
-              shadow="md"
               size={16}
               borderRadius={40}
               src={repository.repoImg}

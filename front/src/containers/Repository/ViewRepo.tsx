@@ -5,337 +5,196 @@ import {
   AlertIcon,
   Box,
   Button,
-  Flex,
-  Heading,
-  Image,
-  Link as ChakraLink,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
   Stack,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
-  Text,
-  useDisclosure,
+  Code,
+  useClipboard,
+  Flex,
 } from '@chakra-ui/core'
-import Container from '@components/Container'
+import React, { useState } from 'react'
+import { DependenciesProvider } from '@contexts/DependenciesContext'
 import DependenciesList from '@components/DependenciesList'
-import LoadBar from '@components/LoadBar'
-import LoadScore from '@components/LoadScore'
-import RepoConfigForm from '@components/RepoConfigForm'
-import useChakraToast from '@hooks/useChakraToast'
-import { useAxiosRequest } from '@hooks/useRequest'
-import { getDependenciesCount } from '@utils/dependencies'
-import { formatDistance } from 'date-fns'
-import React, { useCallback } from 'react'
-import { FaGithub } from 'react-icons/fa'
-import { Link, useHistory, useRouteMatch } from 'react-router-dom'
-import { mutate } from 'swr'
-import FrameworkTag from '../../components/FrameworkTag/FrameworkTag'
-import ViewRepoSkeleton from './ViewRepoSkeleton'
-import PullRequestItem from '../../components/PullRequest/PullRequestItem'
-import { Repository } from '../../typings/entities'
-
-const AlertError = () => {
-  const history = useHistory()
-
-  return (
-    <Alert status="error">
-      <AlertIcon />
-      <Stack align="flex-start">
-        <AlertDescription>Repository not found.</AlertDescription>
-        <Button variantColor="red" onClick={() => history.push('/')}>
-          Back to repositories list
-        </Button>
-      </Stack>
-    </Alert>
-  )
-}
+import { useRepository } from '@contexts/RepositoryContext'
+import { DiGitPullRequest } from 'react-icons/di'
+import { createUpgradePR } from '../../api/repositories'
+import { refinedDependency } from '@utils/dependencies'
 
 function ViewRepo() {
-  const {
-    params: { id },
-  } = useRouteMatch<{ id: string }>()
+  const { repository, increasePRCount } = useRepository()
 
-  const toast = useChakraToast()
+  const [showSuccess, setShowSuccess] = React.useState(false)
+  const [selectedDependencies, setSelectedDependencies] = useState<{
+    [key: string]: 'stable' | 'latest'
+  }>({})
 
-  const { data, error } = useAxiosRequest<Repository>([id], {
-    fetcher: RepositoriesAPI.getRepository,
-    revalidateOnFocus: true,
-  })
-
-  const { data: branches, error: branchesError } = useAxiosRequest<
-    GithubBranch[]
-  >(`branches-${data?.githubId}`, {
-    fetcher: () => RepositoriesAPI.getRepositoryBranches(data!.fullName),
-    revalidateOnFocus: false,
-  })
-
-  const { data: pullRequests } = useAxiosRequest<PullRequest[]>(
-    `repositories/${id}/pull-requests`,
-    {
-      fetcher: () =>
-        RepositoriesAPI.getPullRequests(id, { params: { limit: 3 } }),
-    },
+  const items = Object.keys(selectedDependencies).map(
+    (key) =>
+      `${key}${
+        selectedDependencies[key] === 'latest'
+          ? `@${selectedDependencies[key]}`
+          : ''
+      }`,
   )
 
-  const {
-    isOpen: configModalOpen,
-    onOpen: openConfigModal,
-    onClose: closeConfigModal,
-  } = useDisclosure()
+  const commandeLine = `yarn upgrade ${items.join(' ')}`
+  const { onCopy, hasCopied } = useClipboard(commandeLine)
 
-  const dependencies: (Dependency | PrefixedDependency)[] = []
-  const devDependencies: (Dependency | PrefixedDependency)[] = []
+  let dependencies: Dependency[] = []
+  let devDependencies: Dependency[] = []
 
-  data?.dependencies?.deps.forEach((dep) => {
-    if (Array.isArray(dep)) {
-      if (dep[4] === 'dependencies') {
-        dependencies.push(dep)
-      } else {
-        devDependencies.push(dep)
-      }
+  if (!repository) {
+    return null
+  }
+
+  const createPR = async () => {
+    await createUpgradePR(repository.fullName, {
+      updatedDependencies: items,
+      repoId: repository.id,
+    })
+
+    setShowSuccess(true)
+    window.scrollTo(0, 0)
+    increasePRCount()
+  }
+
+  const onDependencySelected = (
+    checked: boolean,
+    name: string,
+    type: 'stable' | 'latest',
+  ) => {
+    if (checked) {
+      setSelectedDependencies({ ...selectedDependencies, [name]: type })
     } else {
-      const prefix = Object.keys(dep)[0]
-      dependencies.push({
-        [prefix]: dep[prefix].filter((dep) => dep[4] === 'dependencies'),
-      })
-      devDependencies.push({
-        [prefix]: dep[prefix].filter((dep) => dep[4] === 'devDependencies'),
-      })
-    }
-  })
-
-  const totalDependencies = getDependenciesCount(data?.packageJson)
-
-  const recomputeDeps = useCallback(() => {
-    return RepositoriesAPI.recomputeDeps(parseInt(id, 10))
-  }, [id])
-
-  const onUpdateConfig = async (config: { branch: string; path: string }) => {
-    try {
-      const { data: configData } = await RepositoriesAPI.configureRepository({
-        id: parseInt(id, 10),
-        data: { ...config, fullName: data!.fullName },
-      })
-      mutate([id], configData)
-
-      closeConfigModal()
-      toast({
-        status: 'success',
-        title: 'Success !',
-        description: "Successfully updated your repository's configuration",
-      })
-    } catch (e) {
-      toast({
-        title: 'An error occured',
-        status: 'error',
-        description: 'Please check the package.json & yarn.lock path is valid.',
-      })
-      throw e
+      const { [name]: omit, ...rest } = selectedDependencies
+      setSelectedDependencies({ ...rest })
     }
   }
 
+  repository?.dependencies?.deps.forEach(
+    (dep: DependencyArray | PrefixedDependency) => {
+      if (Array.isArray(dep)) {
+        const depObject = refinedDependency(dep)
+
+        depObject.type === 'dependencies'
+          ? dependencies.push(depObject)
+          : devDependencies.push(depObject)
+      } else {
+        const prefix = Object.keys(dep)[0]
+        const type = dep[prefix][0][4]
+
+        dependencies = [
+          ...dependencies,
+          ...dep[prefix]
+            .filter((dep) => dep[4] === type)
+            .map((dep) => ({ ...refinedDependency(dep), prefix })),
+        ]
+      }
+    },
+  )
+
+  const recomputeDeps = () => {
+    return RepositoriesAPI.recomputeDeps(repository.id)
+  }
+
+  const hasSelectedDependencies = Object.keys(selectedDependencies).length > 0
+
   return (
     <>
-      <Flex justifyContent="space-between">
-        <Link to="/">
+      <Code
+        position="relative"
+        width="100%"
+        rounded={10}
+        whiteSpace="normal"
+        my={5}
+        p={5}
+      >
+        {hasSelectedDependencies
+          ? commandeLine
+          : `yarn upgrade [pick some dependencies]`}
+
+        {hasSelectedDependencies && (
           <Button
-            leftIcon="chevron-left"
-            variant="ghost"
-            variantColor="brand"
-            mb={4}
+            size="xs"
+            variantColor="secondary"
+            position="absolute"
+            right={3}
+            top={-6}
+            onClick={onCopy}
           >
-            Dashboard
+            {hasCopied ? 'Copied!' : 'Copy'}
           </Button>
-        </Link>
-        <Button
-          leftIcon="settings"
-          variant="ghost"
-          variantColor="brand"
-          onClick={openConfigModal}
-          isDisabled={!!branchesError}
-          isLoading={!branches}
-        >
-          Settings
-        </Button>
-      </Flex>
+        )}
+      </Code>
 
-      {!data ? (
-        <Container>
-          <ViewRepoSkeleton />
-        </Container>
-      ) : (
-        <>
-          <Container>
-            <Flex pr={10} justifyContent="space-between" my={4}>
-              <LoadBar score={data.score} />
-              <Stack isInline spacing={4}>
-                <ChakraLink isExternal href={data.repoUrl}>
-                  <Image
-                    rounded={100}
-                    src={data.repoImg}
-                    alt={data.name}
-                    size={[16, 24]}
+      <DependenciesProvider>
+        {repository && repository.dependencies && repository.dependencies.deps && (
+          <Box w={['100%', 'unset']} minW={['100%']} mt={4}>
+            <Tabs
+              defaultIndex={dependencies.length === 0 ? 1 : 0}
+              isFitted
+              variantColor="secondary"
+              variant="line"
+            >
+              <TabList>
+                <Tab disabled={dependencies.length === 0}>Dependencies</Tab>
+                <Tab disabled={devDependencies.length === 0}>
+                  Dev Dependencies{' '}
+                </Tab>
+              </TabList>
+              <TabPanels>
+                <TabPanel>
+                  <DependenciesList
+                    dependencies={dependencies}
+                    selectedDependencies={selectedDependencies}
+                    onDependencySelected={onDependencySelected}
                   />
-                </ChakraLink>
-                <Box backgroundColor="yellow">
-                  <Heading fontSize="2xl">{data.name}</Heading>
+                </TabPanel>
+                <TabPanel>
+                  <DependenciesList
+                    onDependencySelected={onDependencySelected}
+                    dependencies={devDependencies}
+                    selectedDependencies={selectedDependencies}
+                  />
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
 
-                  <Text
-                    mb={2}
-                    fontSize="sm"
-                    display="flex"
-                    justifyContent="space-between"
-                  >
-                    {data?.framework !== null && (
-                      <FrameworkTag framework={data.framework} />
-                    )}
-                  </Text>
-
-                  <ChakraLink
-                    borderTop="1px dashed"
-                    borderTopColor="gray.300"
-                    pt={2}
-                    fontSize="sm"
-                    display="flex"
-                    alignItems="center"
-                    isExternal
-                    href={`https://github.com/${data.fullName}`}
-                  >
-                    <Box as={FaGithub} mr={1} /> {data.fullName}
-                  </ChakraLink>
-                </Box>
-              </Stack>
-              <LoadScore score={data.score} />
+            <Flex
+              zIndex={10}
+              pos={hasSelectedDependencies ? 'sticky' : 'inherit'}
+              bottom={0}
+              flexDir="row-reverse"
+            >
+              <Button
+                leftIcon={showSuccess ? 'check-circle' : DiGitPullRequest}
+                onClick={createPR}
+                variantColor="gray"
+                isDisabled={showSuccess || !hasSelectedDependencies}
+                m={2}
+              >
+                {showSuccess ? 'Your PR is on its way!' : 'Create Pull Request'}
+              </Button>
             </Flex>
-          </Container>
+          </Box>
+        )}
 
-          <Container py={3}>
-            <Heading mt={10} as="h3" fontSize="xl">
-              Outdated Dependencies
-            </Heading>
-            {data?.score !== null && totalDependencies !== null && (
-              <>
-                <Text fontSize="xs">
-                  Refreshed{' '}
-                  {formatDistance(
-                    new Date(data.dependenciesUpdatedAt),
-                    new Date(),
-                  )}{' '}
-                  ago
-                </Text>
-                <Text as="small" color={'red.500'} display="inline">
-                  {dependencies.length + devDependencies.length} (outdated)
-                </Text>
-                <Text as="small" display="inline">
-                  {' '}
-                  / {totalDependencies} libraries
-                </Text>
-              </>
-            )}
-
-            {/* Pull Requests list */}
-            {pullRequests && pullRequests.length > 0 && (
-              <>
-                <Heading mt={10} as="h3" fontSize="xl">
-                  Pull Requests
-                </Heading>
-                <Box w="100%" py={4}>
-                  {pullRequests.map((pullRequest) => (
-                    <PullRequestItem pullRequest={pullRequest} />
-                  ))}
-                </Box>
-              </>
-            )}
-
-            {data.dependencies && data.dependencies.deps && (
-              <Box w={['100%', 'unset']} minW={['100%']} mt={4}>
-                <Tabs
-                  defaultIndex={dependencies.length === 0 ? 1 : 0}
-                  isFitted
-                  variant="enclosed"
-                >
-                  <TabList>
-                    <Tab
-                      _selected={{ bg: 'secondary.500', color: 'white' }}
-                      disabled={dependencies.length === 0}
-                    >
-                      Dependencies
-                    </Tab>
-                    <Tab
-                      _selected={{ bg: 'secondary.500', color: 'white' }}
-                      disabled={devDependencies.length === 0}
-                    >
-                      Dev Dependencies{' '}
-                    </Tab>
-                  </TabList>
-                  <TabPanels>
-                    <TabPanel>
-                      <DependenciesList
-                        dependencies={dependencies}
-                        repo={data}
-                      />
-                    </TabPanel>
-                    <TabPanel>
-                      <DependenciesList
-                        isDev
-                        dependencies={devDependencies}
-                        repo={data}
-                      />
-                    </TabPanel>
-                  </TabPanels>
-                </Tabs>
-              </Box>
-            )}
-            {!data.dependencies && (
-              <Alert status="info" mt={6}>
-                <AlertIcon />
-                <Stack align="flex-start">
-                  <AlertDescription>
-                    It looks like your dependencies were not computed. This
-                    might be due to an unexpected server error.
-                  </AlertDescription>
-                  <Button onClick={recomputeDeps}>Retry</Button>
-                </Stack>
-              </Alert>
-            )}
-          </Container>
-        </>
-      )}
-
-      {error && <AlertError />}
-      {data && (
-        <Modal
-          isOpen={configModalOpen}
-          onClose={closeConfigModal}
-          isCentered
-          closeOnOverlayClick={false}
-        >
-          <ModalOverlay />
-          <ModalContent pb={4} rounded={10}>
-            <ModalHeader>Update repository configuration</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <RepoConfigForm
-                repoName={data.fullName}
-                initialBranch={data.branch}
-                initialPath={data.path}
-                onSubmit={onUpdateConfig}
-                branches={branches?.map((branch) => branch.name) || []}
-                allowDelete
-                repoId={data.id}
-              />
-            </ModalBody>
-          </ModalContent>
-        </Modal>
-      )}
+        {repository && !repository.dependencies && (
+          <Alert status="info" mt={6}>
+            <AlertIcon />
+            <Stack align="flex-start">
+              <AlertDescription>
+                It looks like your dependencies were not computed. This might be
+                due to an unexpected server error.
+              </AlertDescription>
+              <Button onClick={recomputeDeps}>Retry</Button>
+            </Stack>
+          </Alert>
+        )}
+      </DependenciesProvider>
     </>
   )
 }

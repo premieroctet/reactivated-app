@@ -5,6 +5,7 @@ import RepositoriesList from '@components/RepositoriesList'
 import { Link } from 'react-router-dom'
 import { useAxiosRequest } from '@hooks/useRequest'
 import { Repository } from '../typings/entities'
+import Container from '@components/Container'
 
 function Home() {
   const { data: repositories } = useAxiosRequest<Repository[]>(
@@ -20,24 +21,9 @@ function Home() {
 
   return (
     <>
-      <Flex
-        bg="white"
-        mb={10}
-        rounded={10}
-        shadow="md"
-        direction="column"
-        flex="1"
-        py={[5, 10]}
-        px={[0, 10]}
-      >
-        <Flex
-          bg="white"
-          mt={3}
-          mb={5}
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <Text fontSize={['2xl', '3xl', '3xl', '3xl']}>
+      <Container>
+        <Flex alignItems="center" justifyContent="space-between">
+          <Text fontSize="2xl">
             My Reactivated <b>apps</b>{' '}
             {repositories.length > 0 && (
               <Badge variantColor="brand" fontSize="sm">
@@ -60,7 +46,7 @@ function Home() {
             </Button>
           </Link>
         </Flex>
-      </Flex>
+      </Container>
       <RepositoriesList repositories={repositories} />
     </>
   )
