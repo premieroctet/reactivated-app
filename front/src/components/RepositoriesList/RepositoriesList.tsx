@@ -5,6 +5,7 @@ import RepositoryListItem from './RepositoryListItem'
 import { FaPlug } from 'react-icons/fa'
 import { Repository } from '../../typings/entities'
 import RepositoryListEmpty from './RepositoryListEmpty'
+import { getMaxRepositories } from '@containers/Dashboard'
 
 interface Props {
   repositories: Repository[]
@@ -44,11 +45,7 @@ const RepositoriesList = ({ repositories }: Props) => {
           <RepositoryListItem repository={repository} />
         </Link>
       ))}
-      {[
-        ...new Array(
-          Number(process.env.REACT_APP_MAX_REPOS) - repositories.length,
-        ),
-      ].map(() => (
+      {[...new Array(getMaxRepositories() - repositories.length)].map(() => (
         <RepositoryListEmpty />
       ))}
     </Flex>
