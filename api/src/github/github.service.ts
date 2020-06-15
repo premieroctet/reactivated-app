@@ -12,6 +12,12 @@ interface IRepoData {
   fullName: string;
   token: string;
 }
+export interface ITreeData {
+  path: string;
+  mode: string;
+  type: string;
+  content: string;
+}
 
 @Injectable()
 export class GithubService {
@@ -113,6 +119,9 @@ ${updateDeps}
         },
       )
       .toPromise();
+    // .catch(e => {
+    //   console.log(JSON.stringify(e, null, '	'));
+    // });
   }
 
   // https://developer.github.com/v3/git/refs/#create-a-reference
@@ -146,45 +155,110 @@ ${updateDeps}
       .toPromise();
   }
 
-  // https://developer.github.com/v3/repos/contents/#create-or-update-a-file
-  async commitFile(data: {
-    message: string;
-    content: string;
-    name: string;
-    path: string;
-    branch: string;
-    token: string;
-    fileName: string;
-  }): Promise<any> {
-    let sha = '';
-    try {
-      // If existing file
-      const fileRes = await this.getFile(data);
-      const fileSHA = fileRes.data.sha;
-      const fileBlobRes = await this.getBlob({
-        fileSHA,
-        name: data.name,
-        token: data.token,
-      });
-      sha = fileBlobRes.data.sha;
-    } catch (error) {
-      this.logger.error('Get commit file error', error);
-    }
-
+  // https://developer.github.com/v3/git/commits/#get-a-commit
+  async getCommit(data: {
+    fullName: string;
+    githubToken: string;
+    commitSHA: string;
+  }) {
     return this.httpService
-      .put(
-        `https://api.github.com/repos/${data.name}/contents${
-          data.path === '/' ? data.path : '/' + data.path
-        }${data.fileName}`,
+      .get(
+        `https://api.github.com/repos/${data.fullName}/git/commits/${data.commitSHA}`,
+        {
+          headers: {
+            Authorization: `token ${data.githubToken}`,
+          },
+        },
+      )
+      .toPromise();
+  }
+
+  // https://developer.github.com/v3/repos/contents/#create-or-update-a-file
+  // async commitFile(data: {
+  //   message: string;
+  //   content: string;
+  //   name: string;
+  //   path: string;
+  //   branch: string;
+  //   token: string;
+  //   fileName: string;
+  // }): Promise<any> {
+  //   let sha = '';
+  //   try {
+  //     // If existing file
+  //     const fileRes = await this.getFile(data);
+  //     const fileSHA = fileRes.data.sha;
+  //     const fileBlobRes = await this.getBlob({
+  //       fileSHA,
+  //       name: data.name,
+  //       token: data.token,
+  //     });
+  //     sha = fileBlobRes.data.sha;
+  //   } catch (error) {
+  //     this.logger.error('Get commit file error', error);
+  //   }
+
+  //   return this.httpService
+  //     .put(
+  //       `https://api.github.com/repos/${data.name}/contents${
+  //         data.path === '/' ? data.path : '/' + data.path
+  //       }${data.fileName}`,
+  //       {
+  //         message: data.message,
+  //         content: data.content,
+  //         branch: data.branch,
+  //         sha,
+  //       },
+  //       {
+  //         headers: {
+  //           Authorization: `token ${data.token}`,
+  //         },
+  //       },
+  //     )
+  //     .toPromise();
+  // }
+
+  // https://developer.github.com/v3/git/commits/#create-a-commit
+  async createCommit(data: {
+    fullName: string;
+    githubToken: string;
+    message: string;
+    tree: string;
+    parents: string[];
+  }) {
+    return this.httpService
+      .post(
+        `https://api.github.com/repos/${data.fullName}/git/commits`,
         {
           message: data.message,
-          content: data.content,
-          branch: data.branch,
-          sha,
+          tree: data.tree,
+          parents: data.parents,
         },
         {
           headers: {
-            Authorization: `token ${data.token}`,
+            Authorization: `token ${data.githubToken}`,
+            Accept: 'application/vnd.github.v3.diff',
+          },
+        },
+      )
+      .toPromise();
+  }
+
+  async updateBranch(data: {
+    sha: string;
+    githubToken: string;
+    branchName: string;
+    fullName: string;
+  }) {
+    return this.httpService
+      .patch(
+        `https://api.github.com/repos/${data.fullName}/git/refs/heads/${data.branchName}`,
+        {
+          sha: data.sha,
+        },
+        {
+          headers: {
+            Authorization: `token ${data.githubToken}`,
           },
         },
       )
@@ -199,6 +273,28 @@ ${updateDeps}
           headers: {
             Authorization: `token ${data.token}`,
             Accept: 'application/vnd.github.v3.diff',
+          },
+        },
+      )
+      .toPromise();
+  }
+
+  async createTree(data: {
+    fullName: string;
+    githubToken: string;
+    base_tree: string;
+    tree: ITreeData[];
+  }) {
+    return this.httpService
+      .post(
+        `https://api.github.com/repos/${data.fullName}/git/trees`,
+        {
+          tree: data.tree,
+          base_tree: data.base_tree,
+        },
+        {
+          headers: {
+            Authorization: `token ${data.githubToken}`,
           },
         },
       )

@@ -8,7 +8,7 @@ import {
 import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bull';
 import { readFileSync } from 'fs';
-import { GithubService } from '../github/github.service';
+import { GithubService, ITreeData } from '../github/github.service';
 import { RepositoryService } from '../repository/repository.service';
 import {
   getDependenciesCount,
@@ -193,53 +193,81 @@ export class DependenciesQueue {
 
     execSync(
       `cd ${tmpPath} && yarn upgrade ${job.data.updatedDependencies.join(' ')}`,
-      // { stdio: 'inherit' },
     );
 
     // Commit the new package.json and yarn.lock and create new PR
+    let branchTreeSHA = null;
     try {
-      await this.githubService.createBranch({
+      const branchRes = await this.githubService.createBranch({
         fullName: job.data.repositoryFullName,
         githubToken: job.data.githubToken,
         branchName: job.data.branchName,
       });
+      branchTreeSHA = branchRes.data.object.sha;
     } catch (error) {
       if (error.response.status === 422) {
         this.logger.error('Branch reference already exists');
       }
     }
 
+    // const commitRes = await this.githubService.getCommit({
+    //   fullName: job.data.repositoryFullName,
+    //   githubToken: job.data.githubToken,
+    //   commitSHA: branchTreeSHA,
+    // });
+    // const parentTreeSHA = commitRes.data.tree.sha;
+
     // Update the files on new branch
-    let commitSHA = null;
     try {
       const files = ['package.json', 'yarn.lock'];
+      const tree: ITreeData[] = [];
       for (const file of files) {
-        const bufferContent = readFileSync(`${tmpPath}/${file}`, {
-          encoding: 'base64',
-        });
-        const res = await this.githubService.commitFile({
-          name: job.data.repositoryFullName,
-          path: job.data.path,
-          branch: job.data.branchName,
-          token: job.data.githubToken,
-          fileName: file,
-          message: `Upgrade ${file}`,
-          content: bufferContent,
-        });
+        const bufferContent = Buffer.from(readFileSync(`${tmpPath}/${file}`));
 
-        if (file === 'package.json') {
-          commitSHA = res.data.commit.sha;
-        }
+        tree.push({
+          path: file,
+          mode: '100644',
+          type: 'blob',
+          content: bufferContent.toString('utf-8'),
+        });
       }
+
+      const upgradedTreeRes = await this.githubService.createTree({
+        fullName: job.data.repositoryFullName,
+        githubToken: job.data.githubToken,
+        base_tree: branchTreeSHA,
+        tree,
+      });
+      console.log(
+        'upgradeDependencies -> upgradedTreeRes',
+        upgradedTreeRes.data,
+      );
+
+      const commitRes = await this.githubService.createCommit({
+        fullName: job.data.repositoryFullName,
+        githubToken: job.data.githubToken,
+        message: `Reactivated App : update package.json and yarn.lock`,
+        tree: upgradedTreeRes.data.sha,
+        parents: [branchTreeSHA],
+      });
+      const upgradeCommitSHA = commitRes.data.sha;
 
       const diffRes = await this.githubService.getDiffUrl({
         name: job.data.repositoryFullName,
         token: job.data.githubToken,
-        commitSHA,
+        commitSHA: upgradeCommitSHA,
       });
 
       const diffLines = diffRes.data.split('\n');
       const upgradedDiff = getUpgradedDiff(diffLines);
+
+      const updateRes = await this.githubService.updateBranch({
+        sha: upgradeCommitSHA,
+        githubToken: job.data.githubToken,
+        branchName: job.data.branchName,
+        fullName: job.data.repositoryFullName,
+      });
+      console.log('upgradeDependencies -> update', updateRes.data);
 
       await this.githubService.createPullRequest({
         baseBranch: job.data.branch,
