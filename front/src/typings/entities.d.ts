@@ -53,7 +53,7 @@ export interface Repository {
 
   /** Outdated dependencies of the repo */
   dependencies: {
-    deps: (Dependency | PrefixedDependency)[]
+    deps: (DependencyArray | PrefixedDependency)[]
   } | null
   branch: string
   path: string
@@ -61,6 +61,16 @@ export interface Repository {
   score: number
   framework: FrameworkTag
   hasYarnLock: boolean
+  pullRequests: PullRequest[]
+}
+
+export interface PullRequest {
+  /** Id of the object */
+  id: number
+  status: string
+  repository: Repository
+  branchName: string
+  url: string
 }
 
 export interface GeneratedRepositoryBulkDto {

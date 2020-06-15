@@ -8,3 +8,12 @@ export const getDependenciesCount = (packageJson: PackageJson | undefined) => {
   }
   return totalDependencies
 }
+
+export const refinedDependency = (dependency: DependencyArray): Dependency => ({
+  name: dependency[0],
+  current: dependency[1],
+  wanted: dependency[2],
+  latest: dependency[3],
+  type: dependency[4],
+  url: dependency[5],
+})

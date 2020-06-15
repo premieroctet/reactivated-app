@@ -1,12 +1,13 @@
-import { Box, Stack, Tag, Flex, Text, Link, Spinner } from '@chakra-ui/core'
 import React from 'react'
+import { Box, Stack, Tag, Flex, Text, Link, Spinner } from '@chakra-ui/core'
+import { PullRequest } from '@typings/entities'
 
 type PullRequestItemProps = {
   pullRequest: PullRequest
 }
 
 const PullRequestItem: React.FC<PullRequestItemProps> = ({ pullRequest }) => {
-  const getColorFromStatus = (status: Status) => {
+  const getColorFromStatus = (status: string) => {
     switch (status) {
       case 'done':
         return 'green.300'
@@ -41,7 +42,9 @@ const PullRequestItem: React.FC<PullRequestItemProps> = ({ pullRequest }) => {
           />
           <Tag variantColor="gray" size="sm">
             {pullRequest.status === 'pending' ? (
-              <Spinner size="sm" speed="1.15s" />
+              <>
+                <Spinner mr={2} size="xs" speed="1.15s" /> {pullRequest.status}
+              </>
             ) : (
               pullRequest.status
             )}
@@ -50,10 +53,10 @@ const PullRequestItem: React.FC<PullRequestItemProps> = ({ pullRequest }) => {
 
         {pullRequest.url ? (
           <Link href={pullRequest.url} isExternal>
-            <Text fontSize="lg">{pullRequest.branchName}</Text>
+            <Text>{pullRequest.branchName}</Text>
           </Link>
         ) : (
-          <Text fontSize="lg">{pullRequest.branchName}</Text>
+          <Text color="gray.300">{pullRequest.branchName}</Text>
         )}
       </Flex>
     </Stack>
