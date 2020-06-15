@@ -7,11 +7,7 @@ import { User } from '../users/user.entity';
 
 @Injectable()
 export class GitHubStrategy extends PassportStrategy(Strategy) {
-  constructor(
-    private config: ConfigService,
-    userService: UsersService,
-    private readonly httpService: HttpService,
-  ) {
+  constructor(private config: ConfigService, userService: UsersService) {
     super(
       {
         clientID: config.get('CLIENT_ID'),

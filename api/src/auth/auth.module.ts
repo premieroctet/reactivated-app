@@ -12,7 +12,6 @@ import { GitHubAppStrategy } from './github-app.strategy';
   imports: [
     ConfigModule,
     UsersModule,
-    HttpModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
