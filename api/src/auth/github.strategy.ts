@@ -20,36 +20,7 @@ export class GitHubStrategy extends PassportStrategy(Strategy) {
       },
 
       async (accessToken, tokenSecret, profile, done) => {
-        let user = await userService.getUser(profile.username);
-
-        if (!user) {
-          let newUser: User = {
-            username: profile.username,
-            githubId: profile.id,
-            githubToken: accessToken,
-            validated: this.config.get('IS_BETA') === 'true' ? false : true,
-          };
-          user = await userService.createUser(newUser);
-
-          const text = `New user to validate registered : ${profile.username}`;
-          await this.httpService
-            .post(
-              this.config.get('SLACK_BETA_URL'),
-              { text },
-              {
-                headers: {
-                  'Content-type': 'application/json',
-                },
-              },
-            )
-            .toPromise();
-        } else {
-          await userService.updateUser({
-            ...user,
-            githubToken: accessToken,
-          });
-        }
-
+        let user = await userService.githubAuth(accessToken, profile);
         return done(null, user);
       },
     );

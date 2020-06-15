@@ -1,13 +1,17 @@
-import { Injectable } from '@nestjs/common';
-import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
+import { HttpService, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Repository } from 'typeorm';
+import { ConfigService } from '../config/config.service';
 import { User } from './user.entity';
 
 @Injectable()
 export class UsersService extends TypeOrmCrudService<User> {
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
+
+    private readonly config: ConfigService,
+    private readonly httpService: HttpService,
   ) {
     super(usersRepository);
   }
@@ -49,8 +53,22 @@ export class UsersService extends TypeOrmCrudService<User> {
         username: profile.username,
         githubId: profile.id,
         githubToken: accessToken,
+        validated: this.config.get('IS_BETA') === 'true' ? false : true,
       };
       user = await this.createUser(newUser);
+
+      const text = `New user to validate registered : ${profile.username}`;
+      await this.httpService
+        .post(
+          this.config.get('SLACK_BETA_URL'),
+          { text },
+          {
+            headers: {
+              'Content-type': 'application/json',
+            },
+          },
+        )
+        .toPromise();
     } else {
       await this.updateUser({
         ...user,
