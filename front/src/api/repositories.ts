@@ -1,5 +1,7 @@
 import API from './api'
 import GithubAPI from './github'
+import { AxiosRequestConfig } from 'axios'
+import { Repository } from '../typings/entities'
 
 export const getRepositories = () => {
   return API.get<Repository[]>(`/repositories`, {
@@ -50,4 +52,15 @@ export const createUpgradePR = (
   data: { updatedDependencies: string[]; repoId: number },
 ) => {
   return API.post(`repositories/${fullName}/pulls`, data)
+}
+
+export const getPullRequests = (
+  repoId: string,
+  config?: AxiosRequestConfig,
+) => {
+  return API.get(`repositories/${repoId}/pull-requests`, config)
+}
+
+export const deleteRepository = (repoId: number) => {
+  return API.delete<Repository>(`repositories/${repoId.toString()}`)
 }

@@ -1,7 +1,7 @@
+import { InjectQueue } from '@nestjs/bull';
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Queue } from 'bull';
-import { InjectQueue } from 'nest-bull';
 import { RepositoryService } from '../repository/repository.service';
 
 @Injectable()
@@ -13,9 +13,9 @@ export class CronService {
     private readonly repositoryService: RepositoryService,
   ) {}
 
-  @Cron(CronExpression.EVERY_DAY_AT_1AM)
+  @Cron(CronExpression.EVERY_4_HOURS)
   async refreshAllRepositories() {
-    const repos = await this.repositoryService.getRepos();
+    const repos = await this.repositoryService.getAllRepos();
     for (const repo of repos) {
       for (const user of repo.users) {
         if (user.githubToken) {
@@ -25,6 +25,7 @@ export class CronService {
             branch: repo.branch,
             githubToken: user.githubToken,
             repositoryId: repo.githubId,
+            hasYarnLock: repo.hasYarnLock,
           });
           break;
         }

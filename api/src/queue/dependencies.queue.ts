@@ -1,14 +1,14 @@
-import { Logger, Injectable } from '@nestjs/common';
-import { Job } from 'bull';
-import { readFileSync } from 'fs';
 import {
   BullQueueEvents,
+  OnQueueActive,
   OnQueueEvent,
   Process,
   Processor,
-  OnQueueActive,
-} from 'nest-bull';
-import { GithubService } from '../github/github.service';
+} from '@nestjs/bull';
+import { Injectable, Logger } from '@nestjs/common';
+import { Job } from 'bull';
+import { readFileSync } from 'fs';
+import { GithubService, ITreeData } from '../github/github.service';
 import { RepositoryService } from '../repository/repository.service';
 import {
   getDependenciesCount,
@@ -17,13 +17,14 @@ import {
   getPrefixedDependencies,
   getUpgradedDiff,
 } from '../utils/dependencies';
+import { LogService } from '../log/log.service';
 
 const { exec, execSync } = require('child_process');
 const fs = require('fs');
 const { promisify } = require('util');
 const asyncWriteFile = promisify(fs.writeFile);
 
-@Processor({ name: 'dependencies' })
+@Processor('dependencies')
 @Injectable()
 export class DependenciesQueue {
   private readonly logger = new Logger(this.constructor.name);
@@ -31,6 +32,7 @@ export class DependenciesQueue {
   constructor(
     private readonly repositoriesService: RepositoryService,
     private readonly githubService: GithubService,
+    private readonly logService: LogService,
   ) {}
 
   @Process({ name: 'compute_yarn_dependencies' })
@@ -75,6 +77,7 @@ export class DependenciesQueue {
       const score = Math.round(
         101 - ((nbOutdatedDeps + nbOutdatedDevDeps) / totalDependencies) * 100,
       );
+      this.logger.log('score : ' + score);
 
       const deps = getPrefixedDependencies(outdatedDeps);
       repository.dependencies = {
@@ -91,6 +94,8 @@ export class DependenciesQueue {
         repository.id.toString(),
         repository,
       );
+
+      this.logger.log('updated repo : ' + repository.fullName);
       exec(`cd ${tmpPath} && cd .. && rm -rf ./${repositoryId}`);
     });
   }
@@ -188,17 +193,17 @@ export class DependenciesQueue {
 
     execSync(
       `cd ${tmpPath} && yarn upgrade ${job.data.updatedDependencies.join(' ')}`,
-      // { stdio: 'inherit' },
     );
 
-    // // Commit the new package.json and yarn.lock and create new PR
-    const newBranchName = 'reactivatedapp/' + Date.now();
+    // Commit the new package.json and yarn.lock and create new PR
+    let branchTreeSHA = null;
     try {
-      await this.githubService.createBranch({
+      const branchRes = await this.githubService.createBranch({
         fullName: job.data.repositoryFullName,
         githubToken: job.data.githubToken,
-        branchName: newBranchName,
+        branchName: job.data.branchName,
       });
+      branchTreeSHA = branchRes.data.object.sha;
     } catch (error) {
       if (error.response.status === 422) {
         this.logger.error('Branch reference already exists');
@@ -206,42 +211,57 @@ export class DependenciesQueue {
     }
 
     // Update the files on new branch
-    let commitSHA = null;
     try {
       const files = ['package.json', 'yarn.lock'];
+      const tree: ITreeData[] = [];
       for (const file of files) {
-        const bufferContent = readFileSync(`${tmpPath}/${file}`, {
-          encoding: 'base64',
-        });
-        const res = await this.githubService.commitFile({
-          name: job.data.repositoryFullName,
-          path: job.data.path,
-          branch: newBranchName,
-          token: job.data.githubToken,
-          fileName: file,
-          message: `Upgrade ${file}`,
-          content: bufferContent,
-        });
+        const bufferContent = Buffer.from(readFileSync(`${tmpPath}/${file}`));
 
-        if (file === 'package.json') {
-          commitSHA = res.data.commit.sha;
-        }
+        tree.push({
+          path: file,
+          mode: '100644',
+          type: 'blob',
+          content: bufferContent.toString('utf-8'),
+        });
       }
+
+      const upgradedTreeRes = await this.githubService.createTree({
+        fullName: job.data.repositoryFullName,
+        githubToken: job.data.githubToken,
+        base_tree: branchTreeSHA,
+        tree,
+      });
+
+      const commitRes = await this.githubService.createCommit({
+        fullName: job.data.repositoryFullName,
+        githubToken: job.data.githubToken,
+        message: `Reactivated App : update package.json and yarn.lock`,
+        tree: upgradedTreeRes.data.sha,
+        parents: [branchTreeSHA],
+      });
+      const upgradeCommitSHA = commitRes.data.sha;
 
       const diffRes = await this.githubService.getDiffUrl({
         name: job.data.repositoryFullName,
         token: job.data.githubToken,
-        commitSHA,
+        commitSHA: upgradeCommitSHA,
       });
 
       const diffLines = diffRes.data.split('\n');
       const upgradedDiff = getUpgradedDiff(diffLines);
 
+      const updateRes = await this.githubService.updateBranch({
+        sha: upgradeCommitSHA,
+        githubToken: job.data.githubToken,
+        branchName: job.data.branchName,
+        fullName: job.data.repositoryFullName,
+      });
+
       await this.githubService.createPullRequest({
         baseBranch: job.data.branch,
         fullName: job.data.repositoryFullName,
         githubToken: job.data.githubToken,
-        headBranch: newBranchName,
+        headBranch: job.data.branchName,
         updatedDependencies: job.data.updatedDependencies,
         upgradedDiff,
       });
@@ -265,14 +285,21 @@ export class DependenciesQueue {
   @OnQueueEvent(BullQueueEvents.COMPLETED)
   onCompleted(job: Job) {
     this.logger.log(
-      `Completed job ${job.id} of type ${
-        job.name
-      } with result (${job.finishedOn - job.processedOn} ms)`,
+      `Completed job ${job.id} of type ${job.name} with result (${
+        job.finishedOn - job.processedOn
+      } ms)`,
     );
   }
 
   @OnQueueEvent(BullQueueEvents.FAILED)
-  onFailed(job: Job) {
+  async onFailed(job: Job) {
+    await this.logService.saveLog({
+      name: 'Job failed : ' + job.name,
+      stackTrace: job.stacktrace.join('\n'),
+      failedReason: job.failedReason,
+      data: JSON.parse(job.data),
+    });
+
     this.logger.log(
       `Failed job ${job.id} of type ${job.name}.\n${job.stacktrace}`,
     );

@@ -3,13 +3,7 @@ interface JwTokenData {
   githubId: string
   userName: string
   userId: User['id']
-}
-
-interface User {
-  id: number
-  username: string
-  githubId: string
-  githubToken: string
+  validated: boolean
 }
 
 type Dependency = [string, string, string, string, DependencyType, string]
@@ -30,28 +24,6 @@ type FrameworkTag =
   | 'next.js'
   | 'nest.js'
   | 'express'
-
-interface Repository {
-  id: number
-  name: string
-  fullName: string
-  githubId: string
-  installationId: string
-  author: string
-  repoImg: string
-  createdAt: string // Date
-  dependenciesUpdatedAt: string // Date
-  repoUrl: string
-  user: User
-  score: number
-  packageJson: PackageJson
-  dependencies: {
-    deps: (Dependency | PrefixedDependency)[]
-  } | null
-  branch: string
-  path?: string
-  framework: FrameworkTag
-}
 
 interface GithubAccount {
   login: string
@@ -74,4 +46,13 @@ interface GithubInstallation {
 
 interface GithubBranch {
   name: string
+}
+
+type Status = 'pending' | 'done' | 'merged' | 'closed'
+interface PullRequest {
+  id: number
+  status: Status
+  repository: Repository
+  branchName: string
+  url: string
 }

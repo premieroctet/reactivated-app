@@ -4,8 +4,10 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { PullRequest } from '../pull-request/pull-request.entity';
 import { User } from '../users/user.entity';
 
 export type FrameworkTag =
@@ -94,10 +96,7 @@ export class Repository {
   repoUrl: string;
 
   @ApiProperty()
-  @ManyToMany(
-    user => User,
-    user => user.id,
-  )
+  @ManyToMany((user) => User, (user) => user.id)
   @JoinTable()
   users?: User[];
 
@@ -142,4 +141,8 @@ export class Repository {
   @ApiProperty()
   @Column({ nullable: true })
   hasYarnLock?: boolean;
+
+  @ApiProperty()
+  @OneToMany(() => PullRequest, (pullRequest) => pullRequest.repository)
+  pullRequests?: PullRequest[];
 }

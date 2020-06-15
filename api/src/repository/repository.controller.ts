@@ -1,32 +1,39 @@
+import { InjectQueue } from '@nestjs/bull';
 import {
-  Controller,
-  UseGuards,
-  Put,
   Body,
-  Param,
-  Request,
-  Get,
+  Controller,
+  Delete,
   ForbiddenException,
-  NotFoundException,
-  Post,
+  Get,
   Logger,
+  NotFoundException,
+  Param,
+  Post,
+  Put,
+  Query,
+  Req,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { RepositoryService } from './repository.service';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   Crud,
+  CrudAuth,
   CrudController,
+  CrudRequest,
   Override,
   ParsedRequest,
-  CrudRequest,
-  CrudAuth,
 } from '@nestjsx/crud';
-import { Repository } from './repository.entity';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { Queue } from 'bull';
-import { InjectQueue } from 'nest-bull';
+import { ConfigService } from '../config/config.service';
 import { GithubService } from '../github/github.service';
+import { PullRequest } from '../pull-request/pull-request.entity';
+import { PullRequestService } from '../pull-request/pull-request.service';
+import { User } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
+import { Repository } from './repository.entity';
+import { RepositoryService } from './repository.service';
 
 @Crud({
   model: {
@@ -43,11 +50,11 @@ import { UsersService } from '../users/users.service';
 })
 @CrudAuth({
   property: 'user',
-  filter: user => {
-    return {
-      userId: { $eq: user.id },
-    };
-  },
+  filter: (user: User) => ({
+    'users.id': {
+      $in: [user.id],
+    },
+  }),
 })
 @UseGuards(AuthGuard('jwt'))
 @ApiTags('repositories')
@@ -56,8 +63,10 @@ export class RepositoryController implements CrudController<Repository> {
   private readonly logger = new Logger(RepositoryController.name);
   constructor(
     public service: RepositoryService,
+    private readonly configService: ConfigService,
     private readonly githubService: GithubService,
     private readonly usersService: UsersService,
+    private readonly pullRequestService: PullRequestService,
     @InjectQueue('dependencies') private readonly queue: Queue,
   ) {}
 
@@ -75,6 +84,8 @@ export class RepositoryController implements CrudController<Repository> {
     @Param('id') repoId: string,
     @Request() req,
   ) {
+    const userId = req.user.id;
+
     let hasYarnLock = true;
 
     try {
@@ -108,7 +119,6 @@ export class RepositoryController implements CrudController<Repository> {
       throw new NotFoundException();
     }
 
-    const userId = req.user.id;
     const user = await this.usersService.getById(userId);
     const repository = await this.service.updateRepo(repoId, {
       ...repo,
@@ -166,7 +176,21 @@ export class RepositoryController implements CrudController<Repository> {
     @Param('name') name: string,
     @Request() req,
   ) {
-    const { user } = req;
+    const { user }: { user: User } = req;
+
+    const repositories = await this.service.getAllRepos();
+    const userRepos = repositories.filter((repo: Repository) =>
+      repo.users.some((repoUser) => repoUser.id === user.id),
+    );
+    const nbUserRepos = userRepos.length;
+
+    if (nbUserRepos >= Number(this.configService.get('MAX_REPOS'))) {
+      throw new ForbiddenException(
+        `Max repositories allowed ${Number(
+          this.configService.get('MAX_REPOS'),
+        )}`,
+      );
+    }
 
     const response = await this.githubService.getRepository({
       fullName: `${author}/${name}`,
@@ -209,6 +233,15 @@ export class RepositoryController implements CrudController<Repository> {
       id: parseInt(repoInfo.repoId, 10),
     });
 
+    const branchTimestamp = new Date().getTime().toString();
+    const branchName = `reactivatedapp/${branchTimestamp}`;
+
+    const pullRequest = new PullRequest();
+    pullRequest.repository = repository;
+    pullRequest.status = 'pending';
+    pullRequest.branchName = branchName;
+    await this.pullRequestService.createPullRequest(pullRequest);
+
     this.queue.add('upgrade_dependencies', {
       repositoryFullName: fullName,
       repositoryId: repository.githubId,
@@ -217,6 +250,21 @@ export class RepositoryController implements CrudController<Repository> {
       path: repository.path,
       updatedDependencies: repoInfo.updatedDependencies,
       hasYarnLock: repository.hasYarnLock,
+      branchName,
     });
+  }
+
+  @Get(':id/pull-requests')
+  async getPullRequests(@Param('id') repoId: string, @Query() query) {
+    return await this.pullRequestService.getPullRequestsFromRepository(
+      repoId,
+      query.limit,
+    );
+  }
+
+  @Delete(':id')
+  async deleteRepo(@Param('id') repoId: string, @Req() req) {
+    const userId = req.user.id;
+    return await this.service.deleteRepo({ id: repoId }, userId);
   }
 }
