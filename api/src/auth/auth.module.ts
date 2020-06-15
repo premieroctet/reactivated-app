@@ -6,12 +6,12 @@ import { UsersModule } from '../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '../config/config.service';
 import { JwtStrategy } from './jwt.strategy';
+import { GitHubAppStrategy } from './github-app.strategy';
 
 @Module({
   imports: [
     ConfigModule,
     UsersModule,
-    HttpModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -21,7 +21,7 @@ import { JwtStrategy } from './jwt.strategy';
       inject: [ConfigService],
     }),
   ],
-  providers: [AuthService, GitHubStrategy, JwtStrategy],
+  providers: [AuthService, GitHubStrategy, GitHubAppStrategy, JwtStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}

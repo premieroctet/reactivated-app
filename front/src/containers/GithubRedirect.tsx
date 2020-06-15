@@ -7,6 +7,7 @@ import Home from '@containers/Home'
 
 const GithubRedirect = () => {
   const { token, setToken } = useAuth()
+
   const { search } = useLocation()
 
   const authUser = async (code: string) => {
