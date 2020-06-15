@@ -38,6 +38,8 @@ const RepositoriesList = ({ repositories }: Props) => {
     )
   }
 
+  const emptyBlockCount = getMaxRepositories() - repositories.length
+
   return (
     <Flex flexDirection="column" width={500}>
       {repositories.map((repository) => (
@@ -45,7 +47,7 @@ const RepositoriesList = ({ repositories }: Props) => {
           <RepositoryListItem repository={repository} />
         </Link>
       ))}
-      {[...new Array(getMaxRepositories() - repositories.length)].map(() => (
+      {[...new Array(emptyBlockCount < 0 ? 0 : emptyBlockCount)].map(() => (
         <RepositoryListEmpty />
       ))}
     </Flex>
