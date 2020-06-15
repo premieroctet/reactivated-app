@@ -7,6 +7,10 @@ import { useAxiosRequest } from '@hooks/useRequest'
 import { Repository } from '../typings/entities'
 import Container from '@components/Container'
 
+export const getMaxRepositories = () => {
+  return parseInt(process.env.REACT_APP_MAX_REPOS || '5', 10)
+}
+
 function Home() {
   const { data: repositories } = useAxiosRequest<Repository[]>(
     '/repositories',
@@ -38,9 +42,7 @@ function Home() {
               variantColor="green"
               variant="ghost"
               leftIcon="add"
-              isDisabled={
-                repositories.length >= Number(process.env.REACT_APP_MAX_REPOS)
-              }
+              isDisabled={repositories.length >= getMaxRepositories()}
             >
               Add app
             </Button>
