@@ -119,9 +119,6 @@ ${updateDeps}
         },
       )
       .toPromise();
-    // .catch(e => {
-    //   console.log(JSON.stringify(e, null, '	'));
-    // });
   }
 
   // https://developer.github.com/v3/git/refs/#create-a-reference
@@ -172,51 +169,6 @@ ${updateDeps}
       )
       .toPromise();
   }
-
-  // https://developer.github.com/v3/repos/contents/#create-or-update-a-file
-  // async commitFile(data: {
-  //   message: string;
-  //   content: string;
-  //   name: string;
-  //   path: string;
-  //   branch: string;
-  //   token: string;
-  //   fileName: string;
-  // }): Promise<any> {
-  //   let sha = '';
-  //   try {
-  //     // If existing file
-  //     const fileRes = await this.getFile(data);
-  //     const fileSHA = fileRes.data.sha;
-  //     const fileBlobRes = await this.getBlob({
-  //       fileSHA,
-  //       name: data.name,
-  //       token: data.token,
-  //     });
-  //     sha = fileBlobRes.data.sha;
-  //   } catch (error) {
-  //     this.logger.error('Get commit file error', error);
-  //   }
-
-  //   return this.httpService
-  //     .put(
-  //       `https://api.github.com/repos/${data.name}/contents${
-  //         data.path === '/' ? data.path : '/' + data.path
-  //       }${data.fileName}`,
-  //       {
-  //         message: data.message,
-  //         content: data.content,
-  //         branch: data.branch,
-  //         sha,
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: `token ${data.token}`,
-  //         },
-  //       },
-  //     )
-  //     .toPromise();
-  // }
 
   // https://developer.github.com/v3/git/commits/#create-a-commit
   async createCommit(data: {

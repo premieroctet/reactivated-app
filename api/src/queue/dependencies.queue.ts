@@ -210,13 +210,6 @@ export class DependenciesQueue {
       }
     }
 
-    // const commitRes = await this.githubService.getCommit({
-    //   fullName: job.data.repositoryFullName,
-    //   githubToken: job.data.githubToken,
-    //   commitSHA: branchTreeSHA,
-    // });
-    // const parentTreeSHA = commitRes.data.tree.sha;
-
     // Update the files on new branch
     try {
       const files = ['package.json', 'yarn.lock'];
@@ -238,10 +231,6 @@ export class DependenciesQueue {
         base_tree: branchTreeSHA,
         tree,
       });
-      console.log(
-        'upgradeDependencies -> upgradedTreeRes',
-        upgradedTreeRes.data,
-      );
 
       const commitRes = await this.githubService.createCommit({
         fullName: job.data.repositoryFullName,
@@ -267,7 +256,6 @@ export class DependenciesQueue {
         branchName: job.data.branchName,
         fullName: job.data.repositoryFullName,
       });
-      console.log('upgradeDependencies -> update', updateRes.data);
 
       await this.githubService.createPullRequest({
         baseBranch: job.data.branch,
