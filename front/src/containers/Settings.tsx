@@ -7,9 +7,12 @@ import { deleteAccount } from '../api/user'
 const Settings = () => {
   const { jwTokenData } = useAuth()
 
+  const [deleteAccountSuccess, setDeleteAccountSuccess] = React.useState(true)
   const onDeleteAccount = async () => {
     const res = await deleteAccount(jwTokenData?.userId)
-    console.log('onDeleteAccount -> res', res)
+    if (res.status === 201) {
+      setDeleteAccountSuccess(true)
+    }
   }
 
   return (
@@ -27,6 +30,10 @@ const Settings = () => {
         >
           Delete my account
         </Button>
+
+        {deleteAccountSuccess && (
+          <Text color="green.300">Your account has been correctly deleted</Text>
+        )}
       </Container>
     </>
   )
