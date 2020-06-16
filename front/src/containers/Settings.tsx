@@ -6,8 +6,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { deleteAccount } from '../api/user'
 const Settings = () => {
   const { jwTokenData } = useAuth()
-
-  const [deleteAccountSuccess, setDeleteAccountSuccess] = React.useState(true)
+  const [deleteAccountSuccess, setDeleteAccountSuccess] = React.useState(false)
   const onDeleteAccount = async () => {
     const res = await deleteAccount(jwTokenData?.userId)
     if (res.status === 201) {
