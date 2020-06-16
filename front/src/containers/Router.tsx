@@ -1,12 +1,13 @@
+import PrivateRoute from '@components/PrivateRoute'
+import { RepositoryProvider } from '@contexts/RepositoryContext'
 import React from 'react'
 import { Route, Switch } from 'react-router-dom'
-import PrivateRoute from '@components/PrivateRoute'
-import ViewPullRequest from './Repository/ViewPullRequest'
-import RepositoryLayout from './Repository/RepositoryLayout'
-import { RepositoryProvider } from '@contexts/RepositoryContext'
-import ViewRepo from './Repository/ViewRepo'
-import AddRepo from './Repository/AddRepo'
 import Dashboard from './Dashboard'
+import AddRepo from './Repository/AddRepo'
+import RepositoryLayout from './Repository/RepositoryLayout'
+import ViewPullRequest from './Repository/ViewPullRequest'
+import ViewRepo from './Repository/ViewRepo'
+import Settings from './Settings'
 
 function Router() {
   return (
@@ -27,6 +28,7 @@ function Router() {
         </RepositoryProvider>
       </Route>
       <PrivateRoute path="/add-repository" exact component={AddRepo} />
+      <PrivateRoute path="/settings" exact component={Settings} />
     </Switch>
   )
 }
