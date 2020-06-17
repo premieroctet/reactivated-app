@@ -45,6 +45,7 @@ import { RepositoryService } from './repository.service';
         eager: true,
         required: true,
       },
+      pullRequests: {},
     },
   },
 })
@@ -184,7 +185,7 @@ export class RepositoryController implements CrudController<Repository> {
     );
     const nbUserRepos = userRepos.length;
 
-    if (nbUserRepos >= Number(this.configService.get('MAX_REPOS'))) {
+    if (nbUserRepos > Number(this.configService.get('MAX_REPOS'))) {
       throw new ForbiddenException(
         `Max repositories allowed ${Number(
           this.configService.get('MAX_REPOS'),

@@ -2,6 +2,7 @@ import { Controller, Get, UseGuards, Request } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth/auth.service';
 import { ApiTags } from '@nestjs/swagger';
+import { User } from './users/user.entity';
 
 @Controller()
 export class AppController {
@@ -25,13 +26,21 @@ export class AppController {
   @UseGuards(AuthGuard('github'))
   @Get('/auth/github/callback')
   async redirect(@Request() req) {
-    const { githubToken, username, githubId, id, validated } = req.user;
+    const {
+      githubToken,
+      username,
+      githubId,
+      id,
+      validated,
+      avatarUrl,
+    }: User = req.user;
     const jwt = this.authService.createToken({
       githubToken: githubToken,
       userName: username,
       githubId: githubId,
       userId: id,
-      validated: validated,
+      validated,
+      avatarUrl,
     });
 
     return { token: jwt };

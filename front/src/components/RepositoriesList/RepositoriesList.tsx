@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom'
 import RepositoryListItem from './RepositoryListItem'
 import { FaPlug } from 'react-icons/fa'
 import { Repository } from '../../typings/entities'
+import RepositoryListEmpty from './RepositoryListEmpty'
+import { getMaxRepositories } from '@containers/Dashboard'
 
 interface Props {
   repositories: Repository[]
@@ -36,12 +38,17 @@ const RepositoriesList = ({ repositories }: Props) => {
     )
   }
 
+  const emptyBlockCount = getMaxRepositories() - repositories.length
+
   return (
     <Flex flexDirection="column" width={500}>
       {repositories.map((repository) => (
         <Link key={repository.id} to={`/repo/${repository.id}`}>
           <RepositoryListItem repository={repository} />
         </Link>
+      ))}
+      {[...new Array(emptyBlockCount < 0 ? 0 : emptyBlockCount)].map(() => (
+        <RepositoryListEmpty />
       ))}
     </Flex>
   )

@@ -73,7 +73,7 @@ const Home = ({ loading = false }: Props) => {
               rightIcon={FaGithub}
               rounded={8}
             >
-              Sign in with Github
+              Sign in with GitHub
             </Button>
           </Header>
 

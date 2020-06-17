@@ -65,8 +65,12 @@ export class DependenciesQueue {
     }
 
     exec(`cd ${tmpPath} && yarn outdated --json`, async (err, stdout) => {
-      const manifest = JSON.parse(stdout.split('\n')[1]);
-      const outdatedDeps = manifest.data.body;
+      let manifest = null,
+        outdatedDeps = [];
+      if (stdout !== '') {
+        manifest = JSON.parse(stdout.split('\n')[1]);
+        outdatedDeps = manifest.data.body;
+      }
       const [nbOutdatedDeps, nbOutdatedDevDeps] = getNbOutdatedDeps(
         outdatedDeps,
       );
@@ -74,9 +78,13 @@ export class DependenciesQueue {
       repository.packageJson = JSON.parse(bufferPackage.toString('utf-8'));
       const totalDependencies = getDependenciesCount(repository.packageJson);
 
-      const score = Math.round(
-        101 - ((nbOutdatedDeps + nbOutdatedDevDeps) / totalDependencies) * 100,
+      let score = Math.round(
+        100 - ((nbOutdatedDeps + nbOutdatedDevDeps) / totalDependencies) * 100,
       );
+      if (score === 0) {
+        score += 1; // Show load bar for the front
+      }
+
       this.logger.log('score : ' + score);
 
       const deps = getPrefixedDependencies(outdatedDeps);

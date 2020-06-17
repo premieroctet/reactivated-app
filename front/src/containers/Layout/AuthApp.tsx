@@ -15,6 +15,7 @@ import { Global } from '@emotion/core'
 import { deleteFromStorage } from '@rehooks/local-storage'
 import React from 'react'
 import WaitingBeta from '../WaitingBeta'
+import { Link } from 'react-router-dom'
 
 const AuthApp = () => {
   const logOut = () => {
@@ -43,12 +44,16 @@ const AuthApp = () => {
                     name={jwTokenData?.userName}
                     size="sm"
                     bg="brand.500"
+                    src={jwTokenData?.avatarUrl}
                   />
                   <Icon color="white" fontSize="2xl" name="chevron-down" />
                 </Flex>
               </MenuButton>
               <MenuList>
                 <MenuItem onClick={logOut}>Logout</MenuItem>
+                <Link to="/settings">
+                  <MenuItem>Settings</MenuItem>
+                </Link>
               </MenuList>
             </Menu>
           </Header>
