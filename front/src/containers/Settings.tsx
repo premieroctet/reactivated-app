@@ -8,28 +8,43 @@ import {
   PopoverHeader,
   PopoverTrigger,
   Text,
+  useToast,
 } from '@chakra-ui/core'
-import { deleteFromStorage } from '@rehooks/local-storage'
 import React from 'react'
 import { FaTrash } from 'react-icons/fa'
+import { useHistory } from 'react-router'
 import { deleteAccount } from '../api/user'
 import Container from '../components/Container'
 import { Row } from '../components/Flex'
 import { useAuth } from '../contexts/AuthContext'
+import { deleteFromStorage } from '@rehooks/local-storage'
 
 const Settings = () => {
   const { jwTokenData } = useAuth()
-  const [deleteAccountSuccess, setDeleteAccountSuccess] = React.useState(false)
+  const history = useHistory()
+  const toast = useToast()
 
   const onDeleteAccount = async () => {
     try {
       await deleteAccount(jwTokenData?.userId)
-      setDeleteAccountSuccess(true)
-      setTimeout(() => {
-        deleteFromStorage('token')
-      }, 800)
+      deleteFromStorage('token')
+      history.push('/')
+
+      return toast({
+        title: 'Account deleted.',
+        description: 'Your account has been correctly deleted',
+        status: 'success',
+        duration: 4000,
+        isClosable: true,
+      })
     } catch (error) {
-      console.error(error)
+      return toast({
+        title: 'An error occured.',
+        description: 'Unable to delete account',
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
+      })
     }
   }
 
@@ -62,10 +77,6 @@ const Settings = () => {
             </PopoverBody>
           </PopoverContent>
         </Popover>
-
-        {deleteAccountSuccess && (
-          <Text color="green.300">Your account has been correctly deleted</Text>
-        )}
       </Container>
     </>
   )
