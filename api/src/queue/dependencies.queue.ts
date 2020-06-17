@@ -82,7 +82,7 @@ export class DependenciesQueue {
         100 - ((nbOutdatedDeps + nbOutdatedDevDeps) / totalDependencies) * 100,
       );
       if (score === 0) {
-        score += 1; // Show health bar for the front
+        score += 1; // Show load bar for the front
       }
 
       this.logger.log('score : ' + score);
