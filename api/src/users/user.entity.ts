@@ -23,6 +23,10 @@ export class User {
   githubToken: string;
 
   @ApiProperty()
+  @Column()
+  avatarUrl: string;
+
+  @ApiProperty()
   @Column({ default: false })
   validated: boolean;
 }

@@ -21,7 +21,7 @@ const LoadBar: React.FC<Props> = ({ score }) => (
       height={1}
       left={0}
       transition="width 300ms"
-      width={`${score}%`}
+      width={`${score === 100 ? score - 1 : score}%`}
       zIndex={0}
     />
     <Box
@@ -32,7 +32,7 @@ const LoadBar: React.FC<Props> = ({ score }) => (
       width={2}
       bg="brand.500"
       boxShadow="2px 1px 6px 3px rgba(71,253,167,0.6)"
-      left={`${score}%`}
+      left={`${score === 100 ? score - 1 : score}%`}
       zIndex={20}
     />
   </Box>

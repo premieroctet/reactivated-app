@@ -2,7 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from './repository.entity';
-import { Repository as RepositoryContent, DeleteResult } from 'typeorm';
+import {
+  Repository as RepositoryContent,
+  DeleteResult,
+  RemoveOptions,
+} from 'typeorm';
 
 @Injectable()
 export class RepositoryService extends TypeOrmCrudService<Repository> {
@@ -15,6 +19,10 @@ export class RepositoryService extends TypeOrmCrudService<Repository> {
 
   async getAllRepos() {
     return this.repositoryContent.find({ relations: ['users'] });
+  }
+
+  async removeRepos(repos: Repository[], options?: RemoveOptions) {
+    return this.repositoryContent.remove(repos, options);
   }
 
   async findRepos(criteria: Partial<Repository>) {
