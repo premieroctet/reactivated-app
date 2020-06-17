@@ -31,6 +31,7 @@ const Settings = () => {
       history.push('/')
 
       return toast({
+        position: 'top-right',
         title: 'Account deleted.',
         description: 'Your account has been correctly deleted',
         status: 'success',
@@ -39,6 +40,7 @@ const Settings = () => {
       })
     } catch (error) {
       return toast({
+        position: 'top-right',
         title: 'An error occured.',
         description: 'Unable to delete account',
         status: 'error',
