@@ -23,8 +23,8 @@ export class User {
   githubToken: string;
 
   @ApiProperty()
-  @Column()
-  avatarUrl: string;
+  @Column({ nullable: true })
+  avatarUrl?: string;
 
   @ApiProperty()
   @Column({ default: false })
