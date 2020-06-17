@@ -78,6 +78,17 @@ const RepositoryLayout: React.FC<RouteProps> = ({ children }) => {
     }
   }
 
+  const outdatedCount = repository?.dependencies?.deps.reduce(
+    (outdatedCount, dep: object | string[], i) => {
+      if (Array.isArray(dep)) {
+        return outdatedCount + 1
+      }
+
+      return outdatedCount + Object.values(dep)[0].length
+    },
+    0,
+  )
+
   return (
     <>
       <Flex justifyContent="space-between">
@@ -116,7 +127,7 @@ const RepositoryLayout: React.FC<RouteProps> = ({ children }) => {
             }
             repositoryId={repository.id}
             pullRequestCount={repository.pullRequests.length}
-            outdatedCount={repository.dependencies?.deps.length}
+            outdatedCount={outdatedCount}
           />
 
           <Container

@@ -4,6 +4,7 @@ interface JwTokenData {
   userName: string
   userId: User['id']
   validated: boolean
+  avatarUrl: string
 }
 
 type DependencyArray = [string, string, string, string, DependencyType, string]

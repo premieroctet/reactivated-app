@@ -54,6 +54,7 @@ export class UsersService extends TypeOrmCrudService<User> {
         githubId: profile.id,
         githubToken: accessToken,
         validated: this.config.get('IS_BETA') === 'true' ? false : true,
+        avatarUrl: profile._json.avatar_url,
       };
       user = await this.createUser(newUser);
 
