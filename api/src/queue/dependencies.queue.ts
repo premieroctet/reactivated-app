@@ -2,15 +2,15 @@ import {
   BullQueueEvents,
   OnQueueActive,
   OnQueueEvent,
+  OnQueueFailed,
   Process,
   Processor,
-  OnQueueError,
-  OnQueueFailed,
 } from '@nestjs/bull';
-import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bull';
 import { readFileSync } from 'fs';
 import { GithubService, ITreeData } from '../github/github.service';
+import { LogService } from '../log/log.service';
 import { RepositoryService } from '../repository/repository.service';
 import {
   getDependenciesCount,
@@ -19,7 +19,6 @@ import {
   getPrefixedDependencies,
   getUpgradedDiff,
 } from '../utils/dependencies';
-import { LogService } from '../log/log.service';
 
 const { exec, execSync } = require('child_process');
 const fs = require('fs');
@@ -169,6 +168,7 @@ export class DependenciesQueue {
         fileName: 'package-lock.json',
       });
     }
+
     return { responsePackageJson, responseLock, hasYarnLock };
   }
 
@@ -280,7 +280,7 @@ export class DependenciesQueue {
     }
 
     // Delete the yarn.lock, package.json, node_modules
-    // exec(`cd ${tmpPath} && cd .. && rm -rf ./${job.data.repositoryId}`);
+    exec(`cd ${tmpPath} && cd .. && rm -rf ./${job.data.repositoryId}`);
   }
 
   @OnQueueActive()
