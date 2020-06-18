@@ -11,7 +11,7 @@ export class Log {
   id?: number;
 
   @ApiProperty()
-  @Column()
+  @Column({ length: 500 })
   stackTrace: string;
 
   @ApiProperty()
@@ -23,6 +23,6 @@ export class Log {
   failedReason: string;
 
   @ApiProperty()
-  @Column({ type: 'json' })
-  data: object;
+  @Column({ type: 'json', nullable: true })
+  data?: object;
 }

@@ -4,6 +4,8 @@ import {
   OnQueueEvent,
   Process,
   Processor,
+  OnQueueError,
+  OnQueueFailed,
 } from '@nestjs/bull';
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { Job } from 'bull';
@@ -188,13 +190,7 @@ export class DependenciesQueue {
     );
 
     if (!hasYarnLock) {
-      try {
-        execSync(`cd ${tmpPath} && yarn import`);
-      } catch (error) {
-        console.log('upgradeDependencies -> error', error);
-        job.moveToFailed({ message: 'Lockfile (yarn.lock) already exists' });
-        // throw new Error('Lockfile (yarn.lock) already exists');
-      }
+      execSync(`cd ${tmpPath} && yarn import`);
       fs.unlinkSync(`${tmpPath}/package-lock.json`);
     }
 
@@ -281,11 +277,10 @@ export class DependenciesQueue {
       });
     } catch (error) {
       this.logger.error('Commit files and create PR', error);
-      job.moveToFailed({ message: 'Error ' + error.toString() });
     }
 
     // Delete the yarn.lock, package.json, node_modules
-    exec(`cd ${tmpPath} && cd .. && rm -rf ./${job.data.repositoryId}`);
+    // exec(`cd ${tmpPath} && cd .. && rm -rf ./${job.data.repositoryId}`);
   }
 
   @OnQueueActive()
@@ -306,17 +301,17 @@ export class DependenciesQueue {
     );
   }
 
-  @OnQueueEvent(BullQueueEvents.FAILED)
-  async onFailed(job: Job) {
+  @OnQueueFailed()
+  async onQueueFailed(job: Job, error: Error) {
     await this.logService.saveLog({
-      name: 'Job failed : ' + job.name,
-      stackTrace: job.stacktrace.join('\n'),
-      failedReason: job.failedReason,
-      data: JSON.parse(job.data),
+      name: `Job failed : ${job.name}`,
+      stackTrace: `${job.stacktrace[0].slice(0, 500)}`,
+      failedReason: `${job.failedReason}`,
+      data: JSON.parse(JSON.stringify(job.data)),
     });
 
-    this.logger.log(
-      `Failed job ${job.id} of type ${job.name}.\n${job.stacktrace}`,
+    this.logger.error(
+      `Failed job ${job.id} of type ${job.name}.\n${job.stacktrace}\n$Error : ${error.message}`,
     );
   }
 }
