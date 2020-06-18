@@ -5,7 +5,7 @@ import {
   Process,
   Processor,
 } from '@nestjs/bull';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { Job } from 'bull';
 import { readFileSync } from 'fs';
 import { GithubService, ITreeData } from '../github/github.service';
@@ -188,7 +188,13 @@ export class DependenciesQueue {
     );
 
     if (!hasYarnLock) {
-      execSync(`cd ${tmpPath} && yarn import`);
+      try {
+        execSync(`cd ${tmpPath} && yarn import`);
+      } catch (error) {
+        console.log('upgradeDependencies -> error', error);
+        job.moveToFailed({ message: 'Lockfile (yarn.lock) already exists' });
+        // throw new Error('Lockfile (yarn.lock) already exists');
+      }
       fs.unlinkSync(`${tmpPath}/package-lock.json`);
     }
 
@@ -258,7 +264,7 @@ export class DependenciesQueue {
       const diffLines = diffRes.data.split('\n');
       const upgradedDiff = getUpgradedDiff(diffLines);
 
-      const updateRes = await this.githubService.updateBranch({
+      await this.githubService.updateBranch({
         sha: upgradeCommitSHA,
         githubToken: job.data.githubToken,
         branchName: job.data.branchName,
@@ -275,6 +281,7 @@ export class DependenciesQueue {
       });
     } catch (error) {
       this.logger.error('Commit files and create PR', error);
+      job.moveToFailed({ message: 'Error ' + error.toString() });
     }
 
     // Delete the yarn.lock, package.json, node_modules
