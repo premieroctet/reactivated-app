@@ -117,6 +117,14 @@ export class WebhooksController {
                 hasYarnLock: true, // only yarn.lock supported
               });
 
+              if (repository.hasYarnLock === false) {
+                repository.hasYarnLock = true;
+                await this.repositoryService.updateRepo(
+                  repository.id.toString(),
+                  repository,
+                );
+              }
+
               this.logger.log('Pull request merged : ' + branchName);
               return await this.pullRequestService.updatePullRequest(
                 branchName,
