@@ -42,14 +42,24 @@ const RepositoriesList = ({ repositories }: Props) => {
 
   return (
     <Flex flexDirection="column" width={500}>
-      {repositories.map((repository) => (
-        <Link key={repository.id} to={`/repo/${repository.id}`}>
-          <RepositoryListItem repository={repository} />
-        </Link>
-      ))}
-      {[...new Array(emptyBlockCount < 0 ? 0 : emptyBlockCount)].map(() => (
-        <RepositoryListEmpty />
-      ))}
+      {repositories.map((repository) => {
+        if (repository.isConfigured) {
+          return (
+            <Link key={repository.id} to={`/repo/${repository.id}`}>
+              <RepositoryListItem repository={repository} />
+            </Link>
+          )
+        } else {
+          return (
+            <RepositoryListItem key={repository.id} repository={repository} />
+          )
+        }
+      })}
+      {[...new Array(emptyBlockCount < 0 ? 0 : emptyBlockCount)].map(
+        (_, idx) => (
+          <RepositoryListEmpty key={idx} />
+        ),
+      )}
     </Flex>
   )
 }

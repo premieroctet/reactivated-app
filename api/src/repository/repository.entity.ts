@@ -131,7 +131,7 @@ export class Repository {
   isConfigured?: boolean;
 
   @ApiProperty()
-  @Column({ nullable: true })
+  @Column({ nullable: true, default: 0 })
   score?: number;
 
   @ApiProperty()

@@ -154,6 +154,7 @@ export class RepositoryController implements CrudController<Repository> {
       githubToken: req.user.githubToken,
       branch: repository.branch,
       path: repository.path,
+      hasYarnLock: repository.hasYarnLock,
     });
   }
 

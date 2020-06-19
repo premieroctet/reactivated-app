@@ -2,6 +2,7 @@ import {
   BullQueueEvents,
   OnQueueActive,
   OnQueueEvent,
+  OnQueueFailed,
   Process,
   Processor,
 } from '@nestjs/bull';
@@ -9,6 +10,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bull';
 import { readFileSync } from 'fs';
 import { GithubService, ITreeData } from '../github/github.service';
+import { LogService } from '../log/log.service';
 import { RepositoryService } from '../repository/repository.service';
 import {
   getDependenciesCount,
@@ -17,7 +19,6 @@ import {
   getPrefixedDependencies,
   getUpgradedDiff,
 } from '../utils/dependencies';
-import { LogService } from '../log/log.service';
 
 const { exec, execSync } = require('child_process');
 const fs = require('fs');
@@ -167,6 +168,7 @@ export class DependenciesQueue {
         fileName: 'package-lock.json',
       });
     }
+
     return { responsePackageJson, responseLock, hasYarnLock };
   }
 
@@ -258,7 +260,7 @@ export class DependenciesQueue {
       const diffLines = diffRes.data.split('\n');
       const upgradedDiff = getUpgradedDiff(diffLines);
 
-      const updateRes = await this.githubService.updateBranch({
+      await this.githubService.updateBranch({
         sha: upgradeCommitSHA,
         githubToken: job.data.githubToken,
         branchName: job.data.branchName,
@@ -299,17 +301,17 @@ export class DependenciesQueue {
     );
   }
 
-  @OnQueueEvent(BullQueueEvents.FAILED)
-  async onFailed(job: Job) {
+  @OnQueueFailed()
+  async onQueueFailed(job: Job, error: Error) {
     await this.logService.saveLog({
-      name: 'Job failed : ' + job.name,
-      stackTrace: job.stacktrace.join('\n'),
-      failedReason: job.failedReason,
-      data: JSON.parse(job.data),
+      name: `Job failed : ${job.name}`,
+      stackTrace: `${job.stacktrace[0].slice(0, 500)}`,
+      failedReason: `${job.failedReason}`,
+      data: JSON.parse(JSON.stringify(job.data)),
     });
 
-    this.logger.log(
-      `Failed job ${job.id} of type ${job.name}.\n${job.stacktrace}`,
+    this.logger.error(
+      `Failed job ${job.id} of type ${job.name}.\n${job.stacktrace}\n$Error : ${error.message}`,
     );
   }
 }
