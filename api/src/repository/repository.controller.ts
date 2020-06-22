@@ -34,6 +34,7 @@ import { User } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
 import { Repository } from './repository.entity';
 import { RepositoryService } from './repository.service';
+import e = require('express');
 
 @Crud({
   model: {
@@ -199,22 +200,27 @@ export class RepositoryController implements CrudController<Repository> {
       token: user.githubToken,
     });
     const { data } = response;
-
-    const repository: Repository = {
-      name: data.name,
+    const existingRepo = await this.service.findRepo({
       fullName: data.full_name,
-      githubId: data.id,
-      installationId: null,
-      author: data.owner.login,
-      repoImg: data.owner.avatar_url,
-      createdAt: new Date(),
-      repoUrl: data.html_url,
-      users: [user],
-    };
-
-    const createdRepository = await this.service.addRepo(repository);
-
-    return createdRepository;
+    });
+    if (existingRepo) {
+      existingRepo.users.push(user);
+      return await this.service.addRepo(existingRepo);
+    } else {
+      const repository: Repository = {
+        name: data.name,
+        fullName: data.full_name,
+        githubId: data.id,
+        installationId: null,
+        author: data.owner.login,
+        repoImg: data.owner.avatar_url,
+        createdAt: new Date(),
+        repoUrl: data.html_url,
+        users: [user],
+      };
+      const createdRepository = await this.service.addRepo(repository);
+      return createdRepository;
+    }
   }
 
   @Post(':author/:name/pulls')
