@@ -67,64 +67,59 @@ export class DependenciesQueue {
       execSync(`cd ${tmpPath} && yarn import`);
     }
 
-    exec(
-      `cd ${tmpPath} && yarn outdated --json`,
-      async (err: Error, stdout) => {
-        try {
-          let manifest = null,
-            outdatedDeps = [];
+    exec(`cd ${tmpPath} && yarn outdated --json`, async (err, stdout) => {
+      try {
+        let manifest = null,
+          outdatedDeps = [];
 
-          manifest = JSON.parse(stdout.split('\n')[1]);
-          outdatedDeps = manifest.data.body;
+        manifest = JSON.parse(stdout.split('\n')[1]);
+        outdatedDeps = manifest.data.body;
 
-          const [nbOutdatedDeps, nbOutdatedDevDeps] = getNbOutdatedDeps(
-            outdatedDeps,
-          );
+        const [nbOutdatedDeps, nbOutdatedDevDeps] = getNbOutdatedDeps(
+          outdatedDeps,
+        );
 
-          repository.packageJson = JSON.parse(bufferPackage.toString('utf-8'));
-          const totalDependencies = getDependenciesCount(
-            repository.packageJson,
-          );
+        repository.packageJson = JSON.parse(bufferPackage.toString('utf-8'));
+        const totalDependencies = getDependenciesCount(repository.packageJson);
 
-          let score = Math.round(
-            100 -
-              ((nbOutdatedDeps + nbOutdatedDevDeps) / totalDependencies) * 100,
-          );
-          if (score === 0) {
-            score += 1; // Show load bar for the front
-          }
-
-          this.logger.log('score : ' + score);
-
-          const deps = getPrefixedDependencies(outdatedDeps);
-          repository.dependencies = {
-            deps,
-          };
-          repository.score = score;
-          repository.framework = getFrameworkFromPackageJson(
-            repository.packageJson,
-          );
-
-          repository.isConfigured = true;
-          repository.dependenciesUpdatedAt = new Date();
-          repository.crawlError = '';
-          await this.repositoriesService.updateRepo(
-            repository.id.toString(),
-            repository,
-          );
-
-          this.logger.log('updated repo : ' + repository.fullName);
-        } catch (err) {
-          this.logger.error(`${err.name} ${err.message} ${err.stack}`);
-          await this.repositoriesService.updateRepo(repository.id.toString(), {
-            ...repository,
-            crawlError: err.message,
-          });
+        let score = Math.round(
+          100 -
+            ((nbOutdatedDeps + nbOutdatedDevDeps) / totalDependencies) * 100,
+        );
+        if (score === 0) {
+          score += 1; // Show load bar for the front
         }
-      },
-    );
 
-    exec(`cd ${tmpPath} && cd .. && rm -rf ./${repositoryId}`);
+        this.logger.log('score : ' + score);
+
+        const deps = getPrefixedDependencies(outdatedDeps);
+        repository.dependencies = {
+          deps,
+        };
+        repository.score = score;
+        repository.framework = getFrameworkFromPackageJson(
+          repository.packageJson,
+        );
+
+        repository.isConfigured = true;
+        repository.dependenciesUpdatedAt = new Date();
+        repository.crawlError = '';
+        await this.repositoriesService.updateRepo(
+          repository.id.toString(),
+          repository,
+        );
+
+        this.logger.log('updated repo : ' + repository.fullName);
+        exec(`cd ${tmpPath} && cd .. && rm -rf ./${repositoryId}`);
+      } catch (err) {
+        this.logger.error(`${err.name} ${err.message} ${err.stack}`);
+        await this.repositoriesService.updateRepo(repository.id.toString(), {
+          ...repository,
+          crawlError: err.message,
+        });
+        exec(`cd ${tmpPath} && cd .. && rm -rf ./${repositoryId}`);
+      }
+    });
   }
 
   async createTemporaryFiles(
