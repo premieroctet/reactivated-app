@@ -5,23 +5,27 @@ import {
   AlertIcon,
   Box,
   Button,
+  Code,
+  Flex,
   Stack,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
-  Code,
+  Tag,
+  TagLabel,
+  Text,
   useClipboard,
-  Flex,
 } from '@chakra-ui/core'
-import React, { useState } from 'react'
-import { DependenciesProvider } from '@contexts/DependenciesContext'
 import DependenciesList from '@components/DependenciesList'
+import { DependenciesProvider } from '@contexts/DependenciesContext'
 import { useRepository } from '@contexts/RepositoryContext'
+import { refinedDependency } from '@utils/dependencies'
+import React, { useState } from 'react'
 import { DiGitPullRequest } from 'react-icons/di'
 import { createUpgradePR } from '../../api/repositories'
-import { refinedDependency } from '@utils/dependencies'
+import { Row } from '../../components/Flex'
 
 function ViewRepo() {
   const { repository, increasePRCount } = useRepository()
@@ -104,6 +108,14 @@ function ViewRepo() {
 
   return (
     <>
+      {repository.crawlError && (
+        <Row py={1}>
+          <Tag variantColor="red" rounded="full" size="sm" mx={1}>
+            <TagLabel>Error</TagLabel>
+          </Tag>
+          <Text color="red.500">{`Something went wrong when fetching dependencies : ${repository.crawlError}`}</Text>
+        </Row>
+      )}
       <Code
         position="relative"
         width="100%"

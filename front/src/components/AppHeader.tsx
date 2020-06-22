@@ -1,26 +1,23 @@
-import React from 'react'
-import Sticky from 'react-stickynode'
 import {
-  Flex,
-  Stack,
   Box,
+  Flex,
   Heading,
   Icon,
-  Link,
-  Text,
   Image,
-  Tag,
-  TagLabel,
+  Link,
+  Stack,
+  Text,
 } from '@chakra-ui/core'
-import LoadBar from './LoadBar'
-import FrameworkTag from './FrameworkTag/FrameworkTag'
-import { formatDistance } from 'date-fns'
-import { FaGithub } from 'react-icons/fa'
-import { motion } from 'framer-motion'
-import LoadScore from './LoadScore'
 import Container from '@components/Container'
 import { Repository } from '@typings/entities'
-import { Row } from './Flex'
+import { formatDistance } from 'date-fns'
+import { motion } from 'framer-motion'
+import React from 'react'
+import { FaGithub } from 'react-icons/fa'
+import Sticky from 'react-stickynode'
+import FrameworkTag from './FrameworkTag/FrameworkTag'
+import LoadBar from './LoadBar'
+import LoadScore from './LoadScore'
 
 const MotionImage = motion.custom(Image)
 const MotionContainer = motion.custom(Container)
@@ -90,17 +87,6 @@ const AppHeader: React.FC<IProps> = ({ repository }) => {
                   </Link>
                 </Box>
               </Stack>
-
-              <Box>
-                {repository.crawlError && (
-                  <Row>
-                    <Tag variantColor="red" rounded="full" size="sm" mx={1}>
-                      <TagLabel>Error</TagLabel>
-                    </Tag>
-                    <Text color="red.500">{repository.crawlError}</Text>
-                  </Row>
-                )}
-              </Box>
 
               <MotionLoadScore
                 animate
