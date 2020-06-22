@@ -23,7 +23,7 @@ const ViewPullRequest = () => {
         <>
           <Box w="100%" py={4}>
             {data.map((pullRequest) => (
-              <PullRequestItem pullRequest={pullRequest} />
+              <PullRequestItem pullRequest={pullRequest} key={pullRequest.id} />
             ))}
           </Box>
         </>

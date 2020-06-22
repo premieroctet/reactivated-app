@@ -1,23 +1,23 @@
-import React from 'react'
-import Sticky from 'react-stickynode'
 import {
-  Flex,
-  Stack,
   Box,
+  Flex,
   Heading,
   Icon,
-  Link,
-  Text,
   Image,
+  Link,
+  Stack,
+  Text,
 } from '@chakra-ui/core'
-import LoadBar from './LoadBar'
-import FrameworkTag from './FrameworkTag/FrameworkTag'
-import { formatDistance } from 'date-fns'
-import { FaGithub } from 'react-icons/fa'
-import { motion } from 'framer-motion'
-import LoadScore from './LoadScore'
 import Container from '@components/Container'
 import { Repository } from '@typings/entities'
+import { formatDistance } from 'date-fns'
+import { motion } from 'framer-motion'
+import React from 'react'
+import { FaGithub } from 'react-icons/fa'
+import Sticky from 'react-stickynode'
+import FrameworkTag from './FrameworkTag/FrameworkTag'
+import LoadBar from './LoadBar'
+import LoadScore from './LoadScore'
 
 const MotionImage = motion.custom(Image)
 const MotionContainer = motion.custom(Container)
@@ -51,7 +51,7 @@ const AppHeader: React.FC<IProps> = ({ repository }) => {
                     animate
                   />
                 </Link>
-                <Box backgroundColor="yellow">
+                <Box>
                   <Heading fontSize="2xl">{repository.name}</Heading>
 
                   {!isSticky && (
@@ -87,6 +87,7 @@ const AppHeader: React.FC<IProps> = ({ repository }) => {
                   </Link>
                 </Box>
               </Stack>
+
               <MotionLoadScore
                 animate
                 isSmall={isSticky}

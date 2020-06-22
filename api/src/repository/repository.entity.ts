@@ -145,4 +145,8 @@ export class Repository {
   @ApiProperty()
   @OneToMany(() => PullRequest, (pullRequest) => pullRequest.repository)
   pullRequests?: PullRequest[];
+
+  @ApiProperty()
+  @Column({ nullable: true })
+  crawlError?: string;
 }
