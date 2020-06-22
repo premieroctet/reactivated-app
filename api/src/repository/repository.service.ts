@@ -7,6 +7,7 @@ import {
   DeleteResult,
   RemoveOptions,
 } from 'typeorm';
+import { User } from '../users/user.entity';
 
 @Injectable()
 export class RepositoryService extends TypeOrmCrudService<Repository> {
@@ -45,9 +46,7 @@ export class RepositoryService extends TypeOrmCrudService<Repository> {
 
   async updateRepo(repoId: string, repo: Repository) {
     const repository = await this.findRepo({ id: parseInt(repoId, 10) });
-
     let users = repository.users;
-
     /*
      * Search if the users passed in repo exists in the repository found in db
      * If it doesnt exist, adds the user to the repository
