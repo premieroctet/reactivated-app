@@ -4,10 +4,11 @@ import { DoneCallback, Job } from 'bull';
 import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
 import { GithubModule } from '../github/github.module';
+import { LogModule } from '../log/log.module';
 import { OrmModule } from '../orm.module';
+import { PullRequestModule } from '../pull-request/pull-request.module';
 import { RepositoryModule } from '../repository/repository.module';
 import { DependenciesQueue } from './dependencies.queue';
-import { LogModule } from '../log/log.module';
 
 const redisOptions = (configService: ConfigService) => {
   const config: BullModuleOptions = {
@@ -41,6 +42,7 @@ const BullQueueModule = BullModule.registerQueueAsync({
     BullQueueModule,
     GithubModule,
     RepositoryModule,
+    PullRequestModule,
     OrmModule,
     LogModule,
   ],

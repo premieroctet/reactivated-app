@@ -14,6 +14,7 @@ const PullRequestItem: React.FC<PullRequestItemProps> = ({ pullRequest }) => {
       case 'pending':
         return 'yellow.300'
       case 'closed':
+      case 'error':
         return 'red.300'
       case 'merged':
         return 'brand.500'

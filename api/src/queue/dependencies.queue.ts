@@ -19,6 +19,7 @@ import {
   getPrefixedDependencies,
   getUpgradedDiff,
 } from '../utils/dependencies';
+import { PullRequestService } from '../pull-request/pull-request.service';
 
 const { exec, execSync } = require('child_process');
 const fs = require('fs');
@@ -34,6 +35,7 @@ export class DependenciesQueue {
     private readonly repositoriesService: RepositoryService,
     private readonly githubService: GithubService,
     private readonly logService: LogService,
+    private readonly pullRequestService: PullRequestService,
   ) {}
 
   @Process({ name: 'compute_yarn_dependencies' })
@@ -65,48 +67,64 @@ export class DependenciesQueue {
       execSync(`cd ${tmpPath} && yarn import`);
     }
 
-    exec(`cd ${tmpPath} && yarn outdated --json`, async (err, stdout) => {
-      let manifest = null,
-        outdatedDeps = [];
-      if (stdout !== '') {
-        manifest = JSON.parse(stdout.split('\n')[1]);
-        outdatedDeps = manifest.data.body;
-      }
-      const [nbOutdatedDeps, nbOutdatedDevDeps] = getNbOutdatedDeps(
-        outdatedDeps,
-      );
+    exec(
+      `cd ${tmpPath} && yarn outdated --json`,
+      async (err: Error, stdout) => {
+        try {
+          let manifest = null,
+            outdatedDeps = [];
 
-      repository.packageJson = JSON.parse(bufferPackage.toString('utf-8'));
-      const totalDependencies = getDependenciesCount(repository.packageJson);
+          manifest = JSON.parse(stdout.split('\n')[1]);
+          outdatedDeps = manifest.data.body;
 
-      let score = Math.round(
-        100 - ((nbOutdatedDeps + nbOutdatedDevDeps) / totalDependencies) * 100,
-      );
-      if (score === 0) {
-        score += 1; // Show load bar for the front
-      }
+          const [nbOutdatedDeps, nbOutdatedDevDeps] = getNbOutdatedDeps(
+            outdatedDeps,
+          );
 
-      this.logger.log('score : ' + score);
+          repository.packageJson = JSON.parse(bufferPackage.toString('utf-8'));
+          const totalDependencies = getDependenciesCount(
+            repository.packageJson,
+          );
 
-      const deps = getPrefixedDependencies(outdatedDeps);
-      repository.dependencies = {
-        deps,
-      };
-      repository.score = score;
-      repository.framework = getFrameworkFromPackageJson(
-        repository.packageJson,
-      );
+          let score = Math.round(
+            100 -
+              ((nbOutdatedDeps + nbOutdatedDevDeps) / totalDependencies) * 100,
+          );
+          if (score === 0) {
+            score += 1; // Show load bar for the front
+          }
 
-      repository.isConfigured = true;
-      repository.dependenciesUpdatedAt = new Date();
-      await this.repositoriesService.updateRepo(
-        repository.id.toString(),
-        repository,
-      );
+          this.logger.log('score : ' + score);
 
-      this.logger.log('updated repo : ' + repository.fullName);
-      exec(`cd ${tmpPath} && cd .. && rm -rf ./${repositoryId}`);
-    });
+          const deps = getPrefixedDependencies(outdatedDeps);
+          repository.dependencies = {
+            deps,
+          };
+          repository.score = score;
+          repository.framework = getFrameworkFromPackageJson(
+            repository.packageJson,
+          );
+
+          repository.isConfigured = true;
+          repository.dependenciesUpdatedAt = new Date();
+          repository.crawlError = '';
+          await this.repositoriesService.updateRepo(
+            repository.id.toString(),
+            repository,
+          );
+
+          this.logger.log('updated repo : ' + repository.fullName);
+        } catch (err) {
+          this.logger.error(`${err.name} ${err.message} ${err.stack}`);
+          await this.repositoriesService.updateRepo(repository.id.toString(), {
+            ...repository,
+            crawlError: err.message,
+          });
+        }
+      },
+    );
+
+    exec(`cd ${tmpPath} && cd .. && rm -rf ./${repositoryId}`);
   }
 
   async createTemporaryFiles(
@@ -277,6 +295,9 @@ export class DependenciesQueue {
       });
     } catch (error) {
       this.logger.error('Commit files and create PR', error);
+      this.pullRequestService.updatePullRequest(job.data.branchName, {
+        status: 'error',
+      });
     }
 
     // Delete the yarn.lock, package.json, node_modules

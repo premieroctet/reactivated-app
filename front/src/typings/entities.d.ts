@@ -62,6 +62,8 @@ export interface Repository {
   framework: FrameworkTag
   hasYarnLock: boolean
   pullRequests: PullRequest[]
+
+  crawlError: string
 }
 
 export interface PullRequest {
