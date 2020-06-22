@@ -9,6 +9,8 @@ import {
   Link,
   Text,
   Image,
+  Tag,
+  TagLabel,
 } from '@chakra-ui/core'
 import LoadBar from './LoadBar'
 import FrameworkTag from './FrameworkTag/FrameworkTag'
@@ -18,6 +20,7 @@ import { motion } from 'framer-motion'
 import LoadScore from './LoadScore'
 import Container from '@components/Container'
 import { Repository } from '@typings/entities'
+import { Row } from './Flex'
 
 const MotionImage = motion.custom(Image)
 const MotionContainer = motion.custom(Container)
@@ -51,7 +54,7 @@ const AppHeader: React.FC<IProps> = ({ repository }) => {
                     animate
                   />
                 </Link>
-                <Box backgroundColor="yellow">
+                <Box>
                   <Heading fontSize="2xl">{repository.name}</Heading>
 
                   {!isSticky && (
@@ -87,6 +90,18 @@ const AppHeader: React.FC<IProps> = ({ repository }) => {
                   </Link>
                 </Box>
               </Stack>
+
+              <Box>
+                {repository.crawlError && (
+                  <Row>
+                    <Tag variantColor="red" rounded="full" size="sm" mx={1}>
+                      <TagLabel>Error</TagLabel>
+                    </Tag>
+                    <Text color="red.500">{repository.crawlError}</Text>
+                  </Row>
+                )}
+              </Box>
+
               <MotionLoadScore
                 animate
                 isSmall={isSticky}
