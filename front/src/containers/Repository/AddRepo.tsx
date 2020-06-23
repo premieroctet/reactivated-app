@@ -1,5 +1,16 @@
-import React, { useState, useCallback } from 'react'
-import { Button, Text, Stack, Box, IconButton, Flex } from '@chakra-ui/core'
+import React, { useState, useCallback, ChangeEvent } from 'react'
+import {
+  Button,
+  Text,
+  Stack,
+  Box,
+  IconButton,
+  Flex,
+  InputGroup,
+  InputRightElement,
+  Input,
+  Icon,
+} from '@chakra-ui/core'
 import { FaGithub } from 'react-icons/fa'
 import useMessageListener from '@hooks/useMessageListener'
 import InstallationRepositories from '@components/InstallationRepositories'
@@ -54,7 +65,8 @@ const Wrapper: React.FC<IWrapperProps> = ({
 
 const AddRepo = () => {
   const [step, setStep] = useState(Step.PROVIDER_SELECTION)
-  const {
+  const [searchTerm, setSearchTerm] = React.useState('')
+  let {
     data: installations,
     revalidate: getInstallations,
     isValidating: installationsLoading,
@@ -67,6 +79,17 @@ const AddRepo = () => {
   const [selectedRepo, setSelectedRepo] = useState<Repository | null>(null)
   const history = useHistory()
   const toast = useChakraToast()
+
+  if (searchTerm) {
+    installations = installations?.map((installation) => {
+      return {
+        ...installation,
+        repositories: installation.repositories.filter((repo) =>
+          repo.name.includes(searchTerm),
+        ),
+      }
+    })
+  }
 
   const onOpenGithub = () => {
     const win = window.open(
@@ -168,6 +191,31 @@ const AddRepo = () => {
             setStep(Step.PROVIDER_SELECTION)
           }}
         >
+          <InputGroup size="md" mb={8} w={'35%'}>
+            <InputRightElement>
+              {searchTerm ? (
+                <IconButton
+                  color="gray.500"
+                  aria-label="clear"
+                  icon="close"
+                  size="xs"
+                  onClick={() => setSearchTerm('')}
+                >
+                  x
+                </IconButton>
+              ) : (
+                <Icon name="search" color="gray.500" />
+              )}
+            </InputRightElement>
+            <Input
+              placeholder="Search my repo..."
+              value={searchTerm}
+              color="gray.500"
+              onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                setSearchTerm(event.target.value)
+              }}
+            ></Input>
+          </InputGroup>
           <InstallationRepositories
             installations={installations}
             onSelectRepo={onSelectRepo}
