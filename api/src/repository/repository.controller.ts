@@ -34,7 +34,6 @@ import { User } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
 import { Repository } from './repository.entity';
 import { RepositoryService } from './repository.service';
-import e = require('express');
 
 @Crud({
   model: {
