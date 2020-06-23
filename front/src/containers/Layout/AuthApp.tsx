@@ -7,6 +7,7 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
+  Button,
 } from '@chakra-ui/core'
 import Header from '@components/Header'
 import Router from '@containers/Router'
@@ -16,7 +17,7 @@ import { deleteFromStorage } from '@rehooks/local-storage'
 import React from 'react'
 import WaitingBeta from '../WaitingBeta'
 import { Link } from 'react-router-dom'
-
+import { IoIosExit } from 'react-icons/io'
 const AuthApp = () => {
   const logOut = () => {
     deleteFromStorage('token')
@@ -50,9 +51,17 @@ const AuthApp = () => {
                 </Flex>
               </MenuButton>
               <MenuList>
-                <MenuItem onClick={logOut}>Logout</MenuItem>
+                <MenuItem onClick={logOut}>
+                  <Button leftIcon={IoIosExit} variant="ghost">
+                    Logout
+                  </Button>
+                </MenuItem>
                 <Link to="/settings">
-                  <MenuItem>Settings</MenuItem>
+                  <MenuItem>
+                    <Button leftIcon="settings" variant="ghost">
+                      Settings
+                    </Button>
+                  </MenuItem>
                 </Link>
               </MenuList>
             </Menu>
