@@ -1,6 +1,6 @@
 import React, { memo } from 'react'
 import { Row } from '@components/Flex'
-import { Box, Text, Icon, ListItem } from '@chakra-ui/core'
+import { Box, Text, Icon, ListItem, Spinner } from '@chakra-ui/core'
 import { FaGithub } from 'react-icons/fa'
 
 interface Props extends GithubInstallationRepository {
@@ -9,7 +9,10 @@ interface Props extends GithubInstallationRepository {
 
 const InstallationRepositoriesListItem: React.FC<Props> = memo(
   ({ fullName, private: isPrivate, id, onSelect, ...props }) => {
+    const [loading, setLoading] = React.useState(false)
+
     const onPress = () => {
+      setLoading(true)
       onSelect(id)
     }
 
@@ -23,7 +26,11 @@ const InstallationRepositoriesListItem: React.FC<Props> = memo(
       >
         <Row align="center" py={1} justify="space-between">
           <Row align="center">
-            <Box as={FaGithub} size="32px" mr={4} color="black" />
+            {loading ? (
+              <Spinner mr={4} w="32px" h="32px" speed="1.15s" />
+            ) : (
+              <Box as={FaGithub} size="32px" mr={4} color="black" />
+            )}
             <Text as="span" fontWeight="semibold">
               {fullName}
             </Text>
