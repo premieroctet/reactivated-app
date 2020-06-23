@@ -85,7 +85,7 @@ const AddRepo = () => {
       return {
         ...installation,
         repositories: installation.repositories.filter((repo) =>
-          repo.name.includes(searchTerm),
+          repo.name.toLowerCase().includes(searchTerm.toLowerCase()),
         ),
       }
     })
@@ -208,6 +208,7 @@ const AddRepo = () => {
               )}
             </InputRightElement>
             <Input
+              variant="filled"
               placeholder="Search my repo..."
               value={searchTerm}
               color="gray.500"
