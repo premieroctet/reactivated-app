@@ -32,13 +32,15 @@ const RepositoryLayout: React.FC<RouteProps> = ({ children }) => {
   const location = useLocation()
   const toast = useChakraToast()
 
-  const { setRepository } = useRepository()
+  const { setRepository, outdatedCount } = useRepository()
   const { data: repository } = useAxiosRequest<Repository>([id], {
     fetcher: RepositoriesAPI.getRepository,
     revalidateOnFocus: true,
   })
 
-  setRepository(repository)
+  if (repository) {
+    setRepository(repository)
+  }
 
   // Load repository
   const { data: branches, error: branchesError } = useAxiosRequest<
@@ -77,17 +79,6 @@ const RepositoryLayout: React.FC<RouteProps> = ({ children }) => {
       throw e
     }
   }
-
-  const outdatedCount = repository?.dependencies?.deps.reduce(
-    (outdatedCount, dep: object | string[], i) => {
-      if (Array.isArray(dep)) {
-        return outdatedCount + 1
-      }
-
-      return outdatedCount + Object.values(dep)[0].length
-    },
-    0,
-  )
 
   return (
     <>

@@ -21,19 +21,34 @@ import {
 import DependenciesList from '@components/DependenciesList'
 import { DependenciesProvider } from '@contexts/DependenciesContext'
 import { useRepository } from '@contexts/RepositoryContext'
-import { refinedDependency } from '@utils/dependencies'
+import { refinedDependency, getNewScore } from '@utils/dependencies'
 import React, { useState } from 'react'
 import { DiGitPullRequest } from 'react-icons/di'
 import { createUpgradePR } from '../../api/repositories'
 import { Row } from '../../components/Flex'
 
 function ViewRepo() {
-  const { repository, increasePRCount } = useRepository()
+  const {
+    repository,
+    increasePRCount,
+    updateScore,
+    outdatedCount,
+  } = useRepository()
 
   const [showSuccess, setShowSuccess] = React.useState(false)
   const [selectedDependencies, setSelectedDependencies] = useState<{
     [key: string]: 'stable' | 'latest'
   }>({})
+
+  const nbSelectedDependencies = Object.keys(selectedDependencies).length
+  React.useEffect(() => {
+    const newScore = getNewScore(
+      nbSelectedDependencies,
+      outdatedCount,
+      repository?.packageJson,
+    )
+    updateScore(newScore)
+  }, [nbSelectedDependencies, outdatedCount, repository, updateScore])
 
   const items = Object.keys(selectedDependencies).map(
     (key) =>

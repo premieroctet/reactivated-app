@@ -18,6 +18,7 @@ import Sticky from 'react-stickynode'
 import FrameworkTag from './FrameworkTag/FrameworkTag'
 import LoadBar from './LoadBar'
 import LoadScore from './LoadScore'
+import { useRepository } from '../contexts/RepositoryContext'
 
 const MotionImage = motion.custom(Image)
 const MotionContainer = motion.custom(Container)
@@ -28,6 +29,7 @@ interface IProps {
 }
 
 const AppHeader: React.FC<IProps> = ({ repository }) => {
+  const { score } = useRepository()
   return (
     <Sticky innerZ={40} top={10}>
       {(status) => {
@@ -40,7 +42,7 @@ const AppHeader: React.FC<IProps> = ({ repository }) => {
             roundedBottom={isSticky ? 0 : 10}
           >
             <Flex pr={10} justifyContent="space-between" my={4}>
-              <LoadBar score={repository.score} />
+              <LoadBar score={score} />
               <Stack isInline spacing={4}>
                 <Link isExternal href={repository.repoUrl}>
                   <MotionImage
@@ -91,7 +93,8 @@ const AppHeader: React.FC<IProps> = ({ repository }) => {
               <MotionLoadScore
                 animate
                 isSmall={isSticky}
-                score={repository.score}
+                isAnimated
+                score={score}
               />
             </Flex>
           </MotionContainer>

@@ -17,3 +17,20 @@ export const refinedDependency = (dependency: DependencyArray): Dependency => ({
   type: dependency[4],
   url: dependency[5],
 })
+
+export const getNewScore = (
+  nbSelectedDependencies: number,
+  nbOutdatedDependencies: number,
+  packageJson: PackageJson | undefined,
+) => {
+  if (packageJson === undefined) {
+    return 0
+  }
+  const totalDependencies = Object.keys(packageJson!.dependencies).length
+  const newScore = Math.round(
+    100 -
+      ((nbOutdatedDependencies - nbSelectedDependencies) / totalDependencies) *
+        100,
+  )
+  return newScore
+}
