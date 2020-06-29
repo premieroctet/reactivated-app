@@ -290,7 +290,7 @@ export class DependenciesQueue {
       });
     } catch (error) {
       this.logger.error('Commit files and create PR', error);
-      this.pullRequestService.updatePullRequest(job.data.branchName, {
+      await this.pullRequestService.updatePullRequest(job.data.branchName, {
         status: 'error',
       });
     }
