@@ -90,4 +90,4 @@ const AppBar = React.forwardRef<HTMLDivElement, IProps>(
   },
 )
 
-export default AppBar
+export default React.memo(AppBar)

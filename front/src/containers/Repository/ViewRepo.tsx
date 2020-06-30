@@ -22,7 +22,7 @@ import DependenciesList from '@components/DependenciesList'
 import { DependenciesProvider } from '@contexts/DependenciesContext'
 import { useRepository } from '@contexts/RepositoryContext'
 import { refinedDependency, getNewScore } from '@utils/dependencies'
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { DiGitPullRequest } from 'react-icons/di'
 import { createUpgradePR } from '../../api/repositories'
 import { Row } from '../../components/Flex'
@@ -62,7 +62,7 @@ function ViewRepo() {
   const commandeLine = `yarn upgrade ${items.join(' ')}`
   const { onCopy, hasCopied } = useClipboard(commandeLine)
 
-  const { dependencies, devDependencies } = React.useMemo(() => {
+  const { dependencies, devDependencies } = useMemo(() => {
     let dependencies: Dependency[] = []
     let devDependencies: Dependency[] = []
     repository?.dependencies?.deps.forEach(
@@ -87,6 +87,23 @@ function ViewRepo() {
     return { dependencies, devDependencies }
   }, [repository])
 
+  const onDependencySelected = React.useCallback(
+    (checked: boolean, name: string, type: 'stable' | 'latest') => {
+      if (checked) {
+        setSelectedDependencies((prevSelectedDependencies) => ({
+          ...prevSelectedDependencies,
+          [name]: type,
+        }))
+      } else {
+        setSelectedDependencies((prevSelectedDependencies) => {
+          const { [name]: omit, ...rest } = prevSelectedDependencies
+          return { ...rest }
+        })
+      }
+    },
+    [setSelectedDependencies],
+  )
+
   if (!repository) {
     return null
   }
@@ -100,19 +117,6 @@ function ViewRepo() {
     setShowSuccess(true)
     window.scrollTo(0, 0)
     increasePRCount()
-  }
-
-  const onDependencySelected = (
-    checked: boolean,
-    name: string,
-    type: 'stable' | 'latest',
-  ) => {
-    if (checked) {
-      setSelectedDependencies({ ...selectedDependencies, [name]: type })
-    } else {
-      const { [name]: omit, ...rest } = selectedDependencies
-      setSelectedDependencies({ ...rest })
-    }
   }
 
   const recomputeDeps = () => {

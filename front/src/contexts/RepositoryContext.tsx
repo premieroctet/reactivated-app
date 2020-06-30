@@ -37,7 +37,6 @@ export function RepositoryProvider(props: Props) {
   React.useEffect(() => {
     setCreatedCount(0)
     if (repository) {
-      setScoreCountUp(<CountUp start={0} end={score} preserveValue={true} />)
       setOutdatedCount(
         repository.dependencies!.deps.reduce(
           (outdatedCount, dep: object | string[], i) => {
@@ -51,8 +50,11 @@ export function RepositoryProvider(props: Props) {
         ),
       )
     }
-  }, [repository, score])
+  }, [repository])
 
+  React.useEffect(() => {
+    setScoreCountUp(<CountUp start={0} end={score} preserveValue={true} />)
+  }, [score])
   const increasePRCount = () => {
     setCreatedCount((prevCount) => prevCount + 1)
   }

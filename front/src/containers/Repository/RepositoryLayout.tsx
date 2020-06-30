@@ -14,7 +14,7 @@ import Container from '@components/Container'
 import RepoConfigForm from '@components/RepoConfigForm'
 import useChakraToast from '@hooks/useChakraToast'
 import { useAxiosRequest } from '@hooks/useRequest'
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Link, useRouteMatch, RouteProps } from 'react-router-dom'
 import { mutate } from 'swr'
 import ViewRepoSkeleton from './ViewRepoSkeleton'
@@ -80,6 +80,11 @@ const RepositoryLayout: React.FC<RouteProps> = ({ children }) => {
     }
   }
 
+  const activeTabName = useMemo(
+    () => (location.pathname.includes('pull-requests') ? 'pr' : 'dependencies'),
+    [location.pathname],
+  )
+
   return (
     <>
       <Flex justifyContent="space-between">
@@ -111,11 +116,7 @@ const RepositoryLayout: React.FC<RouteProps> = ({ children }) => {
         <>
           <AppHeader repository={repository} />
           <AppBar
-            activeTabName={
-              location.pathname.includes('pull-requests')
-                ? 'pr'
-                : 'dependencies'
-            }
+            activeTabName={activeTabName}
             repositoryId={repository.id}
             pullRequestCount={repository.pullRequests.length}
             outdatedCount={outdatedCount}
