@@ -23,10 +23,18 @@ export const getNewScore = (
   nbOutdatedDependencies: number,
   packageJson: PackageJson | undefined,
 ) => {
-  if (packageJson === undefined) {
+  let totalDependencies = 0
+  if (packageJson) {
+    if (packageJson.dependencies) {
+      totalDependencies += Object.keys(packageJson.dependencies).length
+    }
+    if (packageJson.devDependencies) {
+      totalDependencies += Object.keys(packageJson.devDependencies).length
+    }
+  } else {
     return 0
   }
-  const totalDependencies = Object.keys(packageJson!.dependencies).length
+
   const newScore = Math.round(
     100 -
       ((nbOutdatedDependencies - nbSelectedDependencies) / totalDependencies) *

@@ -21,49 +21,78 @@ import {
 import DependenciesList from '@components/DependenciesList'
 import { DependenciesProvider } from '@contexts/DependenciesContext'
 import { useRepository } from '@contexts/RepositoryContext'
-import { refinedDependency, getNewScore } from '@utils/dependencies'
-import React, { useState } from 'react'
+import { refinedDependency } from '@utils/dependencies'
+import React, { useMemo } from 'react'
 import { DiGitPullRequest } from 'react-icons/di'
 import { createUpgradePR } from '../../api/repositories'
 import { Row } from '../../components/Flex'
+
+const MemoTabList = React.memo(
+  ({
+    dependenciesDisabled,
+    devDependenciesDisabled,
+  }: {
+    dependenciesDisabled: boolean
+    devDependenciesDisabled: boolean
+  }) => (
+    <TabList>
+      <Tab disabled={dependenciesDisabled}>Dependencies</Tab>
+      <Tab disabled={devDependenciesDisabled}>Dev Dependencies </Tab>
+    </TabList>
+  ),
+)
+
+const YarnCommandLine = React.memo(() => {
+  const { items, hasSelectedDependencies } = useRepository()
+  const commandeLine = `yarn upgrade ${items.join(' ')}`
+  const { onCopy, hasCopied } = useClipboard(commandeLine)
+  return (
+    <Code
+      position="relative"
+      width="100%"
+      rounded={10}
+      whiteSpace="normal"
+      my={5}
+      p={5}
+    >
+      {hasSelectedDependencies
+        ? commandeLine
+        : `yarn upgrade [pick some dependencies]`}
+
+      {hasSelectedDependencies && (
+        <Button
+          size="xs"
+          variantColor="secondary"
+          position="absolute"
+          right={3}
+          top={-6}
+          onClick={onCopy}
+        >
+          {hasCopied ? 'Copied!' : 'Copy'}
+        </Button>
+      )}
+    </Code>
+  )
+})
 
 function ViewRepo() {
   const {
     repository,
     increasePRCount,
-    updateScore,
-    outdatedCount,
+    onDependencySelected,
+    hasSelectedDependencies,
+    items,
   } = useRepository()
-
   const [showSuccess, setShowSuccess] = React.useState(false)
-  const [selectedDependencies, setSelectedDependencies] = useState<{
-    [key: string]: 'stable' | 'latest'
-  }>({})
 
-  const nbSelectedDependencies = Object.keys(selectedDependencies).length
-  React.useEffect(() => {
-    const newScore = getNewScore(
-      nbSelectedDependencies,
-      outdatedCount,
-      repository?.packageJson,
-    )
-    updateScore(newScore)
-  }, [nbSelectedDependencies, outdatedCount, repository, updateScore])
-
-  const items = Object.keys(selectedDependencies).map(
-    (key) =>
-      `${key}${
-        selectedDependencies[key] === 'latest'
-          ? `@${selectedDependencies[key]}`
-          : ''
-      }`,
-  )
-
-  const commandeLine = `yarn upgrade ${items.join(' ')}`
-  const { onCopy, hasCopied } = useClipboard(commandeLine)
-
-  let dependencies: Dependency[] = []
-  let devDependencies: Dependency[] = []
+  let dependencies: Dependency[] = useMemo(() => [], [])
+  let devDependencies: Dependency[] = useMemo(() => [], [])
+  const devDependenciesDisabled = useMemo(() => devDependencies.length === 0, [
+    devDependencies.length,
+  ])
+  const dependenciesDisabled = useMemo(() => dependencies.length === 0, [
+    dependencies.length,
+  ])
 
   if (!repository) {
     return null
@@ -78,19 +107,6 @@ function ViewRepo() {
     setShowSuccess(true)
     window.scrollTo(0, 0)
     increasePRCount()
-  }
-
-  const onDependencySelected = (
-    checked: boolean,
-    name: string,
-    type: 'stable' | 'latest',
-  ) => {
-    if (checked) {
-      setSelectedDependencies({ ...selectedDependencies, [name]: type })
-    } else {
-      const { [name]: omit, ...rest } = selectedDependencies
-      setSelectedDependencies({ ...rest })
-    }
   }
 
   repository?.dependencies?.deps.forEach(
@@ -119,8 +135,6 @@ function ViewRepo() {
     return RepositoriesAPI.recomputeDeps(repository.id)
   }
 
-  const hasSelectedDependencies = Object.keys(selectedDependencies).length > 0
-
   return (
     <>
       {repository.crawlError && (
@@ -131,31 +145,7 @@ function ViewRepo() {
           <Text color="red.500">{`Something went wrong when fetching dependencies : ${repository.crawlError}`}</Text>
         </Row>
       )}
-      <Code
-        position="relative"
-        width="100%"
-        rounded={10}
-        whiteSpace="normal"
-        my={5}
-        p={5}
-      >
-        {hasSelectedDependencies
-          ? commandeLine
-          : `yarn upgrade [pick some dependencies]`}
-
-        {hasSelectedDependencies && (
-          <Button
-            size="xs"
-            variantColor="secondary"
-            position="absolute"
-            right={3}
-            top={-6}
-            onClick={onCopy}
-          >
-            {hasCopied ? 'Copied!' : 'Copy'}
-          </Button>
-        )}
-      </Code>
+      <YarnCommandLine />
 
       <DependenciesProvider>
         {repository && repository.dependencies && repository.dependencies.deps && (
@@ -166,25 +156,21 @@ function ViewRepo() {
               variantColor="secondary"
               variant="line"
             >
-              <TabList>
-                <Tab disabled={dependencies.length === 0}>Dependencies</Tab>
-                <Tab disabled={devDependencies.length === 0}>
-                  Dev Dependencies{' '}
-                </Tab>
-              </TabList>
+              <MemoTabList
+                dependenciesDisabled={dependenciesDisabled}
+                devDependenciesDisabled={devDependenciesDisabled}
+              />
               <TabPanels>
                 <TabPanel>
                   <DependenciesList
                     dependencies={dependencies}
-                    selectedDependencies={selectedDependencies}
                     onDependencySelected={onDependencySelected}
                   />
                 </TabPanel>
                 <TabPanel>
                   <DependenciesList
-                    onDependencySelected={onDependencySelected}
                     dependencies={devDependencies}
-                    selectedDependencies={selectedDependencies}
+                    onDependencySelected={onDependencySelected}
                   />
                 </TabPanel>
               </TabPanels>

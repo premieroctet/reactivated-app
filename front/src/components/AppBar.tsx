@@ -47,14 +47,12 @@ const AppBar = React.forwardRef<HTMLDivElement, IProps>(
       }
     }, [prCount])
 
+    const navigate = () => {
+      history.push(`/repo/${repositoryId}`)
+    }
     return (
       <Stack isInline ref={ref}>
-        <Tab
-          onClick={() => {
-            history.push(`/repo/${repositoryId}`)
-          }}
-          isActive={activeTabName === 'dependencies'}
-        >
+        <Tab onClick={navigate} isActive={activeTabName === 'dependencies'}>
           {outdatedCount ? (
             <>
               Outdated Dependencies{' '}
@@ -90,4 +88,4 @@ const AppBar = React.forwardRef<HTMLDivElement, IProps>(
   },
 )
 
-export default AppBar
+export default React.memo(AppBar)
