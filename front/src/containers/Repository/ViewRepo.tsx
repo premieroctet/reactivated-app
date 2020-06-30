@@ -62,8 +62,30 @@ function ViewRepo() {
   const commandeLine = `yarn upgrade ${items.join(' ')}`
   const { onCopy, hasCopied } = useClipboard(commandeLine)
 
-  let dependencies: Dependency[] = []
-  let devDependencies: Dependency[] = []
+  const { dependencies, devDependencies } = React.useMemo(() => {
+    let dependencies: Dependency[] = []
+    let devDependencies: Dependency[] = []
+    repository?.dependencies?.deps.forEach(
+      (dep: DependencyArray | PrefixedDependency) => {
+        if (Array.isArray(dep)) {
+          const depObject = refinedDependency(dep)
+          depObject.type === 'dependencies'
+            ? dependencies.push(depObject)
+            : devDependencies.push(depObject)
+        } else {
+          const prefix = Object.keys(dep)[0]
+          const type = dep[prefix][0][4]
+          dependencies = [
+            ...dependencies,
+            ...dep[prefix]
+              .filter((dep) => dep[4] === type)
+              .map((dep) => ({ ...refinedDependency(dep), prefix })),
+          ]
+        }
+      },
+    )
+    return { dependencies, devDependencies }
+  }, [repository])
 
   if (!repository) {
     return null
@@ -92,28 +114,6 @@ function ViewRepo() {
       setSelectedDependencies({ ...rest })
     }
   }
-
-  repository?.dependencies?.deps.forEach(
-    (dep: DependencyArray | PrefixedDependency) => {
-      if (Array.isArray(dep)) {
-        const depObject = refinedDependency(dep)
-
-        depObject.type === 'dependencies'
-          ? dependencies.push(depObject)
-          : devDependencies.push(depObject)
-      } else {
-        const prefix = Object.keys(dep)[0]
-        const type = dep[prefix][0][4]
-
-        dependencies = [
-          ...dependencies,
-          ...dep[prefix]
-            .filter((dep) => dep[4] === type)
-            .map((dep) => ({ ...refinedDependency(dep), prefix })),
-        ]
-      }
-    },
-  )
 
   const recomputeDeps = () => {
     return RepositoriesAPI.recomputeDeps(repository.id)

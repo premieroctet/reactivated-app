@@ -144,4 +144,4 @@ const DependencyItem: React.FC<IProps> = ({
   )
 }
 
-export default DependencyItem
+export default React.memo(DependencyItem)
