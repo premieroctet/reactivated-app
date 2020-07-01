@@ -63,7 +63,6 @@ const RepositoryLayout: React.FC<RouteProps> = ({ children }) => {
   const toast = useChakraToast()
 
   const repositoryCtxt = useRepository()
-  console.log('repositoryCtxt', repositoryCtxt)
   const {
     // setRepository: setRepositoryCtxt,
     // repository: repoCtxt,
