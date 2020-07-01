@@ -15,10 +15,10 @@ import { motion } from 'framer-motion'
 import React from 'react'
 import { FaGithub } from 'react-icons/fa'
 import Sticky from 'react-stickynode'
+import { useRepository } from '../contexts/RepositoryContext'
 import FrameworkTag from './FrameworkTag/FrameworkTag'
 import LoadBar from './LoadBar'
 import LoadScore from './LoadScore'
-import { useRepository } from '../contexts/RepositoryContext'
 
 const MotionImage = motion.custom(Image)
 const MotionContainer = motion.custom(Container)

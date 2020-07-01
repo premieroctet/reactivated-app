@@ -104,6 +104,23 @@ function ViewRepo() {
     [setSelectedDependencies],
   )
 
+  const TabListItems = ({
+    dependencies,
+    devDependencies,
+  }: {
+    dependencies: Dependency[]
+    devDependencies: Dependency[]
+  }) => {
+    return (
+      <TabList>
+        <Tab disabled={dependencies.length === 0}>Dependencies</Tab>
+        <Tab disabled={devDependencies.length === 0}>Dev Dependencies </Tab>
+      </TabList>
+    )
+  }
+
+  const DependenciesTypeTabs = React.memo(TabListItems)
+
   if (!repository) {
     return null
   }
@@ -124,7 +141,6 @@ function ViewRepo() {
   }
 
   const hasSelectedDependencies = Object.keys(selectedDependencies).length > 0
-
   return (
     <>
       {repository.crawlError && (
@@ -170,12 +186,11 @@ function ViewRepo() {
               variantColor="secondary"
               variant="line"
             >
-              <TabList>
-                <Tab disabled={dependencies.length === 0}>Dependencies</Tab>
-                <Tab disabled={devDependencies.length === 0}>
-                  Dev Dependencies{' '}
-                </Tab>
-              </TabList>
+              <DependenciesTypeTabs
+                dependencies={dependencies}
+                devDependencies={devDependencies}
+              />
+
               <TabPanels>
                 <TabPanel>
                   <DependenciesList
