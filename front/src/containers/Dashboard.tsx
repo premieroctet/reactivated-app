@@ -12,16 +12,23 @@ export const getMaxRepositories = () => {
 }
 
 function Home() {
-  const { data: repositories } = useAxiosRequest<Repository[]>(
-    '/repositories',
-    {
-      fetcher: RepositoriesAPI.getRepositories,
-    },
-  )
+  let { data: repositories } = useAxiosRequest<Repository[]>('/repositories', {
+    fetcher: RepositoriesAPI.getRepositories,
+  })
 
   if (!repositories) {
     return null
   }
+  repositories = repositories.sort((repo1, repo2) => {
+    if (!repo1.isConfigured) {
+      return 1
+    } else {
+      if (repo1.isConfigured && repo2.isConfigured) {
+        return repo1.score - repo2.score
+      }
+      return -1
+    }
+  })
 
   return (
     <>
