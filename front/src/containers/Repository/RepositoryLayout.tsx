@@ -25,6 +25,35 @@ import AppHeader from '@components/AppHeader'
 import { useLocation } from 'react-router'
 import { useRepository } from '@contexts/RepositoryContext'
 
+function HeaderButtons({ openConfigModal, branchesError, branches }) {
+  return (
+    <Flex justifyContent="space-between">
+      <Link to="/">
+        <Button
+          leftIcon="chevron-left"
+          variant="ghost"
+          variantColor="brand"
+          mb={4}
+        >
+          Dashboard
+        </Button>
+      </Link>
+      <Button
+        leftIcon="settings"
+        variant="ghost"
+        variantColor="brand"
+        onClick={openConfigModal}
+        isDisabled={!!branchesError}
+        isLoading={!branches}
+      >
+        Settings
+      </Button>
+    </Flex>
+  )
+}
+
+const HeaderButtonsMemo = React.memo(HeaderButtons)
+
 const RepositoryLayout: React.FC<RouteProps> = ({ children }) => {
   const {
     params: { id },
@@ -110,28 +139,11 @@ const RepositoryLayout: React.FC<RouteProps> = ({ children }) => {
 
   return (
     <>
-      <Flex justifyContent="space-between">
-        <Link to="/">
-          <Button
-            leftIcon="chevron-left"
-            variant="ghost"
-            variantColor="brand"
-            mb={4}
-          >
-            Dashboard
-          </Button>
-        </Link>
-        <Button
-          leftIcon="settings"
-          variant="ghost"
-          variantColor="brand"
-          onClick={openConfigModal}
-          isDisabled={!!branchesError}
-          isLoading={!branches}
-        >
-          Settings
-        </Button>
-      </Flex>
+      <HeaderButtonsMemo
+        openConfigModal={openConfigModal}
+        branchesError={branchesError}
+        branches={branches}
+      />
 
       {!repository ? (
         <ViewRepoSkeleton />
