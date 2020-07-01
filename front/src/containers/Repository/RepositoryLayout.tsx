@@ -62,35 +62,15 @@ const RepositoryLayout: React.FC<RouteProps> = ({ children }) => {
   const location = useLocation()
   const toast = useChakraToast()
 
-  const repositoryCtxt = useRepository()
-  const {
-    // setRepository: setRepositoryCtxt,
-    // repository: repoCtxt,
-    updateRepository,
-    outdatedCount,
-  } = repositoryCtxt
+  const { setRepository, outdatedCount } = useRepository()
 
-  const [repository, setRepository] = React.useState<Repository | undefined>(
-    undefined,
-  )
-  React.useEffect(() => {
-    const getRepository = async () => {
-      const { data: repositoryData } = await RepositoriesAPI.getRepository(id)
-      setRepository(repositoryData)
-    }
-    getRepository()
-  }, [id])
-  // const { repository } = useMemo(() => {
-  // const { data: repository } useAxiosRequest<Repository>([id], {
-  //   fetcher: RepositoriesAPI.getRepository,
-  //   revalidateOnFocus: false,
-  // })
-  //   return { repository }
-  // }, [id])
+  const { data: repository } = useAxiosRequest<Repository>([id], {
+    fetcher: RepositoriesAPI.getRepository,
+    revalidateOnFocus: false,
+  })
 
   if (repository) {
-    // setRepositoryCtxt(repository)
-    updateRepository(repository)
+    setRepository(repository)
   }
 
   // Load repository
@@ -151,10 +131,8 @@ const RepositoryLayout: React.FC<RouteProps> = ({ children }) => {
           <AppHeader repository={repository} />
           <AppBar
             activeTabName={activeTabName}
-            repositoryId={60}
-            pullRequestCount={3}
-            // repositoryId={repository.id}
-            // pullRequestCount={repository.pullRequests.length}
+            repositoryId={repository.id}
+            pullRequestCount={repository.pullRequests.length}
             outdatedCount={outdatedCount}
           />
 

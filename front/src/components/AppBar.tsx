@@ -35,7 +35,6 @@ const MotionBadge = motion.custom(Badge)
 
 const AppBar = React.forwardRef<HTMLDivElement, IProps>(
   ({ outdatedCount, pullRequestCount, repositoryId, activeTabName }, ref) => {
-    console.log('rendering appbar')
     const history = useHistory()
     const { prCount } = useRepository()
     const [isAnimated, setIsAnimated] = useState(false)

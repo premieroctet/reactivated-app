@@ -8,7 +8,6 @@ interface RepositoryContextInterface {
   prCount: number
   scoreCountUp: JSX.Element
   updateScore: (newScore: number) => void
-  updateRepository: (repo: Repository) => void
   outdatedCount: number
   score: number
 }
@@ -20,7 +19,6 @@ const RepositoryContext = React.createContext<RepositoryContextInterface>({
   increasePRCount: () => null,
   scoreCountUp: <></>,
   updateScore: () => null,
-  updateRepository: () => null,
   outdatedCount: 0,
   score: 0,
 })
@@ -64,11 +62,6 @@ export function RepositoryProvider(props: Props) {
   const updateScore = (newScore: number) => {
     setScore(newScore)
   }
-  const updateRepository = (repo: Repository) => {
-    if (!repository || repository?.id !== repo.id) {
-      setRepository(repo)
-    }
-  }
 
   return (
     <RepositoryContext.Provider
@@ -81,7 +74,6 @@ export function RepositoryProvider(props: Props) {
         outdatedCount,
         updateScore,
         score,
-        updateRepository,
       }}
       {...props}
     />
