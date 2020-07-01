@@ -66,7 +66,7 @@ const RepositoryLayout: React.FC<RouteProps> = ({ children }) => {
 
   const { data: repository } = useAxiosRequest<Repository>([id], {
     fetcher: RepositoriesAPI.getRepository,
-    revalidateOnFocus: false,
+    revalidateOnFocus: true,
   })
 
   if (repository) {
