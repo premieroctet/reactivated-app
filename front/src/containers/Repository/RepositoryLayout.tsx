@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as RepositoriesAPI from '@api/repositories'
 import {
   Button,
@@ -25,7 +24,15 @@ import AppHeader from '@components/AppHeader'
 import { useLocation } from 'react-router'
 import { useRepository } from '@contexts/RepositoryContext'
 
-function HeaderButtons({ openConfigModal, branchesError, branches }) {
+function HeaderButtons({
+  openConfigModal,
+  branchesError,
+  branches,
+}: {
+  openConfigModal: () => void
+  branchesError: any
+  branches: GithubBranch[] | undefined
+}) {
   return (
     <Flex justifyContent="space-between">
       <Link to="/">
