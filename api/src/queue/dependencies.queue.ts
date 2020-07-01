@@ -162,6 +162,7 @@ export class DependenciesQueue {
       token: job.data.githubToken,
       fileName: 'package.json',
     });
+
     let responseLock = null;
     const hasYarnLock = job.data.hasYarnLock;
     if (hasYarnLock) {
@@ -225,6 +226,7 @@ export class DependenciesQueue {
         fullName: job.data.repositoryFullName,
         githubToken: job.data.githubToken,
         branchName: job.data.branchName,
+        baseBranch: job.data.branch,
       });
       branchTreeSHA = branchRes.data.object.sha;
     } catch (error) {
@@ -241,7 +243,7 @@ export class DependenciesQueue {
         const bufferContent = Buffer.from(readFileSync(`${tmpPath}/${file}`));
 
         tree.push({
-          path: file,
+          path: job.data.path + file,
           mode: '100644',
           type: 'blob',
           content: bufferContent.toString('utf-8'),
@@ -311,9 +313,9 @@ export class DependenciesQueue {
   @OnQueueEvent(BullQueueEvents.COMPLETED)
   onCompleted(job: Job) {
     this.logger.log(
-      `Completed job ${job.id} of type ${job.name} with result (${
-        job.finishedOn - job.processedOn
-      } ms)`,
+      `Completed job ${job.id} of type ${
+        job.name
+      } with result (${job.finishedOn - job.processedOn} ms)`,
     );
   }
 
