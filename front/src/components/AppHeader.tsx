@@ -107,12 +107,7 @@ const AppHeader: React.FC<IProps> = ({ repository }) => {
                 <RepoDetails isSticky={isSticky} repository={repository} />
               </Stack>
 
-              <MotionLoadScore
-                animate
-                isSmall={isSticky}
-                isAnimated
-                score={score}
-              />
+              <MotionLoadScore animate isSmall={isSticky} score={score} />
             </Flex>
           </MotionContainer>
         )
