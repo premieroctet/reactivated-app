@@ -15,6 +15,7 @@ import { motion } from 'framer-motion'
 import React from 'react'
 import { FaGithub } from 'react-icons/fa'
 import Sticky from 'react-stickynode'
+import { useRepository } from '../contexts/RepositoryContext'
 import FrameworkTag from './FrameworkTag/FrameworkTag'
 import LoadBar from './LoadBar'
 import LoadScore from './LoadScore'
@@ -28,10 +29,61 @@ interface IProps {
 }
 
 const AppHeader: React.FC<IProps> = ({ repository }) => {
+  const { score } = useRepository()
+
+  const RepoDetails = React.memo(
+    ({
+      isSticky,
+      repository,
+    }: {
+      isSticky: boolean
+      repository: Repository
+    }) => {
+      return (
+        <Box>
+          <Heading fontSize="2xl">{repository.name}</Heading>
+
+          {!isSticky && (
+            <Stack alignItems="center" mb={2} isInline>
+              <Box display="flex" justifyContent="space-between">
+                {repository?.framework !== null && (
+                  <FrameworkTag framework={repository.framework} />
+                )}
+              </Box>
+
+              <Text fontSize="sm">
+                <Icon name="repeat" />{' '}
+                {formatDistance(
+                  new Date(repository.dependenciesUpdatedAt),
+                  new Date(),
+                  { addSuffix: false },
+                )}
+              </Text>
+            </Stack>
+          )}
+
+          <Link
+            borderTop="1px dashed"
+            borderTopColor="gray.300"
+            pt={isSticky ? 0 : 2}
+            fontSize="sm"
+            display="flex"
+            alignItems="center"
+            isExternal
+            href={`https://github.com/${repository.fullName}`}
+          >
+            <Box as={FaGithub} mr={1} /> {repository.fullName}
+          </Link>
+        </Box>
+      )
+    },
+  )
+
   return (
     <Sticky innerZ={40} top={10}>
       {(status) => {
         const isSticky = status.status === Sticky.STATUS_FIXED
+
         return (
           <MotionContainer
             animate
@@ -40,7 +92,7 @@ const AppHeader: React.FC<IProps> = ({ repository }) => {
             roundedBottom={isSticky ? 0 : 10}
           >
             <Flex pr={10} justifyContent="space-between" my={4}>
-              <LoadBar score={repository.score} />
+              <LoadBar score={score} />
               <Stack isInline spacing={4}>
                 <Link isExternal href={repository.repoUrl}>
                   <MotionImage
@@ -51,48 +103,11 @@ const AppHeader: React.FC<IProps> = ({ repository }) => {
                     animate
                   />
                 </Link>
-                <Box>
-                  <Heading fontSize="2xl">{repository.name}</Heading>
 
-                  {!isSticky && (
-                    <Stack alignItems="center" mb={2} isInline>
-                      <Box display="flex" justifyContent="space-between">
-                        {repository?.framework !== null && (
-                          <FrameworkTag framework={repository.framework} />
-                        )}
-                      </Box>
-
-                      <Text fontSize="sm">
-                        <Icon name="repeat" />{' '}
-                        {formatDistance(
-                          new Date(repository.dependenciesUpdatedAt),
-                          new Date(),
-                          { addSuffix: false },
-                        )}
-                      </Text>
-                    </Stack>
-                  )}
-
-                  <Link
-                    borderTop="1px dashed"
-                    borderTopColor="gray.300"
-                    pt={isSticky ? 0 : 2}
-                    fontSize="sm"
-                    display="flex"
-                    alignItems="center"
-                    isExternal
-                    href={`https://github.com/${repository.fullName}`}
-                  >
-                    <Box as={FaGithub} mr={1} /> {repository.fullName}
-                  </Link>
-                </Box>
+                <RepoDetails isSticky={isSticky} repository={repository} />
               </Stack>
 
-              <MotionLoadScore
-                animate
-                isSmall={isSticky}
-                score={repository.score}
-              />
+              <MotionLoadScore animate isSmall={isSticky} score={score} />
             </Flex>
           </MotionContainer>
         )

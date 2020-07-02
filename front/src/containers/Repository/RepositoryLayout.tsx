@@ -14,7 +14,7 @@ import Container from '@components/Container'
 import RepoConfigForm from '@components/RepoConfigForm'
 import useChakraToast from '@hooks/useChakraToast'
 import { useAxiosRequest } from '@hooks/useRequest'
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Link, useRouteMatch, RouteProps } from 'react-router-dom'
 import { mutate } from 'swr'
 import ViewRepoSkeleton from './ViewRepoSkeleton'
@@ -24,6 +24,43 @@ import AppHeader from '@components/AppHeader'
 import { useLocation } from 'react-router'
 import { useRepository } from '@contexts/RepositoryContext'
 
+function HeaderButtons({
+  openConfigModal,
+  branchesError,
+  branches,
+}: {
+  openConfigModal: () => void
+  branchesError: any
+  branches: GithubBranch[] | undefined
+}) {
+  return (
+    <Flex justifyContent="space-between">
+      <Link to="/">
+        <Button
+          leftIcon="chevron-left"
+          variant="ghost"
+          variantColor="brand"
+          mb={4}
+        >
+          Dashboard
+        </Button>
+      </Link>
+      <Button
+        leftIcon="settings"
+        variant="ghost"
+        variantColor="brand"
+        onClick={openConfigModal}
+        isDisabled={!!branchesError}
+        isLoading={!branches}
+      >
+        Settings
+      </Button>
+    </Flex>
+  )
+}
+
+const HeaderButtonsMemo = React.memo(HeaderButtons)
+
 const RepositoryLayout: React.FC<RouteProps> = ({ children }) => {
   const {
     params: { id },
@@ -32,13 +69,16 @@ const RepositoryLayout: React.FC<RouteProps> = ({ children }) => {
   const location = useLocation()
   const toast = useChakraToast()
 
-  const { setRepository } = useRepository()
+  const { setRepository, outdatedCount } = useRepository()
+
   const { data: repository } = useAxiosRequest<Repository>([id], {
     fetcher: RepositoriesAPI.getRepository,
     revalidateOnFocus: true,
   })
 
-  setRepository(repository)
+  if (repository) {
+    setRepository(repository)
+  }
 
   // Load repository
   const { data: branches, error: branchesError } = useAxiosRequest<
@@ -78,41 +118,18 @@ const RepositoryLayout: React.FC<RouteProps> = ({ children }) => {
     }
   }
 
-  const outdatedCount = repository?.dependencies?.deps.reduce(
-    (outdatedCount, dep: object | string[], i) => {
-      if (Array.isArray(dep)) {
-        return outdatedCount + 1
-      }
-
-      return outdatedCount + Object.values(dep)[0].length
-    },
-    0,
+  const activeTabName = useMemo(
+    () => (location.pathname.includes('pull-requests') ? 'pr' : 'dependencies'),
+    [location.pathname],
   )
 
   return (
     <>
-      <Flex justifyContent="space-between">
-        <Link to="/">
-          <Button
-            leftIcon="chevron-left"
-            variant="ghost"
-            variantColor="brand"
-            mb={4}
-          >
-            Dashboard
-          </Button>
-        </Link>
-        <Button
-          leftIcon="settings"
-          variant="ghost"
-          variantColor="brand"
-          onClick={openConfigModal}
-          isDisabled={!!branchesError}
-          isLoading={!branches}
-        >
-          Settings
-        </Button>
-      </Flex>
+      <HeaderButtonsMemo
+        openConfigModal={openConfigModal}
+        branchesError={branchesError}
+        branches={branches}
+      />
 
       {!repository ? (
         <ViewRepoSkeleton />
@@ -120,11 +137,7 @@ const RepositoryLayout: React.FC<RouteProps> = ({ children }) => {
         <>
           <AppHeader repository={repository} />
           <AppBar
-            activeTabName={
-              location.pathname.includes('pull-requests')
-                ? 'pr'
-                : 'dependencies'
-            }
+            activeTabName={activeTabName}
             repositoryId={repository.id}
             pullRequestCount={repository.pullRequests.length}
             outdatedCount={outdatedCount}

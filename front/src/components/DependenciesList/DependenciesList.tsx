@@ -20,6 +20,24 @@ const DependenciesList: React.FC<IProps> = ({
   onDependencySelected,
 }) => {
   const lastPrefixRef = useRef<string>()
+  const onSelect = React.useCallback(
+    (checked: boolean, name: string, type: 'stable' | 'latest'): void => {
+      onDependencySelected(checked, name, type)
+    },
+    [onDependencySelected],
+  )
+  const isStableChecked = React.useCallback(
+    (depName: string) => {
+      return selectedDependencies[depName] === 'stable'
+    },
+    [selectedDependencies],
+  )
+  const isLatestChecked = React.useCallback(
+    (depName: string) => {
+      return selectedDependencies[depName] === 'latest'
+    },
+    [selectedDependencies],
+  )
 
   return (
     <Box overflowX="auto" whiteSpace="nowrap">
@@ -39,11 +57,9 @@ const DependenciesList: React.FC<IProps> = ({
                 </Text>
               )}
               <DependencyItem
-                isStableChecked={selectedDependencies[dep.name] === 'stable'}
-                isLatestChecked={selectedDependencies[dep.name] === 'latest'}
-                onSelect={(checked, name, type) => {
-                  onDependencySelected(checked, name, type)
-                }}
+                isStableChecked={isStableChecked(dep.name)}
+                isLatestChecked={isLatestChecked(dep.name)}
+                onSelect={onSelect}
                 dependency={dep}
               />
             </Box>

@@ -3,6 +3,7 @@ import { Stack, Box, Badge, BoxProps } from '@chakra-ui/core'
 import { motion } from 'framer-motion'
 import { useHistory } from 'react-router'
 import { useRepository } from '@contexts/RepositoryContext'
+import { useCallback } from 'react'
 
 interface IProps {
   outdatedCount?: number
@@ -47,14 +48,24 @@ const AppBar = React.forwardRef<HTMLDivElement, IProps>(
       }
     }, [prCount])
 
+    const goToViewRepo = useCallback(() => {
+      history.push(`/repo/${repositoryId}`)
+    }, [history, repositoryId])
+    const isDependenciesActive = React.useMemo(
+      () => activeTabName === 'dependencies',
+      [activeTabName],
+    )
+
+    const isPullRequestActive = React.useMemo(() => activeTabName === 'pr', [
+      activeTabName,
+    ])
+    const goToPullRequest = useCallback(() => {
+      history.push(`/repo/${repositoryId}/pull-requests`)
+    }, [history, repositoryId])
+
     return (
       <Stack isInline ref={ref}>
-        <Tab
-          onClick={() => {
-            history.push(`/repo/${repositoryId}`)
-          }}
-          isActive={activeTabName === 'dependencies'}
-        >
+        <Tab onClick={goToViewRepo} isActive={isDependenciesActive}>
           {outdatedCount ? (
             <>
               Outdated Dependencies{' '}
@@ -66,12 +77,7 @@ const AppBar = React.forwardRef<HTMLDivElement, IProps>(
             <>Dependencies Outdated</>
           )}
         </Tab>
-        <Tab
-          isActive={activeTabName === 'pr'}
-          onClick={() => {
-            history.push(`/repo/${repositoryId}/pull-requests`)
-          }}
-        >
+        <Tab isActive={isPullRequestActive} onClick={goToPullRequest}>
           Pull Requests{' '}
           <MotionBadge
             animate
@@ -90,4 +96,4 @@ const AppBar = React.forwardRef<HTMLDivElement, IProps>(
   },
 )
 
-export default AppBar
+export default React.memo(AppBar)

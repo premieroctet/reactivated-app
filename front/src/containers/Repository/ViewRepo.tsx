@@ -21,19 +21,34 @@ import {
 import DependenciesList from '@components/DependenciesList'
 import { DependenciesProvider } from '@contexts/DependenciesContext'
 import { useRepository } from '@contexts/RepositoryContext'
-import { refinedDependency } from '@utils/dependencies'
-import React, { useState } from 'react'
+import { refinedDependency, getNewScore } from '@utils/dependencies'
+import React, { useState, useMemo } from 'react'
 import { DiGitPullRequest } from 'react-icons/di'
 import { createUpgradePR } from '../../api/repositories'
 import { Row } from '../../components/Flex'
 
 function ViewRepo() {
-  const { repository, increasePRCount } = useRepository()
+  const {
+    repository,
+    increasePRCount,
+    updateScore,
+    outdatedCount,
+  } = useRepository()
 
   const [showSuccess, setShowSuccess] = React.useState(false)
   const [selectedDependencies, setSelectedDependencies] = useState<{
     [key: string]: 'stable' | 'latest'
   }>({})
+
+  const nbSelectedDependencies = Object.keys(selectedDependencies).length
+  React.useEffect(() => {
+    const newScore = getNewScore(
+      nbSelectedDependencies,
+      outdatedCount,
+      repository?.packageJson,
+    )
+    updateScore(newScore)
+  }, [nbSelectedDependencies, outdatedCount, repository, updateScore])
 
   const items = Object.keys(selectedDependencies).map(
     (key) =>
@@ -47,8 +62,64 @@ function ViewRepo() {
   const commandeLine = `yarn upgrade ${items.join(' ')}`
   const { onCopy, hasCopied } = useClipboard(commandeLine)
 
-  let dependencies: Dependency[] = []
-  let devDependencies: Dependency[] = []
+  const { dependencies, devDependencies } = useMemo(() => {
+    let dependencies: Dependency[] = []
+    let devDependencies: Dependency[] = []
+    repository?.dependencies?.deps.forEach(
+      (dep: DependencyArray | PrefixedDependency) => {
+        if (Array.isArray(dep)) {
+          const depObject = refinedDependency(dep)
+          depObject.type === 'dependencies'
+            ? dependencies.push(depObject)
+            : devDependencies.push(depObject)
+        } else {
+          const prefix = Object.keys(dep)[0]
+          const type = dep[prefix][0][4]
+          dependencies = [
+            ...dependencies,
+            ...dep[prefix]
+              .filter((dep) => dep[4] === type)
+              .map((dep) => ({ ...refinedDependency(dep), prefix })),
+          ]
+        }
+      },
+    )
+    return { dependencies, devDependencies }
+  }, [repository])
+
+  const onDependencySelected = React.useCallback(
+    (checked: boolean, name: string, type: 'stable' | 'latest') => {
+      if (checked) {
+        setSelectedDependencies((prevSelectedDependencies) => ({
+          ...prevSelectedDependencies,
+          [name]: type,
+        }))
+      } else {
+        setSelectedDependencies((prevSelectedDependencies) => {
+          const { [name]: omit, ...rest } = prevSelectedDependencies
+          return { ...rest }
+        })
+      }
+    },
+    [setSelectedDependencies],
+  )
+
+  const TabListItems = ({
+    dependencies,
+    devDependencies,
+  }: {
+    dependencies: Dependency[]
+    devDependencies: Dependency[]
+  }) => {
+    return (
+      <TabList>
+        <Tab disabled={dependencies.length === 0}>Dependencies</Tab>
+        <Tab disabled={devDependencies.length === 0}>Dev Dependencies </Tab>
+      </TabList>
+    )
+  }
+
+  const DependenciesTypeTabs = React.memo(TabListItems)
 
   if (!repository) {
     return null
@@ -65,47 +136,11 @@ function ViewRepo() {
     increasePRCount()
   }
 
-  const onDependencySelected = (
-    checked: boolean,
-    name: string,
-    type: 'stable' | 'latest',
-  ) => {
-    if (checked) {
-      setSelectedDependencies({ ...selectedDependencies, [name]: type })
-    } else {
-      const { [name]: omit, ...rest } = selectedDependencies
-      setSelectedDependencies({ ...rest })
-    }
-  }
-
-  repository?.dependencies?.deps.forEach(
-    (dep: DependencyArray | PrefixedDependency) => {
-      if (Array.isArray(dep)) {
-        const depObject = refinedDependency(dep)
-
-        depObject.type === 'dependencies'
-          ? dependencies.push(depObject)
-          : devDependencies.push(depObject)
-      } else {
-        const prefix = Object.keys(dep)[0]
-        const type = dep[prefix][0][4]
-
-        dependencies = [
-          ...dependencies,
-          ...dep[prefix]
-            .filter((dep) => dep[4] === type)
-            .map((dep) => ({ ...refinedDependency(dep), prefix })),
-        ]
-      }
-    },
-  )
-
   const recomputeDeps = () => {
     return RepositoriesAPI.recomputeDeps(repository.id)
   }
 
   const hasSelectedDependencies = Object.keys(selectedDependencies).length > 0
-
   return (
     <>
       {repository.crawlError && (
@@ -151,12 +186,11 @@ function ViewRepo() {
               variantColor="secondary"
               variant="line"
             >
-              <TabList>
-                <Tab disabled={dependencies.length === 0}>Dependencies</Tab>
-                <Tab disabled={devDependencies.length === 0}>
-                  Dev Dependencies{' '}
-                </Tab>
-              </TabList>
+              <DependenciesTypeTabs
+                dependencies={dependencies}
+                devDependencies={devDependencies}
+              />
+
               <TabPanels>
                 <TabPanel>
                   <DependenciesList
