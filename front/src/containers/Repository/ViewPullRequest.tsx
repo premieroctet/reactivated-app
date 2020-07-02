@@ -5,6 +5,7 @@ import PullRequestItem from '../../components/PullRequest/PullRequestItem'
 import { useAxiosRequest } from '../../hooks/useRequest'
 import { getPullRequests } from '../../api/repositories'
 import { PullRequest } from '@typings/entities'
+import { useRepository } from '../../contexts/RepositoryContext'
 
 const ViewPullRequest = () => {
   const {
@@ -16,6 +17,11 @@ const ViewPullRequest = () => {
       fetcher: () => getPullRequests(id),
     },
   )
+  const { repository, updateScore } = useRepository()
+
+  React.useEffect(() => {
+    updateScore(repository?.score || 0)
+  }, [repository, updateScore])
 
   return (
     <>
