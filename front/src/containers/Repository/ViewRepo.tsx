@@ -111,22 +111,6 @@ function ViewRepo() {
     return { dependencies, devDependencies }
   }, [repository])
 
-  const TabListItems = ({
-    dependencies,
-    devDependencies,
-  }: {
-    dependencies: Dependency[]
-    devDependencies: Dependency[]
-  }) => {
-    return (
-      <TabList>
-        <Tab disabled={dependencies.length === 0}>Dependencies</Tab>
-        <Tab disabled={devDependencies.length === 0}>Dev Dependencies </Tab>
-      </TabList>
-    )
-  }
-  const DependenciesTypeTabs = React.memo(TabListItems)
-
   const onDependencySelected = React.useCallback(
     (checked: boolean, name: string, type: 'stable' | 'latest') => {
       if (checked) {
@@ -143,6 +127,22 @@ function ViewRepo() {
     },
     [setSelectedDependencies],
   )
+
+  const TabListItems = ({
+    dependencies,
+    devDependencies,
+  }: {
+    dependencies: Dependency[]
+    devDependencies: Dependency[]
+  }) => {
+    return (
+      <TabList>
+        <Tab disabled={dependencies.length === 0}>Dependencies</Tab>
+        <Tab disabled={devDependencies.length === 0}>Dev Dependencies </Tab>
+      </TabList>
+    )
+  }
+  const DependenciesTypeTabs = React.memo(TabListItems)
 
   const onSelectAllDependencies = React.useCallback(() => {
     if (selectAllChecked) {
