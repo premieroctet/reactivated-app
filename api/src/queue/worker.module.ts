@@ -14,7 +14,8 @@ const redisOptions = (configService: ConfigService) => {
   const config: BullModuleOptions = {
     redis: configService.get('REDIS_URL'),
     settings: {
-      lockDuration: 30000 * 3,
+      lockDuration: 30000 * 10,
+      maxStalledCount: 0,
     },
     limiter: {
       duration: 1000,

@@ -6,7 +6,7 @@ import { Repository } from '../typings/entities'
 export const getRepositories = () => {
   return API.get<Repository[]>(`/repositories`, {
     params: {
-      sort: 'createdAt,ASC',
+      sort: ['score,ASC'],
     },
   })
 }

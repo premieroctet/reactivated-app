@@ -126,6 +126,7 @@ ${updateDeps}
     fullName: string;
     branchName: string;
     githubToken: string;
+    baseBranch: string;
   }): Promise<any> {
     const branchesRes = await this.httpService
       .get(`https://api.github.com/repos/${data.fullName}/git/refs/heads`, {
@@ -134,14 +135,17 @@ ${updateDeps}
         },
       })
       .toPromise();
-    const masterSHA = branchesRes.data[0].object.sha;
+    const originalBranch = branchesRes.data.find(
+      branch => branch.ref === `refs/heads/${data.baseBranch}`,
+    );
+    const baseSHA = originalBranch.object.sha;
 
     return await this.httpService
       .post(
         `https://api.github.com/repos/${data.fullName}/git/refs`,
         {
           ref: 'refs/heads/' + data.branchName,
-          sha: masterSHA,
+          sha: baseSHA,
         },
         {
           headers: {
