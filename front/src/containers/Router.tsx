@@ -1,5 +1,4 @@
 import PrivateRoute from '@components/PrivateRoute'
-import { RepositoryProvider } from '@contexts/RepositoryContext'
 import React from 'react'
 import { Route, Switch } from 'react-router-dom'
 import Dashboard from './Dashboard'
