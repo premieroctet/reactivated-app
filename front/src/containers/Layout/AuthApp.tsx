@@ -1,13 +1,13 @@
 import {
   Avatar,
   Box,
+  Button,
   Flex,
   Icon,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
-  Button,
 } from '@chakra-ui/core'
 import Header from '@components/Header'
 import Router from '@containers/Router'
@@ -15,12 +15,9 @@ import { useAuth } from '@contexts/AuthContext'
 import { Global } from '@emotion/core'
 import { deleteFromStorage } from '@rehooks/local-storage'
 import React from 'react'
-import WaitingBeta from '../WaitingBeta'
-import { Link } from 'react-router-dom'
 import { IoIosExit } from 'react-icons/io'
-import useWindowSize from 'react-use/lib/useWindowSize'
-import Confetti from 'react-confetti'
-import { useRepository } from '../../contexts/RepositoryContext'
+import { Link } from 'react-router-dom'
+import WaitingBeta from '../WaitingBeta'
 
 const AuthApp = () => {
   const logOut = () => {
@@ -28,8 +25,6 @@ const AuthApp = () => {
   }
 
   const { jwTokenData } = useAuth()
-  const { width, height } = useWindowSize()
-  const { showConfettis } = useRepository()
 
   return (
     <>
@@ -90,14 +85,6 @@ const AuthApp = () => {
           <Router />
         )}
       </Box>
-      <Confetti
-        width={width}
-        height={height}
-        run={showConfettis}
-        recycle={false}
-        numberOfPieces={800}
-        initialVelocityY={14}
-      />
     </>
   )
 }

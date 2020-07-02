@@ -57,6 +57,8 @@ export function RepositoryProvider(props: Props) {
   const updateScore = (newScore: number) => {
     if (newScore === 100) {
       setShowConfettis(true)
+    } else {
+      setShowConfettis(false)
     }
     setScore(newScore)
   }
