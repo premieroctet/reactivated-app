@@ -8,6 +8,7 @@ interface RepositoryContextInterface {
   updateScore: (newScore: number) => void
   outdatedCount: number
   score: number
+  showConfettis: boolean
 }
 
 const RepositoryContext = React.createContext<RepositoryContextInterface>({
@@ -18,6 +19,7 @@ const RepositoryContext = React.createContext<RepositoryContextInterface>({
   updateScore: () => null,
   outdatedCount: 0,
   score: 0,
+  showConfettis: false,
 })
 
 interface Props {
@@ -29,7 +31,7 @@ export function RepositoryProvider(props: Props) {
   const [prCount, setCreatedCount] = useState<number>(0)
   const [score, setScore] = React.useState<number>(0)
   const [outdatedCount, setOutdatedCount] = React.useState<number>(0)
-
+  const [showConfettis, setShowConfettis] = React.useState(false)
   React.useEffect(() => {
     setCreatedCount(0)
     if (repository) {
@@ -46,12 +48,16 @@ export function RepositoryProvider(props: Props) {
         ),
       )
     }
+    setShowConfettis(false)
   }, [repository])
 
   const increasePRCount = () => {
     setCreatedCount((prevCount) => prevCount + 1)
   }
   const updateScore = (newScore: number) => {
+    if (newScore === 100) {
+      setShowConfettis(true)
+    }
     setScore(newScore)
   }
 
@@ -64,6 +70,7 @@ export function RepositoryProvider(props: Props) {
         prCount,
         outdatedCount,
         updateScore,
+        showConfettis,
         score,
       }}
       {...props}

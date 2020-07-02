@@ -18,12 +18,18 @@ import React from 'react'
 import WaitingBeta from '../WaitingBeta'
 import { Link } from 'react-router-dom'
 import { IoIosExit } from 'react-icons/io'
+import useWindowSize from 'react-use/lib/useWindowSize'
+import Confetti from 'react-confetti'
+import { useRepository } from '../../contexts/RepositoryContext'
+
 const AuthApp = () => {
   const logOut = () => {
     deleteFromStorage('token')
   }
 
   const { jwTokenData } = useAuth()
+  const { width, height } = useWindowSize()
+  const { showConfettis } = useRepository()
 
   return (
     <>
@@ -84,6 +90,14 @@ const AuthApp = () => {
           <Router />
         )}
       </Box>
+      <Confetti
+        width={width}
+        height={height}
+        run={showConfettis}
+        recycle={false}
+        numberOfPieces={800}
+        initialVelocityY={14}
+      />
     </>
   )
 }

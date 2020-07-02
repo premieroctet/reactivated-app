@@ -141,6 +141,7 @@ function ViewRepo() {
   }
 
   const hasSelectedDependencies = Object.keys(selectedDependencies).length > 0
+
   return (
     <>
       {repository.crawlError && (
