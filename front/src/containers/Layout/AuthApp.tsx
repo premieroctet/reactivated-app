@@ -8,6 +8,7 @@ import {
   MenuItem,
   MenuList,
   Button,
+  Skeleton,
 } from '@chakra-ui/core'
 import Header from '@components/Header'
 import Router from '@containers/Router'
@@ -22,7 +23,13 @@ const AuthApp = () => {
   const logOut = () => {
     deleteFromStorage('token')
   }
+  const [showAvatar, setShowAvatar] = React.useState(false)
 
+  React.useEffect(() => {
+    setTimeout(() => {
+      setShowAvatar(true)
+    }, 1000)
+  }, [])
   const { jwTokenData } = useAuth()
 
   return (
@@ -41,12 +48,18 @@ const AuthApp = () => {
             <Menu>
               <MenuButton>
                 <Flex alignItems="center">
-                  <Avatar
-                    name={jwTokenData?.userName}
-                    size="sm"
-                    bg="brand.500"
-                    src={jwTokenData?.avatarUrl}
-                  />
+                  {showAvatar ? (
+                    <Avatar
+                      name={jwTokenData?.userName}
+                      size="sm"
+                      bg="brand.500"
+                      src={jwTokenData?.avatarUrl}
+                    />
+                  ) : (
+                    <Skeleton rounded="full">
+                      <Avatar size="sm" bg="brand.500" />
+                    </Skeleton>
+                  )}
                   <Icon color="white" fontSize="2xl" name="chevron-down" />
                 </Flex>
               </MenuButton>

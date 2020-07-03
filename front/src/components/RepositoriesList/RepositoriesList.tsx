@@ -6,10 +6,13 @@ import { FaPlug } from 'react-icons/fa'
 import { Repository } from '../../typings/entities'
 import RepositoryListEmpty from './RepositoryListEmpty'
 import { getMaxRepositories } from '@containers/Dashboard'
+import { motion } from 'framer-motion'
 
 interface Props {
   repositories: Repository[]
 }
+
+const MotionRepositoryListItem = motion.custom(RepositoryListItem)
 
 const RepositoriesList = ({ repositories }: Props) => {
   if (repositories.length === 0) {
@@ -46,7 +49,10 @@ const RepositoriesList = ({ repositories }: Props) => {
         if (repository.isConfigured) {
           return (
             <Link key={repository.id} to={`/repo/${repository.id}`}>
-              <RepositoryListItem repository={repository} />
+              <MotionRepositoryListItem
+                repository={repository}
+                whileHover={{ scale: 1.1 }}
+              />
             </Link>
           )
         } else {

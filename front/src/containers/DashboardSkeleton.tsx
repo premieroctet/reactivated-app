@@ -3,20 +3,18 @@ import {
   Box,
   Button,
   Flex,
+  IconButton,
+  Image,
   Skeleton,
+  Stack,
   Text,
   Tooltip,
-  Image,
-  IconButton,
-  Stack,
 } from '@chakra-ui/core'
 import Container from '@components/Container'
 import React from 'react'
 import { Link } from 'react-router-dom'
-import RepositoryListItem from '../components/RepositoriesList/RepositoryListItem'
-import { Repository } from '../typings/entities'
-import LoadBar from '../components/LoadBar'
 import { Row } from '../components/Flex'
+import { Repository } from '../typings/entities'
 
 const DashboardSkeleton = () => {
   const repository: Repository = {

@@ -18,8 +18,6 @@ function Home() {
     fetcher: RepositoriesAPI.getRepositories,
   })
 
-  repositories = null
-
   if (!repositories) {
     return <DashboardSkeleton />
   }
