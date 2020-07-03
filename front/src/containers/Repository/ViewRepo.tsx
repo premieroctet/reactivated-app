@@ -38,10 +38,13 @@ function SelectAllButton({
 }) {
   return (
     <Flex justifyContent="flex-end" alignItems="center" flexDirection="row">
-      <FormLabel cursor="pointer">Update all dependencies</FormLabel>
+      <FormLabel cursor="pointer" htmlFor="select-all">
+        Update all dependencies
+      </FormLabel>
       <Switch
         color="secondary"
         size="sm"
+        id="select-all"
         isChecked={selectAllChecked}
         onChange={onSelectAllDependencies}
       />
