@@ -17,6 +17,8 @@ import {
   TagLabel,
   Text,
   useClipboard,
+  Switch,
+  FormLabel,
 } from '@chakra-ui/core'
 import DependenciesList from '@components/DependenciesList'
 import { DependenciesProvider } from '@contexts/DependenciesContext'
@@ -27,6 +29,30 @@ import { DiGitPullRequest } from 'react-icons/di'
 import { createUpgradePR } from '../../api/repositories'
 import { Row } from '../../components/Flex'
 
+function SelectAllButton({
+  selectAllChecked,
+  onSelectAllDependencies,
+}: {
+  selectAllChecked: boolean
+  onSelectAllDependencies: () => void
+}) {
+  return (
+    <Flex justifyContent="flex-end" alignItems="center" flexDirection="row">
+      <FormLabel cursor="pointer" htmlFor="select-all">
+        Update all dependencies
+      </FormLabel>
+      <Switch
+        color="secondary"
+        size="sm"
+        id="select-all"
+        isChecked={selectAllChecked}
+        onChange={onSelectAllDependencies}
+      />
+    </Flex>
+  )
+}
+const SelectAll = React.memo(SelectAllButton)
+
 function ViewRepo() {
   const {
     repository,
@@ -36,6 +62,7 @@ function ViewRepo() {
   } = useRepository()
 
   const [showSuccess, setShowSuccess] = React.useState(false)
+  const [selectAllChecked, setSelectAllChecked] = React.useState(false)
   const [selectedDependencies, setSelectedDependencies] = useState<{
     [key: string]: 'stable' | 'latest'
   }>({})
@@ -118,8 +145,29 @@ function ViewRepo() {
       </TabList>
     )
   }
-
   const DependenciesTypeTabs = React.memo(TabListItems)
+
+  const onSelectAllDependencies = React.useCallback(() => {
+    if (selectAllChecked) {
+      setSelectedDependencies({})
+    } else {
+      const deps = dependencies
+        .map((dep) => {
+          return { [dep.name]: 'latest' }
+        })
+        .concat(
+          devDependencies.map((dep) => {
+            return { [dep.name]: 'latest' }
+          }),
+        )
+      let selectedDeps = {}
+      for (const dep of deps) {
+        selectedDeps = { ...selectedDeps, ...dep }
+      }
+      setSelectedDependencies(selectedDeps)
+    }
+    setSelectAllChecked((selectAllChecked) => !selectAllChecked)
+  }, [setSelectedDependencies, dependencies, devDependencies, selectAllChecked])
 
   if (!repository) {
     return null
@@ -176,6 +224,11 @@ function ViewRepo() {
           </Button>
         )}
       </Code>
+
+      <SelectAll
+        selectAllChecked={selectAllChecked}
+        onSelectAllDependencies={onSelectAllDependencies}
+      />
 
       <DependenciesProvider>
         {repository && repository.dependencies && repository.dependencies.deps && (
