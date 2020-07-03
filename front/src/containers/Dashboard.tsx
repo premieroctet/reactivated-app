@@ -46,6 +46,9 @@ function Home() {
           </Text>
 
           <Tooltip
+            isOpen={
+              repositories.length === Number(process.env.REACT_APP_MAX_REPOS)
+            }
             hasArrow
             label={`Max repositories reached : ${process.env.REACT_APP_MAX_REPOS}`}
             aria-label={'Max repositories reached'}

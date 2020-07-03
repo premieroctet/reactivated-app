@@ -8,46 +8,13 @@ import {
   Skeleton,
   Stack,
   Text,
-  Tooltip,
 } from '@chakra-ui/core'
 import Container from '@components/Container'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { Row } from '../components/Flex'
-import { Repository } from '../typings/entities'
 
 const DashboardSkeleton = () => {
-  const repository: Repository = {
-    id: 66,
-    name: 'yarnlock',
-    fullName: 'thozh/yarnlock',
-    githubId: '267258739',
-    installationId: '104924',
-    author: 'thozh',
-    repoImg: 'https://avatars2.githubusercontent.com/u/37123351?v=4',
-    createdAt: '2020-07-01T11:57:36.000Z',
-    dependenciesUpdatedAt: '2020-07-02T14:00:19.000Z',
-    repoUrl: 'https://github.com/thozh/yarnlock',
-    packageJson: { dependencies: {}, devDependencies: {} },
-    dependencies: { deps: [] },
-    branch: 'master',
-    path: '/',
-    isConfigured: true,
-    score: 50,
-    framework: 'react',
-    hasYarnLock: true,
-    crawlError: '',
-    users: [
-      {
-        id: 16,
-        username: 'thozh',
-        githubId: '121',
-        githubToken: 'qded',
-      },
-    ],
-    pullRequests: [],
-  }
-
   return (
     <>
       <Container py={[2, 5]} px={[2, 5]}>
@@ -62,23 +29,16 @@ const DashboardSkeleton = () => {
           </Skeleton>
 
           <Skeleton>
-            <Tooltip
-              hasArrow
-              label={`Max repositories reached : ${process.env.REACT_APP_MAX_REPOS}`}
-              aria-label={'Max repositories reached'}
-              placement="left"
-            >
-              <Link to="/add-repository">
-                <Button
-                  cursor="pointer"
-                  variantColor="green"
-                  variant="ghost"
-                  leftIcon="add"
-                >
-                  Add app
-                </Button>
-              </Link>
-            </Tooltip>
+            <Link to="/add-repository">
+              <Button
+                cursor="pointer"
+                variantColor="green"
+                variant="ghost"
+                leftIcon="add"
+              >
+                Add app
+              </Button>
+            </Link>
           </Skeleton>
         </Flex>
       </Container>
@@ -105,12 +65,7 @@ const DashboardSkeleton = () => {
             >
               <Row justifyContent="center">
                 <Skeleton rounded={40} mr={2}>
-                  <Image
-                    size={16}
-                    borderRadius={40}
-                    src={repository.repoImg}
-                    alt={repository.name}
-                  />
+                  <Image size={16} borderRadius={40} />
                 </Skeleton>
                 <Stack>
                   <Skeleton>reactivated-app</Skeleton>
