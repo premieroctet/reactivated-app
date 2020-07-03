@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react'
 import { Button, Text, Flex, Badge, Tooltip } from '@chakra-ui/core'
 import * as RepositoriesAPI from '@api/repositories'
