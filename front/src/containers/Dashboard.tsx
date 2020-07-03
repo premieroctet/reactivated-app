@@ -1,11 +1,13 @@
+// @ts-nocheck
 import React from 'react'
-import { Button, Text, Flex, Badge } from '@chakra-ui/core'
+import { Button, Text, Flex, Badge, Tooltip } from '@chakra-ui/core'
 import * as RepositoriesAPI from '@api/repositories'
 import RepositoriesList from '@components/RepositoriesList'
 import { Link } from 'react-router-dom'
 import { useAxiosRequest } from '@hooks/useRequest'
 import { Repository } from '../typings/entities'
 import Container from '@components/Container'
+import DashboardSkeleton from './DashboardSkeleton'
 
 export const getMaxRepositories = () => {
   return parseInt(process.env.REACT_APP_MAX_REPOS || '5', 10)
@@ -16,8 +18,10 @@ function Home() {
     fetcher: RepositoriesAPI.getRepositories,
   })
 
+  repositories = null
+
   if (!repositories) {
-    return null
+    return <DashboardSkeleton />
   }
   repositories = repositories.sort((repo1, repo2) => {
     if (!repo1.isConfigured) {
@@ -43,17 +47,24 @@ function Home() {
             )}
           </Text>
 
-          <Link to="/add-repository">
-            <Button
-              cursor="pointer"
-              variantColor="green"
-              variant="ghost"
-              leftIcon="add"
-              isDisabled={repositories.length >= getMaxRepositories()}
-            >
-              Add app
-            </Button>
-          </Link>
+          <Tooltip
+            hasArrow
+            label={`Max repositories reached : ${process.env.REACT_APP_MAX_REPOS}`}
+            aria-label={'Max repositories reached'}
+            placement="left"
+          >
+            <Link to="/add-repository">
+              <Button
+                cursor="pointer"
+                variantColor="green"
+                variant="ghost"
+                leftIcon="add"
+                isDisabled={repositories.length >= getMaxRepositories()}
+              >
+                Add app
+              </Button>
+            </Link>
+          </Tooltip>
         </Flex>
       </Container>
       <RepositoriesList repositories={repositories} />

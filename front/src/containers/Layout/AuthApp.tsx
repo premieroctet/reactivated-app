@@ -51,11 +51,6 @@ const AuthApp = () => {
                 </Flex>
               </MenuButton>
               <MenuList>
-                <MenuItem onClick={logOut}>
-                  <Button leftIcon={IoIosExit} variant="ghost">
-                    Logout
-                  </Button>
-                </MenuItem>
                 <Link to="/settings">
                   <MenuItem>
                     <Button leftIcon="settings" variant="ghost">
@@ -63,6 +58,11 @@ const AuthApp = () => {
                     </Button>
                   </MenuItem>
                 </Link>
+                <MenuItem onClick={logOut}>
+                  <Button leftIcon={IoIosExit} variant="ghost">
+                    Logout
+                  </Button>
+                </MenuItem>
               </MenuList>
             </Menu>
           </Header>
