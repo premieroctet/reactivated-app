@@ -51,7 +51,7 @@ const RepositoriesList = ({ repositories }: Props) => {
             <Link key={repository.id} to={`/repo/${repository.id}`}>
               <MotionRepositoryListItem
                 repository={repository}
-                whileHover={{ scale: 1.1 }}
+                whileHover={{ scale: 1.1, x: 70 }}
               />
             </Link>
           )
