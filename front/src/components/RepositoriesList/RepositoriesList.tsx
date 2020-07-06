@@ -23,7 +23,7 @@ const RepositoriesList = ({ repositories }: Props) => {
         </Text>
 
         <Text mb={5} textAlign="center" maxWidth="25rem" color="gray.400">
-          You have no reactivated app yet! Start now by adding yout from a
+          You have no reactivated app yet! Start now by adding your from a
           GitHub repository
         </Text>
 
