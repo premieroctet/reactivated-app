@@ -235,19 +235,21 @@ const AddRepo = () => {
           </Box>
         </Wrapper>
       ) : (
-        <Stack spacing={4} mt={6}>
-          <Text fontSize={['md', 'lg']} textAlign="center">
-            It seems you have no repository configured.
-          </Text>
-          <Button
-            variantColor="teal"
-            size="lg"
-            leftIcon={FaGithub}
-            onClick={onOpenGithub}
-          >
-            Configure on GitHub
-          </Button>
-        </Stack>
+        <Container>
+          <Stack spacing={4} mt={6} align="center">
+            <Text fontSize={['md', 'lg']} textAlign="center">
+              It seems you have no repository configured.
+            </Text>
+            <Button
+              variantColor="teal"
+              size="lg"
+              leftIcon={FaGithub}
+              onClick={onOpenGithub}
+            >
+              Configure on GitHub
+            </Button>
+          </Stack>
+        </Container>
       )
     case Step.REPO_CONFIGURATION:
       return (
