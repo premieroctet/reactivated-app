@@ -233,6 +233,11 @@ export class DependenciesQueue {
       if (error.response.status === 422) {
         this.logger.error('Branch reference already exists');
       }
+      await this.logService.saveLog({
+        name: `Create new branch`,
+        failedReason: `${error}`,
+        data: JSON.parse(JSON.stringify(error)),
+      });
     }
 
     // Update the files on new branch
@@ -292,6 +297,11 @@ export class DependenciesQueue {
       });
     } catch (error) {
       this.logger.error('Commit files and create PR', error);
+      await this.logService.saveLog({
+        name: `Commit files and create PR`,
+        failedReason: `${error}`,
+        data: JSON.parse(JSON.stringify(error)),
+      });
       await this.pullRequestService.updatePullRequest(job.data.branchName, {
         status: 'error',
       });

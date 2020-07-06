@@ -12,7 +12,7 @@ export class Log {
 
   @ApiProperty()
   @Column({ length: 500 })
-  stackTrace: string;
+  stackTrace?: string;
 
   @ApiProperty()
   @Column()
