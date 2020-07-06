@@ -11,7 +11,7 @@ export class Log {
   id?: number;
 
   @ApiProperty()
-  @Column({ length: 500 })
+  @Column({ length: 500, nullable: true })
   stackTrace?: string;
 
   @ApiProperty()
