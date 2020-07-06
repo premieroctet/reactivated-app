@@ -1,16 +1,16 @@
-import React from 'react'
-import semver from 'semver'
 import {
   Box,
-  Link,
-  Switch,
-  Stack,
-  Tag,
   Flex,
   FormLabel,
+  Link,
+  Stack,
+  Switch,
+  Tag,
   Text,
+  Tooltip,
 } from '@chakra-ui/core'
-import { Tooltip } from '@chakra-ui/core'
+import React from 'react'
+import semver from 'semver'
 
 interface IProps {
   dependency: Dependency
