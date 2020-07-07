@@ -138,7 +138,6 @@ ${updateDeps}
     const originalBranch = branchesRes.data.find(
       branch => branch.ref === `refs/heads/${data.baseBranch}`,
     );
-    console.log('originalBranch', originalBranch);
     const baseSHA = originalBranch.object.sha;
 
     return await this.httpService
@@ -242,7 +241,6 @@ ${updateDeps}
     base_tree: string;
     tree: ITreeData[];
   }) {
-    console.log('data', data);
     return this.httpService
       .post(
         `https://api.github.com/repos/${data.fullName}/git/trees`,
