@@ -128,7 +128,6 @@ ${updateDeps}
     githubToken: string;
     baseBranch: string;
   }): Promise<any> {
-    console.log('data', data);
     const branchesRes = await this.httpService
       .get(`https://api.github.com/repos/${data.fullName}/git/refs/heads`, {
         headers: {
@@ -136,10 +135,10 @@ ${updateDeps}
         },
       })
       .toPromise();
-    console.log('branchesRes.data', branchesRes.data);
     const originalBranch = branchesRes.data.find(
       branch => branch.ref === `refs/heads/${data.baseBranch}`,
     );
+    console.log('originalBranch', originalBranch);
     const baseSHA = originalBranch.object.sha;
 
     return await this.httpService
@@ -243,7 +242,6 @@ ${updateDeps}
     base_tree: string;
     tree: ITreeData[];
   }) {
-    console.log('data', data);
     return this.httpService
       .post(
         `https://api.github.com/repos/${data.fullName}/git/trees`,
