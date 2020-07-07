@@ -240,7 +240,9 @@ export class DependenciesQueue {
       const files = ['package.json', 'yarn.lock'];
       const tree: ITreeData[] = [];
       for (const file of files) {
+        console.log('upgradeDependencies -> file', file);
         const bufferContent = Buffer.from(readFileSync(`${tmpPath}/${file}`));
+        console.log('upgradeDependencies -> bufferContent', bufferContent);
 
         tree.push({
           path: `${job.data.path === '/' ? file : job.data.path + file} `,
