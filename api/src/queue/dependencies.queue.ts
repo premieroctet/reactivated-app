@@ -230,6 +230,7 @@ export class DependenciesQueue {
       });
       branchTreeSHA = branchRes.data.object.sha;
       console.log('upgradeDependencies -> branchRes.data', branchRes.data);
+      console.log('upgradeDependencies -> branchTreeSHA', branchTreeSHA);
     } catch (error) {
       if (error.response.status === 422) {
         this.logger.error('Branch reference already exists');
@@ -265,7 +266,6 @@ export class DependenciesQueue {
         tree: upgradedTreeRes.data.sha,
         parents: [branchTreeSHA],
       });
-      console.log('upgradeDependencies -> commitRes.data', commitRes.data);
       const upgradeCommitSHA = commitRes.data.sha;
 
       const diffRes = await this.githubService.getDiffUrl({
@@ -273,7 +273,6 @@ export class DependenciesQueue {
         token: job.data.githubToken,
         commitSHA: upgradeCommitSHA,
       });
-      console.log('upgradeDependencies -> diffRes', diffRes.data);
 
       const diffLines = diffRes.data.split('\n');
       const upgradedDiff = getUpgradedDiff(diffLines);
