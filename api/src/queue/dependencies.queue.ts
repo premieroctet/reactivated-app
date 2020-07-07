@@ -256,6 +256,10 @@ export class DependenciesQueue {
         base_tree: branchTreeSHA,
         tree,
       });
+      console.log(
+        'upgradeDependencies -> upgradedTreeRes',
+        upgradedTreeRes.data,
+      );
 
       const commitRes = await this.githubService.createCommit({
         fullName: job.data.repositoryFullName,
@@ -264,6 +268,7 @@ export class DependenciesQueue {
         tree: upgradedTreeRes.data.sha,
         parents: [branchTreeSHA],
       });
+      console.log('upgradeDependencies -> commitRes.data', commitRes.data);
       const upgradeCommitSHA = commitRes.data.sha;
 
       const diffRes = await this.githubService.getDiffUrl({
@@ -271,6 +276,7 @@ export class DependenciesQueue {
         token: job.data.githubToken,
         commitSHA: upgradeCommitSHA,
       });
+      console.log('upgradeDependencies -> diffRes', diffRes.data);
 
       const diffLines = diffRes.data.split('\n');
       const upgradedDiff = getUpgradedDiff(diffLines);
