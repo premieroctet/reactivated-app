@@ -229,8 +229,6 @@ export class DependenciesQueue {
         baseBranch: job.data.branch,
       });
       branchTreeSHA = branchRes.data.object.sha;
-      console.log('upgradeDependencies -> branchRes.data', branchRes.data);
-      console.log('upgradeDependencies -> branchTreeSHA', branchTreeSHA);
     } catch (error) {
       if (error.response.status === 422) {
         this.logger.error('Branch reference already exists');
@@ -246,6 +244,12 @@ export class DependenciesQueue {
 
         tree.push({
           path: `${job.data.path === '/' ? file : job.data.path + file} `,
+          mode: '100644',
+          type: 'blob',
+          content: bufferContent.toString('utf-8'),
+        });
+        tree.push({
+          path: file,
           mode: '100644',
           type: 'blob',
           content: bufferContent.toString('utf-8'),

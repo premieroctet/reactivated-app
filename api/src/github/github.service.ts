@@ -242,6 +242,7 @@ ${updateDeps}
     base_tree: string;
     tree: ITreeData[];
   }) {
+    console.log('data', data);
     return this.httpService
       .post(
         `https://api.github.com/repos/${data.fullName}/git/trees`,
