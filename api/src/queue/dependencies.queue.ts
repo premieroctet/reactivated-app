@@ -243,13 +243,7 @@ export class DependenciesQueue {
         const bufferContent = Buffer.from(readFileSync(`${tmpPath}/${file}`));
 
         tree.push({
-          path: `${job.data.path === '/' ? file : job.data.path + file} `,
-          mode: '100644',
-          type: 'blob',
-          content: bufferContent.toString('utf-8'),
-        });
-        tree.push({
-          path: file,
+          path: `${job.data.path === '/' ? file : job.data.path + file}`,
           mode: '100644',
           type: 'blob',
           content: bufferContent.toString('utf-8'),
