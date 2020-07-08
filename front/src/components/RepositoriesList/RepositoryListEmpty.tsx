@@ -1,29 +1,30 @@
 import React from 'react'
-import { Flex, Icon, Box } from '@chakra-ui/core'
+import { Flex, Icon, Box, FlexProps } from '@chakra-ui/core'
 import { Link } from 'react-router-dom'
 
-const RepositoryListEmpty: React.FC = () => {
-  return (
-    <Link to="/add-repository">
-      <Flex
-        border="2px dashed"
-        borderColor="gray.300"
-        position="relative"
-        cursor="pointer"
-        rounded={10}
-        mb={4}
-        px={5}
-        py={10}
-        alignItems="center"
-        justifyContent="center"
-        overflow="hidden"
-      >
-        <Box py={2} color="gray.500" fontSize="xl">
-          Plug <b>new app</b> <Icon name="small-add" />
-        </Box>
-      </Flex>
-    </Link>
-  )
-}
+const RepositoryListEmpty = React.forwardRef<FlexProps>((props, ref) => (
+  <Link to="/add-repository">
+    <Flex
+      ref={ref}
+      {...props}
+      borderColor="gray.300"
+      shadow="md"
+      position="relative"
+      backgroundColor="white"
+      cursor="pointer"
+      rounded={10}
+      mb={4}
+      px={5}
+      py={10}
+      alignItems="center"
+      justifyContent="center"
+      overflow="hidden"
+    >
+      <Box py={2} color="gray.500" fontSize="xl">
+        Add <b>new app</b> <Icon name="small-add" />
+      </Box>
+    </Flex>
+  </Link>
+))
 
 export default RepositoryListEmpty
