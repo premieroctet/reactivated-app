@@ -92,6 +92,7 @@ function ViewRepo() {
   const { dependencies, devDependencies } = useMemo(() => {
     let dependencies: Dependency[] = []
     let devDependencies: Dependency[] = []
+
     repository?.dependencies?.deps.forEach(
       (dep: DependencyArray | PrefixedDependency) => {
         if (Array.isArray(dep)) {
@@ -229,7 +230,6 @@ function ViewRepo() {
         selectAllChecked={selectAllChecked}
         onSelectAllDependencies={onSelectAllDependencies}
       />
-
       <DependenciesProvider>
         {repository && repository.dependencies && repository.dependencies.deps && (
           <Box w={['100%', 'unset']} minW={['100%']} mt={4}>
