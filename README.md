@@ -9,6 +9,8 @@ Reactivated App is the tool to maintain your projects' dependencies up-to-date
 
 ## Quick Demo
 
+![Demo](reactivated-app.gif)
+
 ## Features
 
 - Support for Node dependencies

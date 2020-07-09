@@ -15,6 +15,7 @@ export const getMaxRepositories = () => {
 function Home() {
   let { data: repositories } = useAxiosRequest<Repository[]>('/repositories', {
     fetcher: RepositoriesAPI.getRepositories,
+    refreshInterval: 3000,
   })
 
   if (!repositories) {
