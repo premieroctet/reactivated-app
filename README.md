@@ -5,7 +5,7 @@
 
 # [Reactivated App](https://reactivated.app) 🔌
 
-Reactivated App is the tool to maintain your projects' dependencies up-to-date
+Reactivated App is the tool you need to maintain your projects' dependencies up-to-date
 
 ## Quick Demo
 
@@ -16,9 +16,11 @@ Reactivated App is the tool to maintain your projects' dependencies up-to-date
 - Support for Node dependencies
 - Add your GitHub repositories
 - Visualizing your project's health
-- Automated PR in a new branch with the up-to-date dependencies
+- Detection of the framework used
+- Grouping the different dependencies by common prefix
+- **beta** Automated PR in a new branch with the up-to-date dependencies _(⚠️only supporting yarn.lock : will be created even if there is a package-lock.json)_
 
-## Documentation
+## Getting started
 
 - [API](api/README.md)
 - [Front](front/README.md)
@@ -31,15 +33,15 @@ We use TypeScript ❤️ for static typing
 
 - [Nestjs](https://nestjs.com/)
 - [Nestjs Crud](https://github.com/nestjsx/crud)
-- [MySQL](https://www.mysql.com/)
-- [Bull](https://github.com/OptimalBits/bull)
+- [MySQL](https://www.mysql.com/) or [PostgreSQL](https://www.postgresql.org/) for the database
+- [Bull](https://github.com/OptimalBits/bull) with [Redis](https://redis.io/) for computing expensive operations with the worker process
 
 ### Front
 
 - [Create React App](https://github.com/facebook/create-react-app)
 - [Chakra UI](https://chakra-ui.com/)
 - [Axios](https://github.com/axios/axios)
-- [Framer motion](https://www.framer.com/motion/)
+- [Framer motion](https://www.framer.com/motion/) for custom animations
 
 ## Contributing
 
