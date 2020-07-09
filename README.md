@@ -90,13 +90,15 @@ cp .env.dist .env.dev
 [http://localhost:3000](http://localhost:3000)
 [http://localhost:3000/swagger](http://localhost:3000/swagger)
 
-## Hooks
+#### Webhook (GitHub API)
+
+Sends the payload from GitHub API to our local dev API.
 
 ```bash
 smee --url https://smee.io/BVk7Sqmgj7fXXcV --path /webhooks/consume --port 3000
 ```
 
-## Test
+#### Test
 
 ```bash
 # unit tests
@@ -113,13 +115,16 @@ $ npm run test:cov
 
 #### Installation and .env config
 
-`yarn install`
-
-`cp front/.env.dist front/.env`
+```bash
+cp front/.env.dist front/.env
+yarn install
+```
 
 #### Run the app
 
-`yarn start`
+```bash
+yarn start
+```
 
 #### Webpack config
 
@@ -128,7 +133,9 @@ One of those configuration is `aliases`. Whenever creating a new folder in the s
 
 #### Build the app
 
-`yarn build`
+```bash
+yarn build
+```
 
 ---
 
