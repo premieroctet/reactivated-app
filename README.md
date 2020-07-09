@@ -30,6 +30,85 @@ Reactivated App is the tool you need to maintain your projects' dependencies up-
 
 ### API
 
+#### Installation
+
+```bash
+$ npm install
+```
+
+```bash
+cp .env.dist .env.dev
+```
+
+#### Running the app
+
+<details>
+    <summary>
+    Without docker
+    </summary>
+
+    # fill in the typeorm credentials and copy .env file
+    cp api/.env.dist api/.env.dev
+
+    # development
+    $ yarn start
+
+    # watch mode
+    $ yarn start:dev
+
+    # production mode
+    $ yarn start:prod
+
+</details>
+
+<details>
+    <summary>
+    With Docker
+    </summary>
+
+<code>
+<p>
+    Update your `.env` file for the following keys:
+</p>
+
+    TYPEORM_HOST=mysql
+    TYPEORM_USERNAME=admin
+    TYPEORM_PASSWORD=password
+    TYPEORM_DATABASE=reactivated
+
+<p>
+    Then 
+</p>
+
+    # Run with --build for the first run
+    docker-compose up --build
+
+</code>
+
+</details>
+
+[http://localhost:3000](http://localhost:3000)
+[http://localhost:3000/swagger](http://localhost:3000/swagger)
+
+## Hooks
+
+```bash
+smee --url https://smee.io/BVk7Sqmgj7fXXcV --path /webhooks/consume --port 3000
+```
+
+## Test
+
+```bash
+# unit tests
+$ npm run test
+
+# e2e tests
+$ npm run test:e2e
+
+# test coverage
+$ npm run test:cov
+```
+
 ### Front
 
 #### Installation and .env config
