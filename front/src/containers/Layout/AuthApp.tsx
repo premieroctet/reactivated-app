@@ -9,6 +9,7 @@ import {
   MenuList,
   Button,
   Skeleton,
+  MenuDivider,
 } from '@chakra-ui/core'
 import Header from '@components/Header'
 import Router from '@containers/Router'
@@ -18,18 +19,13 @@ import { deleteFromStorage } from '@rehooks/local-storage'
 import React from 'react'
 import WaitingBeta from '../WaitingBeta'
 import { Link } from 'react-router-dom'
-import { IoIosExit } from 'react-icons/io'
+import { FiLogOut } from 'react-icons/fi'
+
 const AuthApp = () => {
   const logOut = () => {
     deleteFromStorage('token')
   }
-  const [showAvatar, setShowAvatar] = React.useState(false)
 
-  React.useEffect(() => {
-    setTimeout(() => {
-      setShowAvatar(true)
-    }, 1000)
-  }, [])
   const { jwTokenData } = useAuth()
 
   return (
@@ -48,7 +44,7 @@ const AuthApp = () => {
             <Menu>
               <MenuButton>
                 <Flex alignItems="center">
-                  {showAvatar ? (
+                  {jwTokenData?.avatarUrl ? (
                     <Avatar
                       name={jwTokenData?.userName}
                       size="sm"
@@ -63,7 +59,7 @@ const AuthApp = () => {
                   <Icon color="white" fontSize="2xl" name="chevron-down" />
                 </Flex>
               </MenuButton>
-              <MenuList>
+              <MenuList zIndex={100}>
                 <Link to="/settings">
                   <MenuItem>
                     <Button leftIcon="settings" variant="ghost">
@@ -71,8 +67,9 @@ const AuthApp = () => {
                     </Button>
                   </MenuItem>
                 </Link>
+                <MenuDivider />
                 <MenuItem onClick={logOut}>
-                  <Button leftIcon={IoIosExit} variant="ghost">
+                  <Button leftIcon={FiLogOut} variant="ghost">
                     Logout
                   </Button>
                 </MenuItem>
@@ -88,8 +85,14 @@ const AuthApp = () => {
         position="absolute"
         left={0}
         right={0}
-      ></Box>
-      <Box maxWidth="60rem" marginX="auto" position="relative">
+      />
+      <Box
+        mb={10}
+        p={[3, 3, 3, 0]}
+        maxWidth="60rem"
+        marginX="auto"
+        position="relative"
+      >
         {process.env.REACT_APP_IS_BETA === 'true' &&
         jwTokenData?.validated === false ? (
           <WaitingBeta />
