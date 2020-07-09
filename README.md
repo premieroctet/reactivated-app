@@ -87,7 +87,7 @@ cp .env.dist .env.dev
 
 </details>
 
-[http://localhost:3000](http://localhost:3000)
+The API should be available on : [http://localhost:3000](http://localhost:3000)
 [http://localhost:3000/swagger](http://localhost:3000/swagger)
 
 #### Webhook (GitHub API)
@@ -125,6 +125,8 @@ yarn install
 ```bash
 yarn start
 ```
+
+The app should be available on [http://localhost:3007](http://localhost:3007)
 
 #### Webpack config
 
