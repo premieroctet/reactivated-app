@@ -1,14 +1,14 @@
 export const reactRepo = {
   id: 10,
   name: 'react',
-  // "fullName": "thozh/react",
-  // "githubId": "278581401",
+  fullName: 'facebook/react',
+  githubId: '11111111',
   installationId: null,
   author: 'thozh',
-  repoImg: 'https://avatars2.githubusercontent.com/u/37123351?v=4',
+  repoImg: 'https://avatars3.githubusercontent.com/u/69631?v=4',
   createdAt: '2020-07-10T09:25:50.000Z',
   dependenciesUpdatedAt: '2020-07-10T09:26:13.000Z',
-  repoUrl: 'https://github.com/thozh/react',
+  repoUrl: 'https://github.com/facebook/react',
   packageJson: {
     private: true,
     version: '16.6.1',

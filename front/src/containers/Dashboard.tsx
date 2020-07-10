@@ -5,7 +5,6 @@ import FirstAppButton from '@components/FirstAppButton'
 import RepositoriesList from '@components/RepositoriesList'
 import { useAxiosRequest } from '@hooks/useRequest'
 import React from 'react'
-import DemoItemMotion from '../components/Demo/DemoItem'
 import { Repository } from '../typings/entities'
 import DashboardSkeleton from './DashboardSkeleton'
 
@@ -50,7 +49,6 @@ const Home = () => {
       <Flex flexDirection={['column-reverse', 'column-reverse', 'row']}>
         <Box flex="1">
           <RepositoriesList repositories={repositories} />
-          <DemoItemMotion whileHover={{ scale: 1.02, x: 10 }} />
         </Box>
 
         <Box flex="1">

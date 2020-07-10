@@ -13,7 +13,7 @@ const DemoItem = React.forwardRef((props, ref) => {
   const isConfiguredOpacity = repository.isConfigured ? 1 : 0.5
 
   return (
-    <Link key={repository.id} to={`/repo/${repository.id}`}>
+    <Link key={repository.id} to={`/demo`}>
       <Flex
         ref={ref}
         position="relative"

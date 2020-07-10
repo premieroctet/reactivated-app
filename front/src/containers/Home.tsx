@@ -11,6 +11,8 @@ import {
 import { FaGithub } from 'react-icons/fa'
 import Header from '@components/Header'
 import { Global } from '@emotion/core'
+import DemoItemMotion from '../components/Demo/DemoItem'
+import { Column } from '../components/Flex'
 
 interface Props {
   loading?: boolean
@@ -146,6 +148,17 @@ const Home = ({ loading = false }: Props) => {
               picture="/feat-pr.png"
             />
           </SimpleGrid>
+        </Box>
+
+        <Box my={10}>
+          <Column align="center">
+            <Text color="white" fontSize="xl">
+              Check it out
+            </Text>
+            <Box w="50%" minW="350px">
+              <DemoItemMotion whileHover={{ scale: 1.02, x: 10 }} />
+            </Box>
+          </Column>
         </Box>
 
         <Box my={20} as="section" textAlign="center" color="brand.500">
