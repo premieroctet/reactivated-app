@@ -66,6 +66,15 @@ export interface Repository {
   crawlError: string
 }
 
+export interface Log {
+  /** Id of the object */
+  id: number
+  stackTrace: string
+  name: string
+  failedReason: string
+  data: object
+}
+
 export interface PullRequest {
   /** Id of the object */
   id: number
@@ -73,6 +82,7 @@ export interface PullRequest {
   repository: Repository
   branchName: string
   url: string
+  log: Log
 }
 
 export interface GeneratedRepositoryBulkDto {

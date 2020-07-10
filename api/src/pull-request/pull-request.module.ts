@@ -11,7 +11,7 @@ import { RepositoryModule } from '../repository/repository.module';
     forwardRef(() => RepositoryModule),
   ],
   providers: [PullRequestService],
-  exports: [PullRequestService],
+  exports: [PullRequestService, TypeOrmModule],
   controllers: [PullRequestController],
 })
 export class PullRequestModule {}

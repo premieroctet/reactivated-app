@@ -4,8 +4,10 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Log } from '../log/log.entity';
 import { Repository } from '../repository/repository.entity';
 
 export type Status = 'pending' | 'done' | 'merged' | 'closed' | 'error';
@@ -24,9 +26,13 @@ export class PullRequest {
   status: Status;
 
   @ApiProperty()
-  @ManyToOne(() => Repository, (repository) => repository.pullRequests, {
-    onDelete: 'CASCADE',
-  })
+  @ManyToOne(
+    () => Repository,
+    repository => repository.pullRequests,
+    {
+      onDelete: 'CASCADE',
+    },
+  )
   @JoinColumn({ name: 'repositoryId' })
   repository: Repository;
 
@@ -37,4 +43,12 @@ export class PullRequest {
   @ApiProperty()
   @Column({ nullable: true })
   url: string;
+
+  @OneToOne(
+    type => Log,
+    log => log.pullRequest,
+    { onUpdate: 'CASCADE' },
+  )
+  @JoinColumn()
+  log: Log;
 }

@@ -182,7 +182,7 @@ export class RepositoryController implements CrudController<Repository> {
 
     const repositories = await this.service.getAllRepos();
     const userRepos = repositories.filter((repo: Repository) =>
-      repo.users.some((repoUser) => repoUser.id === user.id),
+      repo.users.some(repoUser => repoUser.id === user.id),
     );
     const nbUserRepos = userRepos.length;
 

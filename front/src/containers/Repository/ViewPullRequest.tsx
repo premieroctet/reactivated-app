@@ -17,6 +17,7 @@ const ViewPullRequest = () => {
       fetcher: () => getPullRequests(id),
     },
   )
+
   const { repository, updateScore } = useRepository()
 
   React.useEffect(() => {
