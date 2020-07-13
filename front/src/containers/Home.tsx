@@ -152,7 +152,7 @@ const Home = ({ loading = false }: Props) => {
 
         <Box my={10}>
           <Column align="center">
-            <Text color="white" fontSize="xl">
+            <Text color="white" fontSize="xl" my={5}>
               Check it out
             </Text>
             <Box w="50%" minW="350px">
