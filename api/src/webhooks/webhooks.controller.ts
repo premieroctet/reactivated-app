@@ -13,6 +13,7 @@ import { PullRequestService } from '../pull-request/pull-request.service';
 import { RepositoryService } from '../repository/repository.service';
 import { UsersService } from '../users/users.service';
 import { WebhookInterceptor } from './webhooks.interceptor';
+import { ConfigService } from '../config/config.service';
 
 @ApiTags('webhooks')
 @Controller('webhooks')
@@ -22,6 +23,7 @@ export class WebhooksController {
     private readonly repositoryService: RepositoryService,
     private readonly userService: UsersService,
     private readonly pullRequestService: PullRequestService,
+    private readonly configService: ConfigService,
     @InjectQueue('dependencies')
     private readonly dependenciesQueue: Queue,
   ) {}
@@ -36,8 +38,14 @@ export class WebhooksController {
       const user = await this.userService.getUser(body.sender.login);
 
       if (user) {
+        const repos = await this.repositoryService.getAllRepos();
+        const nbRepos = repos.filter(repo =>
+          repo.users.some(repoUser => repoUser.id === user.id),
+        ).length;
         let repositories = [];
         let repositoriesRemoved = [];
+        let nbNewRepo = 0;
+
         if (body.action === 'created') {
           repositories = body.repositories;
         } else if (body.action === 'added') {
@@ -45,9 +53,8 @@ export class WebhooksController {
         } else if (body.action === 'removed') {
           repositoriesRemoved = body.repositories_removed;
         }
-
         await Promise.all(
-          repositories.map((repoAdd) => {
+          repositories.map(repoAdd => {
             const newRepo = {
               name: repoAdd.name,
               fullName: repoAdd.full_name,
@@ -59,13 +66,18 @@ export class WebhooksController {
               repoUrl: body.installation.account.html_url,
               users: [user],
             };
-
-            return this.repositoryService.addRepo(newRepo);
+            nbNewRepo++;
+            if (
+              nbNewRepo + nbRepos <=
+              Number(this.configService.get('MAX_REPOS'))
+            ) {
+              return this.repositoryService.addRepo(newRepo);
+            }
           }),
         );
 
         await Promise.all(
-          repositoriesRemoved.map((repoAdd) => {
+          repositoriesRemoved.map(repoAdd => {
             return this.repositoryService.deleteRepo(
               {
                 githubId: repoAdd.id,
