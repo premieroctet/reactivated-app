@@ -18,6 +18,7 @@ const ViewPullRequest = () => {
       refreshInterval: 3000,
     },
   )
+
   const { repository, updateScore } = useRepository()
 
   React.useEffect(() => {

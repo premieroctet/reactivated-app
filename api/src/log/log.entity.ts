@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { PullRequest } from '../pull-request/pull-request.entity';
 
 @Entity()
 export class Log {
@@ -25,4 +26,11 @@ export class Log {
   @ApiProperty()
   @Column({ type: 'json', nullable: true })
   data?: object;
+
+  @OneToOne(
+    type => PullRequest,
+    pullRequest => pullRequest.log,
+    { onDelete: 'CASCADE' },
+  )
+  pullRequest: PullRequest;
 }

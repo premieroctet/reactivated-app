@@ -1,5 +1,14 @@
 import React from 'react'
-import { Box, Stack, Tag, Flex, Text, Link, Spinner } from '@chakra-ui/core'
+import {
+  Box,
+  Stack,
+  Tag,
+  Flex,
+  Text,
+  Link,
+  Spinner,
+  Tooltip,
+} from '@chakra-ui/core'
 import { PullRequest } from '@typings/entities'
 
 type PullRequestItemProps = {
@@ -36,11 +45,27 @@ const PullRequestItem: React.FC<PullRequestItemProps> = ({ pullRequest }) => {
     >
       <Flex flex={1} justifyContent="space-between" direction="row">
         <Stack isInline alignItems="center">
-          <Box
-            bg={getColorFromStatus(pullRequest.status)}
-            size={4}
-            rounded={20}
-          />
+          {pullRequest.log ? (
+            <Tooltip
+              aria-label="error"
+              label={pullRequest.log.failedReason}
+              bg="red.600"
+              placement="top"
+              hasArrow
+            >
+              <Box
+                bg={getColorFromStatus(pullRequest.status)}
+                size={4}
+                rounded={20}
+              />
+            </Tooltip>
+          ) : (
+            <Box
+              bg={getColorFromStatus(pullRequest.status)}
+              size={4}
+              rounded={20}
+            />
+          )}
           <Tag variantColor="gray" size="sm">
             {pullRequest.status === 'pending' ? (
               <>
