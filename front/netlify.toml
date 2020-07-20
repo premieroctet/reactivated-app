@@ -1,6 +1,6 @@
 [context.staging.environment]
   REACT_APP_API_HOST="https://reactivated-app-staging.herokuapp.com"
-  REACT_APP_GITHUB_APP_NAME="dev-reactivated-app"
+  REACT_APP_GITHUB_APP_NAME="staging-reactivated-app"
 
 [context.master.environment]
   REACT_APP_API_HOST="https://reactivated-app.herokuapp.com"
