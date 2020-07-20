@@ -15,8 +15,10 @@ const ViewPullRequest = () => {
     `repositories/${id}/pull-requests`,
     {
       fetcher: () => getPullRequests(id),
+      refreshInterval: 3000,
     },
   )
+
   const { repository, updateScore } = useRepository()
 
   React.useEffect(() => {

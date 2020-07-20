@@ -65,19 +65,29 @@ const Home = ({ loading = false }: Props) => {
           <Header>
             <Button
               onClick={() => {
+                window.location.href = `https://github.com/premieroctet/reactivated-app/`
+              }}
+              variant="link"
+              variantColor="brand"
+              rounded={8}
+              mr={5}
+            >
+              GitHub Project
+            </Button>
+            <Button
+              onClick={() => {
                 window.location.href = `${process.env.REACT_APP_API_HOST}/auth/github`
               }}
-              variant="outline"
               variantColor="brand"
               isLoading={loading}
               rightIcon={FaGithub}
               rounded={8}
             >
-              Sign in with GitHub
+              Login
             </Button>
           </Header>
 
-          <Box as="main">
+          <Box as="main" mb="10rem">
             <SimpleGrid columns={[1, 1, 2]}>
               <Flex alignItems="center" direction="row">
                 <Flex direction="column" fontSize="6xl">
@@ -106,7 +116,7 @@ const Home = ({ loading = false }: Props) => {
                 </Flex>
               </Flex>
               <Flex p={[5, 10, 0]}>
-                <img alt="Reactivated App" height={100} src="/hero.svg" />
+                <img width="100%" alt="Reactivated App" src="/hero.svg" />
               </Flex>
             </SimpleGrid>
           </Box>
@@ -139,16 +149,12 @@ const Home = ({ loading = false }: Props) => {
         </Box>
 
         <Box my={20} as="section" textAlign="center" color="brand.500">
-          <Text color="white" fontSize="3xl" fontWeight="bolder" mb={5}>
-            Your app deserves fresh dependencies
-          </Text>
-
           <Button
             onClick={() => {
               window.location.href = `${process.env.REACT_APP_API_HOST}/auth/github`
             }}
             variant="outline"
-            variantColor="brand.500"
+            variantColor="brand"
             isLoading={loading}
             rightIcon={FaGithub}
             size="lg"

@@ -233,6 +233,14 @@ export class DependenciesQueue {
       if (error.response.status === 422) {
         this.logger.error('Branch reference already exists');
       }
+      await this.logService.savePullRequestLog(
+        {
+          name: `Create new branch`,
+          failedReason: `${error}`,
+          data: JSON.parse(JSON.stringify(error)),
+        },
+        job.data.branchName,
+      );
     }
 
     // Update the files on new branch
@@ -292,6 +300,14 @@ export class DependenciesQueue {
       });
     } catch (error) {
       this.logger.error('Commit files and create PR', error);
+      await this.logService.savePullRequestLog(
+        {
+          name: `Commit files and create PR`,
+          failedReason: `${error}`,
+          data: JSON.parse(JSON.stringify(error)),
+        },
+        job.data.branchName,
+      );
       await this.pullRequestService.updatePullRequest(job.data.branchName, {
         status: 'error',
       });
@@ -321,12 +337,15 @@ export class DependenciesQueue {
 
   @OnQueueFailed()
   async onQueueFailed(job: Job, error: Error) {
-    await this.logService.saveLog({
-      name: `Job failed : ${job.name}`,
-      stackTrace: `${job.stacktrace[0].slice(0, 500)}`,
-      failedReason: `${job.failedReason}`,
-      data: JSON.parse(JSON.stringify(job.data)),
-    });
+    await this.logService.savePullRequestLog(
+      {
+        name: `Job failed : ${job.name}`,
+        stackTrace: `${job.stacktrace[0].slice(0, 500)}`,
+        failedReason: `${job.failedReason}`,
+        data: JSON.parse(JSON.stringify(job.data)),
+      },
+      job.data.branchName,
+    );
 
     this.logger.error(
       `Failed job ${job.id} of type ${job.name}.\n${job.stacktrace}\n$Error : ${error.message}`,
