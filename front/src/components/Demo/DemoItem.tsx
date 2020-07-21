@@ -10,17 +10,16 @@ import { reactRepo } from './model'
 
 const DemoItem = React.forwardRef((props, ref) => {
   const repository = reactRepo
-  const isConfiguredOpacity = repository.isConfigured ? 1 : 0.5
 
   return (
     <Link key={repository.id} to={`/demo`}>
       <Flex
         ref={ref}
         position="relative"
-        cursor={repository.isConfigured ? 'pointer' : 'auto'}
+        cursor="pointer"
         rounded={10}
         shadow="md"
-        bg={'white'}
+        bg="white"
         mb={4}
         px={5}
         py={8}
@@ -34,7 +33,7 @@ const DemoItem = React.forwardRef((props, ref) => {
             alignItems="center"
             justifyContent="space-between"
           >
-            <Row justifyContent="center" opacity={isConfiguredOpacity}>
+            <Row justifyContent="center">
               <Image
                 size={16}
                 borderRadius={40}
@@ -45,24 +44,18 @@ const DemoItem = React.forwardRef((props, ref) => {
                 <Text as="span" fontSize="2xl" fontWeight="semibold">
                   {repository.name}
                 </Text>
-                {repository.framework !== null && repository.isConfigured && (
-                  <FrameworkTag framework={'react'} />
-                )}
+                <FrameworkTag framework="react" />
               </Column>
             </Row>
 
             <Row alignItems="center">
-              {repository.score > 0 && (
-                <>
-                  <LoadScore score={repository.score} />
-                  <IconButton
-                    variant="ghost"
-                    fontSize="3xl"
-                    aria-label="View"
-                    icon="chevron-right"
-                  />
-                </>
-              )}
+              <LoadScore score={repository.score} />
+              <IconButton
+                variant="ghost"
+                fontSize="3xl"
+                aria-label="View"
+                icon="chevron-right"
+              />
             </Row>
           </Flex>
         </Flex>

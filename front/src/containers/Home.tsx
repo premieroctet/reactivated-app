@@ -13,6 +13,7 @@ import Header from '@components/Header'
 import { Global } from '@emotion/core'
 import DemoItemMotion from '../components/Demo/DemoItem'
 import { Column } from '../components/Flex'
+import HeaderLinks from '@components/Header/HeaderLinks'
 
 interface Props {
   loading?: boolean
@@ -65,28 +66,7 @@ const Home = ({ loading = false }: Props) => {
       <Box h="auto" mx={4}>
         <Box maxWidth="60rem" marginX="auto">
           <Header>
-            <Button
-              onClick={() => {
-                window.location.href = `https://github.com/premieroctet/reactivated-app/`
-              }}
-              variant="link"
-              variantColor="brand"
-              rounded={8}
-              mr={5}
-            >
-              GitHub Project
-            </Button>
-            <Button
-              onClick={() => {
-                window.location.href = `${process.env.REACT_APP_API_HOST}/auth/github`
-              }}
-              variantColor="brand"
-              isLoading={loading}
-              rightIcon={FaGithub}
-              rounded={8}
-            >
-              Login
-            </Button>
+            <HeaderLinks loading={loading} />
           </Header>
 
           <Box as="main" mb="10rem">

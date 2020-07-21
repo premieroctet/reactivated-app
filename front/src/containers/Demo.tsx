@@ -1,22 +1,16 @@
-// @ts-nocheck
 import {
   Box,
   Button,
   Code,
   Flex,
-  FormLabel,
-  Switch,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
   Tooltip,
   useClipboard,
+  Stack,
+  Badge,
+  DarkMode,
 } from '@chakra-ui/core'
-import DependenciesList from '@components/DependenciesList'
 import { DependenciesProvider } from '@contexts/DependenciesContext'
-import { getNewScore, refinedDependency } from '@utils/dependencies'
+import { getNewScore, sortDependencies } from '@utils/dependencies'
 import React, { useMemo, useState } from 'react'
 import { DiGitPullRequest } from 'react-icons/di'
 import { useLocation } from 'react-router'
@@ -24,31 +18,11 @@ import Container from '../components/Container'
 import AppHeaderDemo from '../components/Demo/AppHeaderDemo'
 import { reactRepo } from '../components/Demo/model'
 import Header from '../components/Header'
-import { FaGithub } from 'react-icons/fa'
-
-function SelectAllButton({
-  selectAllChecked,
-  onSelectAllDependencies,
-}: {
-  selectAllChecked: boolean
-  onSelectAllDependencies: () => void
-}) {
-  return (
-    <Flex justifyContent="flex-end" alignItems="center" flexDirection="row">
-      <FormLabel cursor="pointer" htmlFor="select-all">
-        Update all dependencies
-      </FormLabel>
-      <Switch
-        color="secondary"
-        size="sm"
-        id="select-all"
-        isChecked={selectAllChecked}
-        onChange={onSelectAllDependencies}
-      />
-    </Flex>
-  )
-}
-const SelectAll = React.memo(SelectAllButton)
+import { SelectAll } from './Repository/ViewRepo'
+import { Tab } from '@components/AppBar'
+import { Global } from '@emotion/core'
+import HeaderLinks from '@components/Header/HeaderLinks'
+import DependencyTabs from '@components/DependencyTabs'
 
 function Demo() {
   const repository = reactRepo
@@ -56,14 +30,15 @@ function Demo() {
   const [selectedDependencies, setSelectedDependencies] = useState<{
     [key: string]: 'stable' | 'latest'
   }>({})
-  const outdatedCount = 46
+
+  const outdatedCount = repository.dependencies!.deps.length
   const nbSelectedDependencies = Object.keys(selectedDependencies).length
   const hasSelectedDependencies = Object.keys(selectedDependencies).length > 0
-  const [score, setScore] = React.useState(0)
+  const [score, setScore] = React.useState(repository.score)
 
   React.useEffect(() => {
-    setScore(repository.score)
-  }, [repository.score])
+    window.scrollTo(0, 0)
+  }, [])
 
   React.useEffect(() => {
     const newScore = getNewScore(
@@ -72,7 +47,7 @@ function Demo() {
       repository.packageJson,
     )
     setScore(newScore)
-  }, [nbSelectedDependencies, repository])
+  }, [nbSelectedDependencies, repository, outdatedCount])
 
   const items = Object.keys(selectedDependencies).map(
     (key) =>
@@ -87,31 +62,10 @@ function Demo() {
   const commandeLine = `yarn upgrade ${items.join(' ')}`
   const { onCopy, hasCopied } = useClipboard(commandeLine)
 
-  const { dependencies, devDependencies } = useMemo(() => {
-    let dependencies: Dependency[] = []
-    let devDependencies: Dependency[] = []
-
-    repository?.dependencies?.deps.forEach(
-      (dep: DependencyArray | PrefixedDependency) => {
-        if (Array.isArray(dep)) {
-          const depObject = refinedDependency(dep)
-          depObject.type === 'dependencies'
-            ? dependencies.push(depObject)
-            : devDependencies.push(depObject)
-        } else {
-          const prefix = Object.keys(dep)[0]
-          const type = dep[prefix][0][4]
-          dependencies = [
-            ...dependencies,
-            ...dep[prefix]
-              .filter((dep) => dep[4] === type)
-              .map((dep) => ({ ...refinedDependency(dep), prefix })),
-          ]
-        }
-      },
-    )
-    return { dependencies, devDependencies }
-  }, [repository])
+  const { dependencies, devDependencies } = useMemo(
+    () => sortDependencies(repository!),
+    [repository],
+  )
 
   const onDependencySelected = React.useCallback(
     (checked: boolean, name: string, type: 'stable' | 'latest') => {
@@ -129,22 +83,6 @@ function Demo() {
     },
     [setSelectedDependencies],
   )
-
-  const TabListItems = ({
-    dependencies,
-    devDependencies,
-  }: {
-    dependencies: Dependency[]
-    devDependencies: Dependency[]
-  }) => {
-    return (
-      <TabList>
-        <Tab disabled={dependencies.length === 0}>Dependencies</Tab>
-        <Tab disabled={devDependencies.length === 0}>Dev Dependencies </Tab>
-      </TabList>
-    )
-  }
-  const DependenciesTypeTabs = React.memo(TabListItems)
 
   const onSelectAllDependencies = React.useCallback(() => {
     if (selectAllChecked) {
@@ -174,33 +112,22 @@ function Demo() {
 
   return (
     <>
-      <Box bg="#24294e" px={3}>
-        <Box maxWidth="60rem" marginX="auto">
-          <Header>
-            <Button
-              onClick={() => {
-                window.location.href = `https://github.com/premieroctet/reactivated-app/`
-              }}
-              variant="link"
-              variantColor="brand"
-              rounded={8}
-              mr={5}
-            >
-              GitHub Project
-            </Button>
-            <Button
-              onClick={() => {
-                window.location.href = `${process.env.REACT_APP_API_HOST}/auth/github`
-              }}
-              variantColor="brand"
-              rightIcon={FaGithub}
-              rounded={8}
-            >
-              Login
-            </Button>
-          </Header>
+      <Global
+        styles={{
+          body: {
+            backgroundColor: '#f5f9f9',
+          },
+        }}
+      />
+      <DarkMode>
+        <Box bg="#24294e" px={3}>
+          <Box maxWidth="60rem" marginX="auto">
+            <Header>
+              <HeaderLinks loading={false} />
+            </Header>
+          </Box>
         </Box>
-      </Box>
+      </DarkMode>
 
       <Box
         backgroundColor="#24294e"
@@ -219,32 +146,33 @@ function Demo() {
       >
         <AppHeaderDemo repository={repository} score={score} />
 
-        {/* bug bizarre */}
-        {/* <Stack isInline>
-        <Tab isActive>
-          <>
-            Outdated Dependencies{' '}
-            <Badge fontSize="xs" variantColor="red">
-              {outdatedCount}
-            </Badge>
-          </>
-        </Tab>
-        <Tab>
-          <>
-            Pull Requests
-            <Badge
-              animate
-              zIndex={30}
-              pos={'relative'}
-              fontSize={'xs'}
-              variantColor="brand"
-              top={0}
-            >
-              0
-            </Badge>
-          </>
-        </Tab>
-      </Stack> */}
+        <Stack isInline>
+          <Tab isActive>
+            <>
+              Outdated Dependencies{' '}
+              <Badge fontSize="xs" variantColor="red">
+                {outdatedCount}
+              </Badge>
+            </>
+          </Tab>
+
+          <Tooltip
+            hasArrow
+            aria-label="Disable in demo"
+            label="Disable in demo"
+            placement="bottom"
+            shouldWrapChildren
+          >
+            <Tab>
+              <>
+                Pull Requests
+                <Badge zIndex={30} fontSize="xs" variantColor="brand" top={0}>
+                  0
+                </Badge>
+              </>
+            </Tab>
+          </Tooltip>
+        </Stack>
 
         <Container
           roundedTopLeft={location.pathname.includes('pull-requests') ? 10 : 0}
@@ -280,65 +208,40 @@ function Demo() {
             selectAllChecked={selectAllChecked}
             onSelectAllDependencies={onSelectAllDependencies}
           />
+
           <DependenciesProvider>
-            {repository &&
-              repository.dependencies &&
-              repository.dependencies.deps && (
-                <Box w={['100%', 'unset']} minW={['100%']} mt={4}>
-                  <Tabs
-                    defaultIndex={dependencies.length === 0 ? 1 : 0}
-                    isFitted
-                    variantColor="secondary"
-                    variant="line"
-                  >
-                    <DependenciesTypeTabs
-                      dependencies={dependencies}
-                      devDependencies={devDependencies}
-                    />
+            <Box w={['100%', 'unset']} minW={['100%']} mt={4}>
+              <DependencyTabs
+                dependencies={dependencies}
+                devDependencies={devDependencies}
+                selectedDependencies={selectedDependencies}
+                onDependencySelected={onDependencySelected}
+              />
 
-                    <TabPanels>
-                      <TabPanel>
-                        <DependenciesList
-                          dependencies={dependencies}
-                          selectedDependencies={selectedDependencies}
-                          onDependencySelected={onDependencySelected}
-                        />
-                      </TabPanel>
-                      <TabPanel>
-                        <DependenciesList
-                          onDependencySelected={onDependencySelected}
-                          dependencies={devDependencies}
-                          selectedDependencies={selectedDependencies}
-                        />
-                      </TabPanel>
-                    </TabPanels>
-                  </Tabs>
-
-                  <Flex
-                    zIndex={10}
-                    pos={hasSelectedDependencies ? 'sticky' : 'inherit'}
-                    bottom={0}
-                    flexDir="row-reverse"
+              <Flex
+                zIndex={10}
+                pos={hasSelectedDependencies ? 'sticky' : 'inherit'}
+                bottom={0}
+                flexDir="row-reverse"
+              >
+                <Tooltip
+                  hasArrow
+                  aria-label="Disable in demo"
+                  label="Disable in demo"
+                  placement="left"
+                  shouldWrapChildren
+                >
+                  <Button
+                    leftIcon={DiGitPullRequest}
+                    variantColor="gray"
+                    isDisabled={true}
+                    m={2}
                   >
-                    <Tooltip
-                      hasArrow
-                      aria-label="Disabled in demo"
-                      label="Disabled in demo"
-                      placement="left"
-                      shouldWrapChildren
-                    >
-                      <Button
-                        leftIcon={DiGitPullRequest}
-                        variantColor="gray"
-                        isDisabled={true}
-                        m={2}
-                      >
-                        Create my Pull Request
-                      </Button>
-                    </Tooltip>
-                  </Flex>
-                </Box>
-              )}
+                    Create my Pull Request
+                  </Button>
+                </Tooltip>
+              </Flex>
+            </Box>
           </DependenciesProvider>
         </Container>
       </Box>
