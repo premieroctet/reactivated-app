@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from 'react'
 import AuthApp from '@containers/Layout/AuthApp'
 import { useAuth } from '@contexts/AuthContext'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import Demo from './containers/Demo'
 
 const GithubRedirect = lazy(() => import('./containers/GithubRedirect'))
 const Home = lazy(() => import('./containers/Home'))
@@ -14,6 +15,7 @@ function App() {
       <BrowserRouter>
         <Switch>
           <Route exact path="/redirect" component={GithubRedirect} />
+          <Route path="/demo" exact component={Demo} />
           <Route
             path="/"
             render={() => {

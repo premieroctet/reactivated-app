@@ -3,7 +3,7 @@ import {
   FrameworkTag,
 } from '../repository/repository.entity';
 
-export const getDependenciesCount = (packageJson) => {
+export const getDependenciesCount = packageJson => {
   let totalDependencies = 0;
   if (packageJson?.dependencies) {
     totalDependencies += Object.keys(packageJson.dependencies).length;
@@ -14,7 +14,7 @@ export const getDependenciesCount = (packageJson) => {
   return totalDependencies;
 };
 
-export const getNbOutdatedDeps = (dependencies) => {
+export const getNbOutdatedDeps = dependencies => {
   let nbOutdatedDevDeps = 0,
     nbOutdatedDeps = 0;
   for (const dep of dependencies) {
@@ -52,21 +52,25 @@ export const getFrameworkFromPackageJson = (packageJson): FrameworkTag => {
   };
 
   let mainFramework = null;
-  Object.keys(frameworkPriorityMap).forEach((framework) => {
-    if (dependencies[framework] && mainFramework === null) {
-      mainFramework = framework;
-    }
+  try {
+    Object.keys(frameworkPriorityMap).forEach(framework => {
+      if (dependencies[framework] && mainFramework === null) {
+        mainFramework = framework;
+      }
 
-    if (
-      dependencies[framework] &&
-      mainFramework &&
-      frameworkPriorityMap[framework] > frameworkPriorityMap[mainFramework]
-    ) {
-      mainFramework = framework;
-    }
-  });
+      if (
+        dependencies[framework] &&
+        mainFramework &&
+        frameworkPriorityMap[framework] > frameworkPriorityMap[mainFramework]
+      ) {
+        mainFramework = framework;
+      }
+    });
 
-  return frameworkToLabelMap[mainFramework];
+    return frameworkToLabelMap[mainFramework];
+  } catch (error) {
+    console.error('No framework found');
+  }
 };
 
 type packageInfo = {
@@ -93,7 +97,7 @@ export const parseOutdatedPackage = (outdatedDep): packageInfo => {
   return parsedPackage;
 };
 
-export const getPrefixedDependencies = (outdatedDeps) => {
+export const getPrefixedDependencies = outdatedDeps => {
   const dependenciesByFirstLetter = {};
   for (const dep of outdatedDeps) {
     const { packageLabel } = parseOutdatedPackage(dep);
@@ -175,7 +179,7 @@ export const getPrefixedDependencies = (outdatedDeps) => {
       "@vue/cli-plugin-eslint": "^4.3.0",
       "@vue/cli-service": "^4.3.0",
     */
-export const getUpgradedDiff = (diffLines) => {
+export const getUpgradedDiff = diffLines => {
   const upgradedDiff = {};
   if (diffLines.length > 6) {
     for (let i = 5; i < diffLines.length; i++) {

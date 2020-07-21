@@ -1,12 +1,12 @@
-import React from 'react'
-import { Text, Flex, Badge, Box, Image } from '@chakra-ui/core'
 import * as RepositoriesAPI from '@api/repositories'
+import { Badge, Box, Flex, Image, Text } from '@chakra-ui/core'
+import Container from '@components/Container'
+import FirstAppButton from '@components/FirstAppButton'
 import RepositoriesList from '@components/RepositoriesList'
 import { useAxiosRequest } from '@hooks/useRequest'
+import React from 'react'
 import { Repository } from '../typings/entities'
-import Container from '@components/Container'
 import DashboardSkeleton from './DashboardSkeleton'
-import FirstAppButton from '@components/FirstAppButton'
 
 export const getMaxRepositories = () => {
   return parseInt(process.env.REACT_APP_MAX_REPOS || '5', 10)

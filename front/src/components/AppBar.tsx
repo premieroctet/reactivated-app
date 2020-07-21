@@ -16,7 +16,7 @@ interface ITabProps {
   isActive?: boolean
 }
 
-const Tab: React.FC<ITabProps & BoxProps> = ({ isActive, ...rest }) => (
+export const Tab: React.FC<ITabProps & BoxProps> = ({ isActive, ...rest }) => (
   <Box
     cursor="pointer"
     pos="relative"
