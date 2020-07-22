@@ -1,11 +1,9 @@
-![image](https://user-images.githubusercontent.com/1102595/81568342-ea672c00-939d-11ea-8cd2-98270005822e.png)
+# [![image](https://user-images.githubusercontent.com/1102595/81568342-ea672c00-939d-11ea-8cd2-98270005822e.png)](https://reactivated.app)
 
 [![prettier][prettier-badge]][prettier-url]
 [![TypeScript][typescript-badge]][typescript-url]
 
-# [Reactivated App](https://reactivated.app) 🔌
-
-Reactivated App is the tool you need to maintain your projects' dependencies up-to-date
+Reactivated.app is an open-source app that scans your JS dependencies every 4 hours and generates a cool sum up.
 
 ## Quick Demo
 
@@ -13,12 +11,12 @@ Reactivated App is the tool you need to maintain your projects' dependencies up-
 
 ## Features
 
-- Support for Node dependencies
-- Add your GitHub repositories
+- Support for NPM dependencies
+- Import your GitHub repositories
 - Visualizing your project's health
 - Detection of the framework used
-- Grouping the different dependencies by common prefix
-- **beta** Automated PR in a new branch with the up-to-date dependencies _(⚠️only supporting yarn.lock : will be created even if there is a package-lock.json)_
+- Grouping the different dependencies by a common prefix
+- **Beta** Automated PR in a new branch with the up-to-date dependencies _(⚠️only supporting yarn.lock : will be created even if there is a package-lock.json)_
 
 ## Getting started
 
@@ -33,7 +31,8 @@ Reactivated App is the tool you need to maintain your projects' dependencies up-
 #### Installation
 
 ```bash
-$ npm install
+$ cd api
+$ yarn
 ```
 
 ```bash
@@ -42,57 +41,22 @@ cp .env.dist .env.dev
 
 #### Running the app
 
-<details>
-    <summary>
-    Without docker
-    </summary>
+```
+# watch mode
+$ yarn start:dev
 
-    # fill in the typeorm credentials and copy .env file
-    cp api/.env.dist api/.env.dev
+# start workers
+yarn start:worker
 
-    # development
-    $ yarn start
+# handle GitHub webhooks with Smee
+$ yarn smee
+```
 
-    # watch mode
-    $ yarn start:dev
-
-    # production mode
-    $ yarn start:prod
-
-</details>
-
-<details>
-    <summary>
-    With Docker
-    </summary>
-
-<code>
-<p>
-    Update your `.env` file for the following keys:
-</p>
-
-    TYPEORM_HOST=mysql
-    TYPEORM_USERNAME=admin
-    TYPEORM_PASSWORD=password
-    TYPEORM_DATABASE=reactivated
-
-<p>
-    Then 
-</p>
-
-    # Run with --build for the first run
-    docker-compose up --build
-
-</code>
-
-</details>
-
-The API should be available on : [http://localhost:3000](http://localhost:3000)
-[http://localhost:3000/swagger](http://localhost:3000/swagger)
+The API should be available on [http://localhost:3000](http://localhost:3000) (the swagger doc is available on [http://localhost:3000/swagger](http://localhost:3000/swagger))
 
 #### Webhook (GitHub API)
 
-Sends the payload from GitHub API to our local dev API.
+Forward the payload from GitHub API to our local dev API thanks to [Smee](https://github.com/probot/smee.io).
 
 ```bash
 smee --url https://smee.io/BVk7Sqmgj7fXXcV --path /webhooks/consume --port 3000
@@ -116,8 +80,9 @@ $ npm run test:cov
 #### Installation and .env config
 
 ```bash
-cp front/.env.dist front/.env
-yarn install
+cd front
+cp f.env.dist .env
+yarn
 ```
 
 #### Run the app
@@ -130,7 +95,7 @@ The app should be available on [http://localhost:3007](http://localhost:3007)
 
 #### Webpack config
 
-We use `customize-cra` to add some additionnal configuration to Webpack.
+We use `customize-cra` to add some additional configuration to Webpack.
 One of those configuration is `aliases`. Whenever creating a new folder in the src folder, make sure it's correctly configured in the Webpack configuration.
 
 #### Build the app
@@ -141,7 +106,7 @@ yarn build
 
 ---
 
-## Built with
+## 💪 Built with
 
 We use TypeScript ❤️ for static typing
 
@@ -156,7 +121,7 @@ We use TypeScript ❤️ for static typing
 
 - [Create React App](https://github.com/facebook/create-react-app)
 - [Chakra UI](https://chakra-ui.com/)
-- [Axios](https://github.com/axios/axios)
+- [SWR](https://github.com/vercel/swr)
 - [Framer motion](https://www.framer.com/motion/) for custom animations
 
 ## Contributing

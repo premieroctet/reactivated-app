@@ -51,7 +51,6 @@ const DemoItem = React.forwardRef((props, ref) => {
             <Row alignItems="center">
               <LoadScore score={repository.score} />
               <IconButton
-                variant="ghost"
                 fontSize="3xl"
                 aria-label="View"
                 icon="chevron-right"
