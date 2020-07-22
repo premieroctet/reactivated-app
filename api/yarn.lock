@@ -326,10 +326,10 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@nestjs/bull@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@nestjs/bull/-/bull-0.1.1.tgz#538131aa2e1df45e7b0dc4bbc4a3f4f8ab0d9505"
-  integrity sha512-E7NA2ukUbeBJZIH5d1HufCmOmH63ZjlG96XQEr8BWgZpgHk38M3V5sukhBnPLL8fHvBYxZnaKpDbGfXRX8VlPQ==
+"@nestjs/bull@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@nestjs/bull/-/bull-0.1.2.tgz#26422a7d97020ba5132f6efc6731b8631480c5e0"
+  integrity sha512-mg0CmBLs+tVZAkNkXy8/DJ/O7JdPRyw7QblCoaKw7ndqbJ+wJqioi8BLwSg0nfobd1xcupsozkoEaPM0zTSPJg==
 
 "@nestjs/cli@^6.9.0":
   version "6.12.2"
