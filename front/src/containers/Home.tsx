@@ -6,7 +6,8 @@ import {
   DarkMode,
   Flex,
   Stack,
-  SimpleGrid,
+  Image,
+  Link,
 } from '@chakra-ui/core'
 import { FaGithub } from 'react-icons/fa'
 import Header from '@components/Header'
@@ -14,6 +15,7 @@ import { Global } from '@emotion/core'
 import DemoItemMotion from '../components/Demo/DemoItem'
 import { Column } from '../components/Flex'
 import HeaderLinks from '@components/Header/HeaderLinks'
+import { useHistory } from 'react-router'
 
 interface Props {
   loading?: boolean
@@ -27,7 +29,7 @@ interface ICardProps {
 
 const Card: React.FC<ICardProps> = ({ title, bullet, picture }) => (
   <Stack spacing={4} direction="column">
-    <Flex fontWeight="600">
+    <Flex color="black" fontWeight="600">
       <Box
         mr={2}
         bg="brand.500"
@@ -54,6 +56,8 @@ const Card: React.FC<ICardProps> = ({ title, bullet, picture }) => (
 )
 
 const Home = ({ loading = false }: Props) => {
+  const history = useHistory()
+
   return (
     <DarkMode>
       <Global
@@ -63,98 +67,126 @@ const Home = ({ loading = false }: Props) => {
           },
         }}
       />
-      <Box h="auto" mx={4}>
+      <Box h="auto">
         <Box maxWidth="60rem" marginX="auto">
           <Header>
             <HeaderLinks loading={loading} />
           </Header>
 
-          <Box as="main" mb="10rem">
-            <SimpleGrid columns={[1, 1, 2]}>
-              <Flex alignItems="center" direction="row">
-                <Flex direction="column" fontSize="6xl">
-                  <Text fontWeight="extrabold" color="white">
-                    <Text as="span" color="brand.500">
-                      React
-                    </Text>
-                    ivated
-                  </Text>
-                  <Flex mt={-10} alignItems="center" justifyContent="flex-end">
-                    <Text
-                      mr={2}
-                      fontSize="3xl"
-                      fontWeight="extrabold"
-                      color="white"
-                    >
-                      ⬤
-                    </Text>
-                    <Text fontWeight="extrabold" color="white">
-                      app
-                    </Text>
-                  </Flex>
-                  <Text textAlign="right" color="white" fontSize="2xl">
-                    Keep your JS app <b>up to date</b>
-                  </Text>
-                </Flex>
-              </Flex>
-              <Flex p={[5, 10, 0]}>
-                <img width="100%" alt="Reactivated App" src="/hero.svg" />
-              </Flex>
-            </SimpleGrid>
+          <Box as="main" mb={10}>
+            <Flex direction="column" alignItems="center">
+              <Text
+                mt={10}
+                textAlign="center"
+                color="white"
+                fontSize="5xl"
+                fontWeight="bold"
+              >
+                Keep your JS apps up to date! ✨
+              </Text>
+              <Text
+                as="div"
+                maxWidth="40rem"
+                textAlign="center"
+                color="whiteAlpha.800"
+                fontSize="2xl"
+              >
+                <Text as="span" color="white">
+                  Reactivated.app
+                </Text>{' '}
+                is an open-source app that scans your JS dependencies every 4
+                hours and generates{' '}
+                <Link textDecoration="underline" color="brand.500" href="/demo">
+                  a cool sum up
+                </Link>
+                .
+              </Text>
+            </Flex>
+
+            <Flex my={10} justifyContent="center">
+              <Button
+                onClick={() => {
+                  history.push('/demo')
+                }}
+                variant="outline"
+                variantColor="brand"
+                rounded={8}
+                mr={5}
+                size="lg"
+              >
+                See Example
+              </Button>
+              <Button
+                onClick={() => {
+                  window.location.href = `${process.env.REACT_APP_API_HOST}/auth/github`
+                }}
+                isLoading={loading}
+                variantColor="brand"
+                rightIcon={FaGithub}
+                rounded={8}
+                size="lg"
+              >
+                Login with GitHub
+              </Button>
+            </Flex>
           </Box>
-
-          <SimpleGrid
-            columns={[1, 2, 3]}
-            mt={[15, 15, 40]}
-            spacingX={5}
-            spacingY={5}
-            as="section"
-            textAlign="center"
-            color="white"
-          >
-            <Card
-              bullet={1}
-              title="Connect you repo"
-              picture="/feat-repo.png"
-            />
-            <Card
-              bullet={2}
-              title="Get improvements"
-              picture="/feat-improvement.png"
-            />
-            <Card
-              bullet={3}
-              title="Create PR with ease"
-              picture="/feat-pr.png"
-            />
-          </SimpleGrid>
         </Box>
 
-        <Box my={10}>
-          <Column align="center">
-            <Text color="white" fontSize="xl" my={5}>
-              Check it out
-            </Text>
-            <Box w="50%" minW="350px">
-              <DemoItemMotion whileHover={{ scale: 1.02, x: 10 }} />
+        <Box pb={10} pos="relative" backgroundColor="#e2e8f0">
+          <Box
+            position="relative"
+            zIndex={1}
+            pt={4}
+            maxWidth="60rem"
+            marginX="auto"
+          >
+            <Box width="100%" display="flex" justifyContent="center">
+              <Image
+                alt="Reactivated.app UI"
+                width="90%"
+                shadow="lg"
+                src="/p4.png"
+              />
             </Box>
-          </Column>
+            <Box my={10}>
+              <Column align="center">
+                <Text
+                  borderBottom="6px solid #43ee9c"
+                  fontWeight="bold"
+                  fontSize="4xl"
+                  my={5}
+                >
+                  Curious? Check It Out:
+                </Text>
+                <Box w="60%" minW="400px">
+                  <DemoItemMotion whileHover={{ scale: 1.02, x: 10 }} />
+                </Box>
+              </Column>
+            </Box>
+          </Box>
+          <Box
+            zIndex={0}
+            backgroundColor="#24294e"
+            position="absolute"
+            top={0}
+            left={0}
+            right={0}
+            height="140px"
+          />
         </Box>
+      </Box>
 
-        <Box my={20} as="section" textAlign="center" color="brand.500">
-          <Button
-            onClick={() => {
-              window.location.href = `${process.env.REACT_APP_API_HOST}/auth/github`
-            }}
-            variant="outline"
-            variantColor="brand"
-            isLoading={loading}
-            rightIcon={FaGithub}
-            size="lg"
-            rounded={8}
+      <Box py={6} color="white" as="footer">
+        <Box textAlign="center" maxWidth="60rem" marginX="auto">
+          Developped with ☕️ by{' '}
+          <Link
+            href="https://premieroctet.com"
+            isExternal
+            textDecoration="underline"
+            color="brand.500"
           >
-            Add your repo now
-          </Button>
+            Premier Octet
+          </Link>
         </Box>
       </Box>
     </DarkMode>

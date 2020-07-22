@@ -4,12 +4,12 @@ export const reactRepo: Repository = {
   id: 10,
   name: 'reactjs.org',
   fullName: 'facebook/reactjs.org',
-  githubId: '11111111',
-  installationId: '1111',
+  githubId: '42',
+  installationId: '42',
   author: 'facebook',
   repoImg: 'https://avatars0.githubusercontent.com/u/6412038?s=200&v=4',
   createdAt: '2020-07-10T09:25:50.000Z',
-  dependenciesUpdatedAt: '2020-07-10T09:26:13.000Z',
+  dependenciesUpdatedAt: '2020-07-21T09:26:13.000Z',
   repoUrl: 'https://github.com/facebook/reactjs.org',
   packageJson: {
     dependencies: {
@@ -77,7 +77,7 @@ export const reactRepo: Repository = {
       [
         '@babel/preset-flow',
         '7.8.3',
-        '7.10.4',
+        '7.10.',
         '7.10.4',
         'devDependencies',
         'https://github.com/babel/babel#readme',
@@ -92,7 +92,7 @@ export const reactRepo: Repository = {
       ],
       [
         'eslint',
-        '4.19.1',
+        '4.19.0',
         '4.19.1',
         '7.5.0',
         'dependencies',
@@ -415,7 +415,7 @@ export const reactRepo: Repository = {
   branch: '16.8.6',
   path: '/',
   isConfigured: true,
-  score: 43,
+  score: 24,
   framework: 'react',
   hasYarnLock: true,
   crawlError: '',
