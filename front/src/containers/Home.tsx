@@ -1,14 +1,5 @@
 import React from 'react'
-import {
-  Button,
-  Text,
-  Box,
-  DarkMode,
-  Flex,
-  Stack,
-  Image,
-  Link,
-} from '@chakra-ui/core'
+import { Button, Text, Box, DarkMode, Flex, Image, Link } from '@chakra-ui/core'
 import { FaGithub } from 'react-icons/fa'
 import Header from '@components/Header'
 import { Global } from '@emotion/core'
@@ -26,34 +17,6 @@ interface ICardProps {
   bullet: number
   picture: string
 }
-
-const Card: React.FC<ICardProps> = ({ title, bullet, picture }) => (
-  <Stack spacing={4} direction="column">
-    <Flex color="black" fontWeight="600">
-      <Box
-        mr={2}
-        bg="brand.500"
-        width={6}
-        height={6}
-        rounded={100}
-        fontWeight="bold"
-        color="#24294e"
-      >
-        {bullet}
-      </Box>
-      {title}
-    </Flex>
-    <Box
-      overflow="hidden"
-      border="1px solid white"
-      height={40}
-      rounded={10}
-      bg="#b4b5bc"
-      width="100%"
-      bgImage={`url(${picture})`}
-    ></Box>
-  </Stack>
-)
 
 const Home = ({ loading = false }: Props) => {
   const history = useHistory()
@@ -82,7 +45,7 @@ const Home = ({ loading = false }: Props) => {
                 fontSize="5xl"
                 fontWeight="bold"
               >
-                Keep your JS apps up to date! ✨
+                Keep your JS apps up to date!
               </Text>
               <Text
                 as="div"
@@ -178,7 +141,11 @@ const Home = ({ loading = false }: Props) => {
 
       <Box py={6} color="white" as="footer">
         <Box textAlign="center" maxWidth="60rem" marginX="auto">
-          Developped with ☕️ by{' '}
+          Developped with{' '}
+          <span role="img" aria-labelledby="coffee">
+            ☕️
+          </span>{' '}
+          by{' '}
           <Link
             href="https://premieroctet.com"
             isExternal
