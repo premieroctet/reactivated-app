@@ -30,7 +30,7 @@
     "test": "react-app-rewired test",
     "eject": "react-scripts eject",
     "typescheck": "tsc --noEmit --jsx react --skipLibCheck",
-    "get-types": "swagger-typescript-api -p http://localhost:3000/swagger-json -o ./src/typings -n entities.d.ts --no-client && prettier --write ./src/typings/entities.d.ts"
+    "get-types": "swagger-typescript-api -p http://localhost:3000/swagger-json -o ./src/typings -n entities2.d.ts --no-client && prettier --write ./src/typings/entities2.d.ts"
   },
   "eslintConfig": {
     "extends": "react-app"

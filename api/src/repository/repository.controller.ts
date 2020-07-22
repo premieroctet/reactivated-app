@@ -34,6 +34,7 @@ import { User } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
 import { Repository } from './repository.entity';
 import { RepositoryService } from './repository.service';
+import e = require('express');
 
 @Crud({
   model: {
@@ -182,7 +183,7 @@ export class RepositoryController implements CrudController<Repository> {
 
     const repositories = await this.service.getAllRepos();
     const userRepos = repositories.filter((repo: Repository) =>
-      repo.users.some((repoUser) => repoUser.id === user.id),
+      repo.users.some(repoUser => repoUser.id === user.id),
     );
     const nbUserRepos = userRepos.length;
 

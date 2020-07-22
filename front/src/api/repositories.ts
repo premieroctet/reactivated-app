@@ -18,7 +18,9 @@ export const getRepository = (repositoryId: string) => {
 }
 
 export const getRepositoryBranches = (fullName: string) => {
-  return GithubAPI.get<GithubBranch[]>(`/repos/${fullName}/branches`)
+  return GithubAPI.get<GithubBranch[]>(`/repos/${fullName}/branches`, {
+    params: { per_page: 100 },
+  })
 }
 
 interface ConfigureRepoParams {

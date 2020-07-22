@@ -10,8 +10,7 @@ const Container = React.forwardRef<HTMLDivElement, BoxProps>(
       mb={6}
       rounded={10}
       shadow="md"
-      py={[2, 5]}
-      px={[2, 5]}
+      p={5}
       children={children}
       {...rest}
     />
