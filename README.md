@@ -3,7 +3,7 @@
 [![prettier][prettier-badge]][prettier-url]
 [![TypeScript][typescript-badge]][typescript-url]
 
-Reactivated.app is an open-source app that scans your JS dependencies every 4 hours and generates a cool sum up.
+Reactivated.app is an open-source app that scans your JS dependencies every 4 hours and generates cool dashboards.
 
 ## Quick Demo
 
@@ -81,7 +81,7 @@ $ npm run test:cov
 
 ```bash
 cd front
-cp f.env.dist .env
+cp .env.dist .env
 yarn
 ```
 

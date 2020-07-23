@@ -35,6 +35,14 @@ export const configureRepository = (params: ConfigureRepoParams) => {
   )
 }
 
+interface SetupRepoParams {
+  data: Pick<Repository, 'branch' | 'path' | 'fullName'>
+}
+
+export const setupRepository = (params: SetupRepoParams) => {
+  return API.post<Repository>(`/repositories/setup`, params.data)
+}
+
 export const findRepositoriesByName = (name: string) => {
   return API.get<Repository[]>(`/repositories`, {
     params: {
