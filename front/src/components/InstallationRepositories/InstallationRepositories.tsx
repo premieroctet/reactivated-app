@@ -6,7 +6,7 @@ import InstallationRepositoriesList from '@components/InstallationRepositoriesLi
 
 interface Props {
   installations: GithubInstallation[]
-  onSelectRepo: (repo: GithubInstallationRepository) => void
+  onSelectRepo: (fullName: string) => void
 }
 
 const InstallationRepositories: React.FC<Props> = ({
@@ -36,7 +36,7 @@ const InstallationRepositories: React.FC<Props> = ({
     const repo = repos.find((repo) => repo.id === id)
 
     if (repo) {
-      onSelectRepo(repo)
+      onSelectRepo(repo.fullName)
     }
   }
 

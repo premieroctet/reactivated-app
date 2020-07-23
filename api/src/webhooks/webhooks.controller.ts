@@ -39,8 +39,8 @@ export class WebhooksController {
 
       if (user) {
         const repos = await this.repositoryService.getAllRepos();
-        const nbRepos = repos.filter(repo =>
-          repo.users.some(repoUser => repoUser.id === user.id),
+        const nbRepos = repos.filter((repo) =>
+          repo.users.some((repoUser) => repoUser.id === user.id),
         ).length;
         let repositories = [];
         let repositoriesRemoved = [];
@@ -53,7 +53,8 @@ export class WebhooksController {
         } else if (body.action === 'removed') {
           repositoriesRemoved = body.repositories_removed;
         }
-        await Promise.all(
+
+        /*await Promise.all(
           repositories.map(repoAdd => {
             const newRepo = {
               name: repoAdd.name,
@@ -74,10 +75,10 @@ export class WebhooksController {
               return this.repositoryService.addRepo(newRepo);
             }
           }),
-        );
+        );*/
 
         await Promise.all(
-          repositoriesRemoved.map(repoAdd => {
+          repositoriesRemoved.map((repoAdd) => {
             return this.repositoryService.deleteRepo(
               {
                 githubId: repoAdd.id,
