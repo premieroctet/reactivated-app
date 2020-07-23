@@ -60,7 +60,7 @@ const Home = ({ loading = false }: Props) => {
                 is an open-source app that scans your JS dependencies every 4
                 hours and generates{' '}
                 <Link textDecoration="underline" color="brand.500" href="/demo">
-                  a cool sum up
+                  cool dashboards
                 </Link>
                 .
               </Text>
@@ -103,7 +103,12 @@ const Home = ({ loading = false }: Props) => {
             maxWidth="60rem"
             marginX="auto"
           >
-            <Box width="100%" display="flex" justifyContent="center">
+            <Box
+              minHeight="30rem"
+              width="100%"
+              display="flex"
+              justifyContent="center"
+            >
               <Image
                 alt="Reactivated.app UI"
                 width="90%"
