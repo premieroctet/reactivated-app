@@ -3,22 +3,15 @@ import {
   NotFoundException,
   Param,
   Post,
-  UseGuards,
   Req,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Crud } from '@nestjsx/crud';
 import { Repository } from '../repository/repository.entity';
 import { RepositoryService } from '../repository/repository.service';
-import { User } from './user.entity';
 import { UsersService } from './users.service';
 
-@Crud({
-  model: {
-    type: User,
-  },
-})
 @Controller('users')
 export class UsersController {
   constructor(
