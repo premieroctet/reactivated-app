@@ -39,8 +39,8 @@ export class WebhooksController {
 
       if (user) {
         const repos = await this.repositoryService.getAllRepos();
-        const nbRepos = repos.filter((repo) =>
-          repo.users.some((repoUser) => repoUser.id === user.id),
+        const nbRepos = repos.filter(repo =>
+          repo.users.some(repoUser => repoUser.id === user.id),
         ).length;
         let repositories = [];
         let repositoriesRemoved = [];
@@ -78,7 +78,7 @@ export class WebhooksController {
         );*/
 
         await Promise.all(
-          repositoriesRemoved.map((repoAdd) => {
+          repositoriesRemoved.map(repoAdd => {
             return this.repositoryService.deleteRepo(
               {
                 githubId: repoAdd.id,
