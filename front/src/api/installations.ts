@@ -21,8 +21,9 @@ type InstallationRepositories = {
 }
 
 export const getUserInstallations = async (): Promise<GithubInstallation[]> => {
+  const timestamp = Math.round(+new Date() / 1000)
   const { data: installationsData } = await GithubAPI.get<Installations>(
-    '/user/installations',
+    `/user/installations?t=${timestamp}`,
   )
 
   const installations = installationsData.installations
@@ -30,7 +31,7 @@ export const getUserInstallations = async (): Promise<GithubInstallation[]> => {
   const repositories = await Promise.all(
     installations.map((installation) => {
       return GithubAPI.get<InstallationRepositories>(
-        `/user/installations/${installation.id}/repositories`,
+        `/user/installations/${installation.id}/repositories?t=${timestamp}`,
       ).then((res) => res.data)
     }),
   )
