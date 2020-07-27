@@ -19,6 +19,7 @@ const HeaderLinks: React.FC<{ loading: boolean }> = ({ loading }) => {
       </Button>
 
       <Button
+        display={['none', 'block']}
         onClick={() => {
           window.location.href = `${process.env.REACT_APP_API_HOST}/auth/github`
         }}
