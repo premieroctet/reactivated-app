@@ -62,18 +62,28 @@ const AppHeader: React.FC<IProps> = ({ repository }) => {
             </Stack>
           )}
 
-          <Link
+          <Stack
+            isInline
+            direction="row"
+            alignItems="center"
+            pt={isSticky ? 0 : 2}
             borderTop="1px dashed"
             borderTopColor="gray.300"
-            pt={isSticky ? 0 : 2}
-            fontSize="sm"
-            display="flex"
-            alignItems="center"
-            isExternal
-            href={`https://github.com/${repository.fullName}`}
+            justifyContent="center"
           >
-            <Box as={FaGithub} mr={1} /> {repository.fullName}
-          </Link>
+            <Link
+              fontSize="sm"
+              display="flex"
+              alignItems="center"
+              isExternal
+              href={`https://github.com/${repository.fullName}`}
+            >
+              <Box as={FaGithub} mr={1} /> {repository.fullName}
+            </Link>
+            <Box mt={1} px={1} rounded={4} bg="gray.100" fontSize="xs">
+              {repository.branch}
+            </Box>
+          </Stack>
         </Box>
       )
     },

@@ -3,20 +3,40 @@
 [![prettier][prettier-badge]][prettier-url]
 [![TypeScript][typescript-badge]][typescript-url]
 
-Reactivated.app is an open-source app that scans your JS dependencies every 4 hours and generates cool dashboards.
+Reactivated.app is an open-source app that scans your JS dependencies every 4 hours and generates [cool dashboards](https://reactivated.app/demo).
 
-## Quick Demo
-
-![Demo](reactivated-app.gif)
+https://reactivated.app
 
 ## Features
 
-- Support for NPM dependencies
-- Import your GitHub repositories
-- Visualizing your project's health
-- Detection of the framework used
-- Grouping the different dependencies by a common prefix
-- **Beta** Automated PR in a new branch with the up-to-date dependencies _(⚠️only supporting yarn.lock : will be created even if there is a package-lock.json)_
+- 🧩 Support for NPM dependencies
+- 🐙 Import your GitHub repositories
+- 🔋 Visualizing your project's health
+- 🔎 Detection of the framework used
+- 💅 Grouping the different dependencies by a common prefix
+- ✨ **Beta** Automated PR in a new branch with the up-to-date dependencies _(⚠️only supporting yarn.lock : will be created even if there is a package-lock.json)_
+
+![Demo](reactivated-app.gif)
+
+---
+
+## 💪 Built with
+
+We use TypeScript ❤️ for static typing
+
+### API
+
+- [NestJS](https://nestjs.com/)
+- [NestJS Crud](https://github.com/nestjsx/crud)
+- [MySQL](https://www.mysql.com/) or [PostgreSQL](https://www.postgresql.org/) for the database
+- [Bull](https://github.com/OptimalBits/bull) with [Redis](https://redis.io/) for computing expensive operations with workers
+
+### Front
+
+- [Create React App](https://github.com/facebook/create-react-app)
+- [Chakra UI](https://chakra-ui.com/)
+- [SWR](https://github.com/vercel/swr)
+- [Framer motion](https://www.framer.com/motion/)
 
 ## Getting started
 
@@ -103,26 +123,6 @@ One of those configuration is `aliases`. Whenever creating a new folder in the s
 ```bash
 yarn build
 ```
-
----
-
-## 💪 Built with
-
-We use TypeScript ❤️ for static typing
-
-### API
-
-- [Nestjs](https://nestjs.com/)
-- [Nestjs Crud](https://github.com/nestjsx/crud)
-- [MySQL](https://www.mysql.com/) or [PostgreSQL](https://www.postgresql.org/) for the database
-- [Bull](https://github.com/OptimalBits/bull) with [Redis](https://redis.io/) for computing expensive operations with the worker process
-
-### Front
-
-- [Create React App](https://github.com/facebook/create-react-app)
-- [Chakra UI](https://chakra-ui.com/)
-- [SWR](https://github.com/vercel/swr)
-- [Framer motion](https://www.framer.com/motion/) for custom animations
 
 ## Contributing
 

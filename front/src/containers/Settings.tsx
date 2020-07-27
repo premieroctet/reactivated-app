@@ -9,6 +9,7 @@ import {
   PopoverTrigger,
   Text,
   useToast,
+  Box,
 } from '@chakra-ui/core'
 import React from 'react'
 import { FaTrash } from 'react-icons/fa'
@@ -57,28 +58,33 @@ const Settings = () => {
       </Container>
 
       <Container>
-        <Popover>
-          <PopoverTrigger>
-            <Button leftIcon={FaTrash} variantColor="red" variant="outline">
-              Delete my account
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent zIndex={4}>
-            <PopoverArrow />
-            <PopoverCloseButton />
-            <PopoverHeader>
-              <Text color="red.500">Confirm deletion</Text>
-            </PopoverHeader>
-            <PopoverBody>
-              Are you sure to delete your account?
-              <Row justify="center" mt={5}>
-                <Button variantColor="red" onClick={onDeleteAccount}>
-                  Confirm
-                </Button>
-              </Row>
-            </PopoverBody>
-          </PopoverContent>
-        </Popover>
+        <Box py={10} textAlign="center">
+          <Text mb={6}>
+            There's not much here... but you can delete your account.
+          </Text>
+          <Popover>
+            <PopoverTrigger>
+              <Button leftIcon={FaTrash} variantColor="red" variant="outline">
+                Delete my account
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent zIndex={4}>
+              <PopoverArrow />
+              <PopoverCloseButton />
+              <PopoverHeader>
+                <Text color="red.500">Confirm deletion</Text>
+              </PopoverHeader>
+              <PopoverBody>
+                Are you sure to delete your account?
+                <Row justify="center" mt={5}>
+                  <Button variantColor="red" onClick={onDeleteAccount}>
+                    Confirm
+                  </Button>
+                </Row>
+              </PopoverBody>
+            </PopoverContent>
+          </Popover>
+        </Box>
       </Container>
     </>
   )
