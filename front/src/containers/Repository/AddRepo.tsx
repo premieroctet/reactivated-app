@@ -10,9 +10,6 @@ import {
   InputRightElement,
   Input,
   Icon,
-  Alert,
-  AlertIcon,
-  AlertDescription,
 } from '@chakra-ui/core'
 import { FaGithub } from 'react-icons/fa'
 import useMessageListener from '@hooks/useMessageListener'
@@ -68,14 +65,14 @@ const Wrapper: React.FC<IWrapperProps> = ({
 const AddRepo = () => {
   const [step, setStep] = useState(Step.PROVIDER_SELECTION)
   const [searchTerm, setSearchTerm] = React.useState('')
+
   let {
     data: installations,
     revalidate: getInstallations,
     isValidating: installationsLoading,
-  } = useRequest<GithubInstallation[]>('installations', {
+  } = useRequest<GithubInstallation[]>(`installations`, {
     fetcher: InstallationsAPI.getUserInstallations,
     initialData: [],
-    revalidateOnFocus: true,
     refreshInterval: 5000,
   })
   const [branches, setBranches] = useState<GithubBranch['name'][]>([])
@@ -222,13 +219,6 @@ const AddRepo = () => {
             >
               Add it from GitHub
             </Button>
-            <Alert mt={8} status="info">
-              <AlertIcon />
-              <AlertDescription>
-                After adding a repository, the GitHub API may take a few seconds
-                before show it
-              </AlertDescription>
-            </Alert>
           </Box>
         </Wrapper>
       ) : (
