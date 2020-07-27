@@ -1,16 +1,19 @@
 import { Repository } from '@typings/entities'
 
+var dependenciesUpdatedAt = new Date()
+dependenciesUpdatedAt.setDate(dependenciesUpdatedAt.getDate() - 2)
+
 export const reactRepo: Repository = {
   id: 10,
   name: 'reactjs.org',
-  fullName: 'facebook/reactjs.org',
+  fullName: 'reactjs/reactjs.org',
   githubId: '42',
   installationId: '42',
   author: 'facebook',
   repoImg: 'https://avatars0.githubusercontent.com/u/6412038?s=200&v=4',
   createdAt: '2020-07-10T09:25:50.000Z',
-  dependenciesUpdatedAt: '2020-07-21T09:26:13.000Z',
-  repoUrl: 'https://github.com/facebook/reactjs.org',
+  dependenciesUpdatedAt: dependenciesUpdatedAt.toISOString(),
+  repoUrl: 'https://github.com/reactjs/reactjs.org',
   packageJson: {
     dependencies: {
       'babel-eslint': '^8.0.1',

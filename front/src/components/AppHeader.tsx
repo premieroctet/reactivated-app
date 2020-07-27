@@ -96,6 +96,7 @@ const AppHeader: React.FC<IProps> = ({ repository }) => {
               <Stack isInline spacing={4}>
                 <Link isExternal href={repository.repoUrl}>
                   <MotionImage
+                    display={['none', 'block']}
                     rounded={100}
                     src={repository.repoImg}
                     alt={repository.name}

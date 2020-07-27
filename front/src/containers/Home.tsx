@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Text, Box, DarkMode, Flex, Image, Link } from '@chakra-ui/core'
+import { Button, Text, Box, DarkMode, Flex, Link } from '@chakra-ui/core'
 import { FaGithub } from 'react-icons/fa'
 import Header from '@components/Header'
 import { Global } from '@emotion/core'
@@ -7,15 +7,10 @@ import DemoItemMotion from '../components/Demo/DemoItem'
 import { Column } from '../components/Flex'
 import HeaderLinks from '@components/Header/HeaderLinks'
 import { useHistory } from 'react-router'
+import Screenshot from '@components/Screenshot'
 
 interface Props {
   loading?: boolean
-}
-
-interface ICardProps {
-  title: string
-  bullet: number
-  picture: string
 }
 
 const Home = ({ loading = false }: Props) => {
@@ -31,7 +26,7 @@ const Home = ({ loading = false }: Props) => {
         }}
       />
       <Box h="auto">
-        <Box maxWidth="60rem" marginX="auto">
+        <Box px={2} maxWidth="60rem" marginX="auto">
           <Header>
             <HeaderLinks loading={loading} />
           </Header>
@@ -42,7 +37,7 @@ const Home = ({ loading = false }: Props) => {
                 mt={10}
                 textAlign="center"
                 color="white"
-                fontSize="5xl"
+                fontSize={['3xl', '5xl']}
                 fontWeight="bold"
               >
                 Keep your JS apps up to date!
@@ -52,7 +47,7 @@ const Home = ({ loading = false }: Props) => {
                 maxWidth="40rem"
                 textAlign="center"
                 color="whiteAlpha.800"
-                fontSize="2xl"
+                fontSize={['xl', '2xl']}
               >
                 <Text as="span" color="white">
                   Reactivated.app
@@ -103,30 +98,21 @@ const Home = ({ loading = false }: Props) => {
             maxWidth="60rem"
             marginX="auto"
           >
-            <Box
-              minHeight="30rem"
-              width="100%"
-              display="flex"
-              justifyContent="center"
-            >
-              <Image
-                alt="Reactivated.app UI"
-                width="90%"
-                shadow="lg"
-                src="/p4.png"
-              />
+            <Box width="100%" display="flex" justifyContent="center">
+              <Screenshot />
             </Box>
             <Box my={10}>
               <Column align="center">
                 <Text
+                  textAlign="center"
                   borderBottom="6px solid #43ee9c"
                   fontWeight="bold"
-                  fontSize="4xl"
+                  fontSize={['2xl', '4xl']}
                   my={5}
                 >
                   Curious? Check It Out:
                 </Text>
-                <Box w="60%" minW="400px">
+                <Box w="60%" minW="370px">
                   <DemoItemMotion whileHover={{ scale: 1.02, x: 10 }} />
                 </Box>
               </Column>
