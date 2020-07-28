@@ -48,7 +48,7 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-proposal-optional-chaining": "^7.10.0",
+    "@babel/plugin-proposal-optional-chaining": "^7.10.4",
     "@types/axios": "^0.14.0",
     "@types/jest": "^26.0.7",
     "@types/jwt-decode": "^2.2.1",
@@ -59,15 +59,15 @@
     "@types/react-router-dom": "^5.1.5",
     "@types/react-stickynode": "^3.0.0",
     "@types/semver": "^7.3.1",
-    "customize-cra": "^0.9.1",
-    "customize-cra-react-refresh": "^1.0.1",
+    "customize-cra": "^1.0.0",
+    "customize-cra-react-refresh": "^1.1.0",
     "husky": "^4.2.5",
-    "lint-staged": "^10.2.6",
+    "lint-staged": "^10.2.11",
     "prettier": "^2.0.5",
     "pretty-quick": "^2.0.1",
     "react-app-rewired": "^2.1.6",
-    "swagger-typescript-api": "^1.8.2",
-    "typescript": "^3.9.3"
+    "swagger-typescript-api": "^1.11.0",
+    "typescript": "^3.9.7"
   },
   "husky": {
     "hooks": {
