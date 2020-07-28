@@ -8,12 +8,12 @@
     "@emotion/styled": "^10.0.27",
     "@rehooks/local-storage": "^2.4.0",
     "axios": "^0.19.2",
-    "date-fns": "^2.14.0",
+    "date-fns": "^2.15.0",
     "emotion-theming": "^10.0.27",
-    "framer-motion": "^2.0.0-beta.72",
+    "framer-motion": "^2.3.0",
     "jwt-decode": "^2.2.0",
     "node-sass": "^4.14.1",
-    "query-string": "^6.12.1",
+    "query-string": "^6.13.1",
     "react": "^16.13.1",
     "react-countup": "^4.3.3",
     "react-dom": "^16.13.1",
@@ -22,7 +22,7 @@
     "react-scripts": "^3.4.1",
     "react-stickynode": "^3.0.3",
     "semver": "^7.3.2",
-    "swr": "^0.2.2"
+    "swr": "^0.2.3"
   },
   "scripts": {
     "start": "PORT=3007 react-app-rewired start",
@@ -48,26 +48,26 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-proposal-optional-chaining": "^7.10.0",
+    "@babel/plugin-proposal-optional-chaining": "^7.10.4",
     "@types/axios": "^0.14.0",
-    "@types/jest": "^25.2.3",
+    "@types/jest": "^26.0.7",
     "@types/jwt-decode": "^2.2.1",
-    "@types/node": "^14.0.5",
-    "@types/react": "^16.9.35",
+    "@types/node": "^14.0.26",
+    "@types/react": "^16.9.43",
     "@types/react-dom": "^16.9.8",
-    "@types/react-router": "^5.1.7",
+    "@types/react-router": "^5.1.8",
     "@types/react-router-dom": "^5.1.5",
     "@types/react-stickynode": "^3.0.0",
-    "@types/semver": "^7.2.0",
-    "customize-cra": "^0.9.1",
-    "customize-cra-react-refresh": "^1.0.1",
+    "@types/semver": "^7.3.1",
+    "customize-cra": "^1.0.0",
+    "customize-cra-react-refresh": "^1.1.0",
     "husky": "^4.2.5",
-    "lint-staged": "^10.2.6",
+    "lint-staged": "^10.2.11",
     "prettier": "^2.0.5",
     "pretty-quick": "^2.0.1",
     "react-app-rewired": "^2.1.6",
-    "swagger-typescript-api": "^1.8.2",
-    "typescript": "^3.9.3"
+    "swagger-typescript-api": "^1.11.0",
+    "typescript": "^3.9.7"
   },
   "husky": {
     "hooks": {
