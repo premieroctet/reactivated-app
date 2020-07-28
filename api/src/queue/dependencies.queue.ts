@@ -72,22 +72,26 @@ export class DependenciesQueue {
         let manifest = null,
           outdatedDeps = [];
 
-        manifest = JSON.parse(stdout.split('\n')[1]);
-        outdatedDeps = manifest.data.body;
-
-        const [nbOutdatedDeps, nbOutdatedDevDeps] = getNbOutdatedDeps(
-          outdatedDeps,
-        );
-
         repository.packageJson = JSON.parse(bufferPackage.toString('utf-8'));
         const totalDependencies = getDependenciesCount(repository.packageJson);
 
-        let score = Math.round(
-          100 -
-            ((nbOutdatedDeps + nbOutdatedDevDeps) / totalDependencies) * 100,
-        );
-        if (score === 0) {
-          score += 1; // Show load bar for the front
+        let score = null;
+        if (stdout === '') {
+          score = 100;
+        } else {
+          manifest = JSON.parse(stdout.split('\n')[1]);
+          outdatedDeps = manifest.data.body;
+
+          const [nbOutdatedDeps, nbOutdatedDevDeps] = getNbOutdatedDeps(
+            outdatedDeps,
+          );
+          score = Math.round(
+            100 -
+              ((nbOutdatedDeps + nbOutdatedDevDeps) / totalDependencies) * 100,
+          );
+          if (score === 0) {
+            score += 1; // Show load bar for the front
+          }
         }
 
         this.logger.log('score : ' + score);
@@ -100,7 +104,6 @@ export class DependenciesQueue {
         repository.framework = getFrameworkFromPackageJson(
           repository.packageJson,
         );
-
         repository.isConfigured = true;
         repository.dependenciesUpdatedAt = new Date();
         repository.crawlError = '';
@@ -108,7 +111,6 @@ export class DependenciesQueue {
           repository.id.toString(),
           repository,
         );
-
         this.logger.log('updated repo : ' + repository.fullName);
         exec(`cd ${tmpPath} && cd .. && rm -rf ./${repositoryId}`);
       } catch (err) {
@@ -329,9 +331,9 @@ export class DependenciesQueue {
   @OnQueueEvent(BullQueueEvents.COMPLETED)
   onCompleted(job: Job) {
     this.logger.log(
-      `Completed job ${job.id} of type ${
-        job.name
-      } with result (${job.finishedOn - job.processedOn} ms)`,
+      `Completed job ${job.id} of type ${job.name} with result (${
+        job.finishedOn - job.processedOn
+      } ms)`,
     );
   }
 
