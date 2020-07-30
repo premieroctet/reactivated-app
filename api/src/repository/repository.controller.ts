@@ -49,6 +49,9 @@ import e = require('express');
       pullRequests: {},
     },
   },
+  routes: {
+    only: ['getManyBase', 'getOneBase', 'deleteOneBase'],
+  },
 })
 @CrudAuth({
   property: 'user',
@@ -74,6 +77,81 @@ export class RepositoryController implements CrudController<Repository> {
 
   get base(): CrudController<Repository> {
     return this;
+  }
+
+  @ApiOperation({
+    summary: 'Setup a repository branch and main path',
+    description: 'Also checks for package.json & yarn.lock existence',
+  })
+  @Post('setup')
+  async setupRepository(@Body() repo: Repository, @Request() req) {
+    const user = await this.usersService.getById(req.user.id);
+    let hasYarnLock = true;
+
+    const response = await this.githubService.getRepository({
+      fullName: repo.fullName,
+      token: user.githubToken,
+    });
+
+    const { data } = response;
+
+    try {
+      await this.githubService.getFile({
+        branch: repo.branch,
+        name: repo.fullName,
+        path: repo.path,
+        token: req.user.githubToken,
+        fileName: 'package.json',
+      });
+
+      try {
+        await this.githubService.getFile({
+          branch: repo.branch,
+          name: repo.fullName,
+          path: repo.path,
+          token: req.user.githubToken,
+          fileName: 'yarn.lock',
+        });
+      } catch (error) {
+        hasYarnLock = false;
+        await this.githubService.getFile({
+          branch: repo.branch,
+          name: repo.fullName,
+          path: repo.path,
+          token: req.user.githubToken,
+          fileName: 'package-lock.json',
+        });
+      }
+    } catch (e) {
+      throw new NotFoundException();
+    }
+
+    const newRepo = {
+      name: data.name,
+      author: data.owner.login,
+      repoImg: data.owner.avatar_url,
+      repoUrl: data.html_url,
+      fullName: data.full_name,
+      githubId: data.id,
+      branch: repo.branch,
+      path: repo.path,
+      createdAt: new Date(),
+      users: [user],
+      hasYarnLock,
+    };
+
+    const repository = await this.service.addRepo(newRepo);
+
+    await this.queue.add('compute_yarn_dependencies', {
+      repositoryFullName: repository.fullName,
+      repositoryId: repository.githubId,
+      githubToken: req.user.githubToken,
+      branch: repository.branch,
+      path: repository.path,
+      hasYarnLock,
+    });
+
+    return repository;
   }
 
   @ApiOperation({
@@ -183,7 +261,7 @@ export class RepositoryController implements CrudController<Repository> {
 
     const repositories = await this.service.getAllRepos();
     const userRepos = repositories.filter((repo: Repository) =>
-      repo.users.some((repoUser) => repoUser.id === user.id),
+      repo.users.some(repoUser => repoUser.id === user.id),
     );
     const nbUserRepos = userRepos.length;
 

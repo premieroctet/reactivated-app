@@ -117,26 +117,28 @@ const RepositoryListItem = memo(
                 {repository.framework !== null && repository.isConfigured ? (
                   <FrameworkTag framework={repository.framework} />
                 ) : (
-                  <div>
-                    Configuration in progress
-                    {Array.from(Array(3).keys()).map((value) => {
-                      return (
-                        <motion.span
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{
-                            ease: 'easeInOut',
-                            duration: 1,
-                            delay: value / 2,
-                            yoyo: Infinity,
-                          }}
-                          key={value}
-                        >
-                          .
-                        </motion.span>
-                      )
-                    })}
-                  </div>
+                  !repository.isConfigured && (
+                    <div>
+                      Configuration in progress
+                      {Array.from(Array(3).keys()).map((value) => {
+                        return (
+                          <motion.span
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{
+                              ease: 'easeInOut',
+                              duration: 1,
+                              delay: value / 2,
+                              yoyo: Infinity,
+                            }}
+                            key={value}
+                          >
+                            .
+                          </motion.span>
+                        )
+                      })}
+                    </div>
+                  )
                 )}
               </Column>
             </Row>

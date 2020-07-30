@@ -72,22 +72,26 @@ export class DependenciesQueue {
         let manifest = null,
           outdatedDeps = [];
 
-        manifest = JSON.parse(stdout.split('\n')[1]);
-        outdatedDeps = manifest.data.body;
-
-        const [nbOutdatedDeps, nbOutdatedDevDeps] = getNbOutdatedDeps(
-          outdatedDeps,
-        );
-
         repository.packageJson = JSON.parse(bufferPackage.toString('utf-8'));
         const totalDependencies = getDependenciesCount(repository.packageJson);
 
-        let score = Math.round(
-          100 -
-            ((nbOutdatedDeps + nbOutdatedDevDeps) / totalDependencies) * 100,
-        );
-        if (score === 0) {
-          score += 1; // Show load bar for the front
+        let score = null;
+        if (stdout === '') {
+          score = 100;
+        } else {
+          manifest = JSON.parse(stdout.split('\n')[1]);
+          outdatedDeps = manifest.data.body;
+
+          const [nbOutdatedDeps, nbOutdatedDevDeps] = getNbOutdatedDeps(
+            outdatedDeps,
+          );
+          score = Math.round(
+            100 -
+              ((nbOutdatedDeps + nbOutdatedDevDeps) / totalDependencies) * 100,
+          );
+          if (score === 0) {
+            score += 1; // Show load bar for the front
+          }
         }
 
         this.logger.log('score : ' + score);
@@ -100,7 +104,6 @@ export class DependenciesQueue {
         repository.framework = getFrameworkFromPackageJson(
           repository.packageJson,
         );
-
         repository.isConfigured = true;
         repository.dependenciesUpdatedAt = new Date();
         repository.crawlError = '';
@@ -108,7 +111,6 @@ export class DependenciesQueue {
           repository.id.toString(),
           repository,
         );
-
         this.logger.log('updated repo : ' + repository.fullName);
         exec(`cd ${tmpPath} && cd .. && rm -rf ./${repositoryId}`);
       } catch (err) {
@@ -233,6 +235,14 @@ export class DependenciesQueue {
       if (error.response.status === 422) {
         this.logger.error('Branch reference already exists');
       }
+      await this.logService.savePullRequestLog(
+        {
+          name: `Create new branch`,
+          failedReason: `${error}`,
+          data: JSON.parse(JSON.stringify(error)),
+        },
+        job.data.branchName,
+      );
     }
 
     // Update the files on new branch
@@ -292,6 +302,14 @@ export class DependenciesQueue {
       });
     } catch (error) {
       this.logger.error('Commit files and create PR', error);
+      await this.logService.savePullRequestLog(
+        {
+          name: `Commit files and create PR`,
+          failedReason: `${error}`,
+          data: JSON.parse(JSON.stringify(error)),
+        },
+        job.data.branchName,
+      );
       await this.pullRequestService.updatePullRequest(job.data.branchName, {
         status: 'error',
       });
@@ -321,12 +339,15 @@ export class DependenciesQueue {
 
   @OnQueueFailed()
   async onQueueFailed(job: Job, error: Error) {
-    await this.logService.saveLog({
-      name: `Job failed : ${job.name}`,
-      stackTrace: `${job.stacktrace[0].slice(0, 500)}`,
-      failedReason: `${job.failedReason}`,
-      data: JSON.parse(JSON.stringify(job.data)),
-    });
+    await this.logService.savePullRequestLog(
+      {
+        name: `Job failed : ${job.name}`,
+        stackTrace: `${job.stacktrace[0].slice(0, 500)}`,
+        failedReason: `${job.failedReason}`,
+        data: JSON.parse(JSON.stringify(job.data)),
+      },
+      job.data.branchName,
+    );
 
     this.logger.error(
       `Failed job ${job.id} of type ${job.name}.\n${job.stacktrace}\n$Error : ${error.message}`,

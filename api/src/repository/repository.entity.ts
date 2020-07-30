@@ -46,9 +46,10 @@ export class Repository {
   name: string;
 
   @ApiProperty({
+    description: "Author and repository's name",
     readOnly: true,
   })
-  @Column()
+  @Column({ unique: true })
   fullName: string;
 
   @ApiProperty({
@@ -92,11 +93,14 @@ export class Repository {
     description: 'URL of the repo',
     readOnly: true,
   })
-  @Column()
+  @Column({ unique: true })
   repoUrl: string;
 
   @ApiProperty()
-  @ManyToMany((user) => User, (user) => user.id)
+  @ManyToMany(
+    user => User,
+    user => user.id,
+  )
   @JoinTable()
   users?: User[];
 
@@ -143,7 +147,10 @@ export class Repository {
   hasYarnLock?: boolean;
 
   @ApiProperty()
-  @OneToMany(() => PullRequest, (pullRequest) => pullRequest.repository)
+  @OneToMany(
+    () => PullRequest,
+    pullRequest => pullRequest.repository,
+  )
   pullRequests?: PullRequest[];
 
   @ApiProperty()

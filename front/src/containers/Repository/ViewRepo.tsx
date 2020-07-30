@@ -10,9 +10,6 @@ import {
   Stack,
   Tab,
   TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
   Tag,
   TagLabel,
   Text,
@@ -20,16 +17,16 @@ import {
   Switch,
   FormLabel,
 } from '@chakra-ui/core'
-import DependenciesList from '@components/DependenciesList'
+import DependencyTabs from '@components/DependencyTabs'
 import { DependenciesProvider } from '@contexts/DependenciesContext'
 import { useRepository } from '@contexts/RepositoryContext'
-import { refinedDependency, getNewScore } from '@utils/dependencies'
+import { getNewScore, sortDependencies } from '@utils/dependencies'
 import React, { useState, useMemo } from 'react'
 import { DiGitPullRequest } from 'react-icons/di'
 import { createUpgradePR } from '../../api/repositories'
 import { Row } from '../../components/Flex'
 
-function SelectAllButton({
+export function SelectAllButton({
   selectAllChecked,
   onSelectAllDependencies,
 }: {
@@ -51,7 +48,24 @@ function SelectAllButton({
     </Flex>
   )
 }
-const SelectAll = React.memo(SelectAllButton)
+
+const TabListItems = ({
+  dependencies,
+  devDependencies,
+}: {
+  dependencies: Dependency[]
+  devDependencies: Dependency[]
+}) => {
+  return (
+    <TabList>
+      <Tab disabled={dependencies.length === 0}>Dependencies</Tab>
+      <Tab disabled={devDependencies.length === 0}>Dev Dependencies </Tab>
+    </TabList>
+  )
+}
+
+export const DependenciesTypeTabs = React.memo(TabListItems)
+export const SelectAll = React.memo(SelectAllButton)
 
 function ViewRepo() {
   const {
@@ -68,6 +82,7 @@ function ViewRepo() {
   }>({})
 
   const nbSelectedDependencies = Object.keys(selectedDependencies).length
+
   React.useEffect(() => {
     const newScore = getNewScore(
       nbSelectedDependencies,
@@ -89,30 +104,10 @@ function ViewRepo() {
   const commandeLine = `yarn upgrade ${items.join(' ')}`
   const { onCopy, hasCopied } = useClipboard(commandeLine)
 
-  const { dependencies, devDependencies } = useMemo(() => {
-    let dependencies: Dependency[] = []
-    let devDependencies: Dependency[] = []
-    repository?.dependencies?.deps.forEach(
-      (dep: DependencyArray | PrefixedDependency) => {
-        if (Array.isArray(dep)) {
-          const depObject = refinedDependency(dep)
-          depObject.type === 'dependencies'
-            ? dependencies.push(depObject)
-            : devDependencies.push(depObject)
-        } else {
-          const prefix = Object.keys(dep)[0]
-          const type = dep[prefix][0][4]
-          dependencies = [
-            ...dependencies,
-            ...dep[prefix]
-              .filter((dep) => dep[4] === type)
-              .map((dep) => ({ ...refinedDependency(dep), prefix })),
-          ]
-        }
-      },
-    )
-    return { dependencies, devDependencies }
-  }, [repository])
+  const { dependencies, devDependencies } = useMemo(
+    () => sortDependencies(repository!),
+    [repository],
+  )
 
   const onDependencySelected = React.useCallback(
     (checked: boolean, name: string, type: 'stable' | 'latest') => {
@@ -130,22 +125,6 @@ function ViewRepo() {
     },
     [setSelectedDependencies],
   )
-
-  const TabListItems = ({
-    dependencies,
-    devDependencies,
-  }: {
-    dependencies: Dependency[]
-    devDependencies: Dependency[]
-  }) => {
-    return (
-      <TabList>
-        <Tab disabled={dependencies.length === 0}>Dependencies</Tab>
-        <Tab disabled={devDependencies.length === 0}>Dev Dependencies </Tab>
-      </TabList>
-    )
-  }
-  const DependenciesTypeTabs = React.memo(TabListItems)
 
   const onSelectAllDependencies = React.useCallback(() => {
     if (selectAllChecked) {
@@ -189,6 +168,7 @@ function ViewRepo() {
   }
 
   const hasSelectedDependencies = Object.keys(selectedDependencies).length > 0
+
   return (
     <>
       {repository.crawlError && (
@@ -199,6 +179,7 @@ function ViewRepo() {
           <Text color="red.500">{`Something went wrong when fetching dependencies : ${repository.crawlError}`}</Text>
         </Row>
       )}
+
       <Code
         position="relative"
         width="100%"
@@ -233,34 +214,12 @@ function ViewRepo() {
       <DependenciesProvider>
         {repository && repository.dependencies && repository.dependencies.deps && (
           <Box w={['100%', 'unset']} minW={['100%']} mt={4}>
-            <Tabs
-              defaultIndex={dependencies.length === 0 ? 1 : 0}
-              isFitted
-              variantColor="secondary"
-              variant="line"
-            >
-              <DependenciesTypeTabs
-                dependencies={dependencies}
-                devDependencies={devDependencies}
-              />
-
-              <TabPanels>
-                <TabPanel>
-                  <DependenciesList
-                    dependencies={dependencies}
-                    selectedDependencies={selectedDependencies}
-                    onDependencySelected={onDependencySelected}
-                  />
-                </TabPanel>
-                <TabPanel>
-                  <DependenciesList
-                    onDependencySelected={onDependencySelected}
-                    dependencies={devDependencies}
-                    selectedDependencies={selectedDependencies}
-                  />
-                </TabPanel>
-              </TabPanels>
-            </Tabs>
+            <DependencyTabs
+              dependencies={dependencies}
+              devDependencies={devDependencies}
+              onDependencySelected={onDependencySelected}
+              selectedDependencies={selectedDependencies}
+            />
 
             <Flex
               zIndex={10}

@@ -21,7 +21,6 @@ import { useHistory } from 'react-router'
 import { useRequest } from '@hooks/useRequest'
 import useChakraToast from '@hooks/useChakraToast'
 import Container from '@components/Container'
-import { Repository } from '../../typings/entities'
 
 enum Step {
   PROVIDER_SELECTION = 0,
@@ -56,7 +55,7 @@ const Wrapper: React.FC<IWrapperProps> = ({
 
       {caption && <Text ml={10}>{caption}</Text>}
 
-      <Box ml={10} mt={8}>
+      <Box ml={10} my={8}>
         {children}
       </Box>
     </Container>
@@ -66,17 +65,18 @@ const Wrapper: React.FC<IWrapperProps> = ({
 const AddRepo = () => {
   const [step, setStep] = useState(Step.PROVIDER_SELECTION)
   const [searchTerm, setSearchTerm] = React.useState('')
+
   let {
     data: installations,
     revalidate: getInstallations,
     isValidating: installationsLoading,
-  } = useRequest<GithubInstallation[]>('installations', {
+  } = useRequest<GithubInstallation[]>(`installations`, {
     fetcher: InstallationsAPI.getUserInstallations,
     initialData: [],
-    revalidateOnFocus: false,
+    refreshInterval: 5000,
   })
   const [branches, setBranches] = useState<GithubBranch['name'][]>([])
-  const [selectedRepo, setSelectedRepo] = useState<Repository | null>(null)
+  const [selectedRepo, setSelectedRepo] = useState<string>()
   const history = useHistory()
   const toast = useChakraToast()
 
@@ -112,25 +112,12 @@ const AddRepo = () => {
 
   useMessageListener(onMessage)
 
-  const onSelectRepo = async (repo: GithubInstallationRepository) => {
-    const { data: repositories } = await RepositoryAPI.findRepositoriesByName(
-      repo.fullName,
-    )
+  const onSelectRepo = async (fullName: string) => {
     const { data: branches } = await RepositoryAPI.getRepositoryBranches(
-      repo.fullName,
+      fullName,
     )
 
-    if (repositories.length === 0) {
-      // Repo has been deleted in our db, we have to recover it
-      const { data: repository } = await RepositoryAPI.syncRepository(
-        repo.fullName,
-      )
-
-      setSelectedRepo(repository)
-    } else {
-      setSelectedRepo(repositories[0])
-    }
-
+    setSelectedRepo(fullName)
     setBranches(branches.map((branch) => branch.name))
     setStep(Step.REPO_CONFIGURATION)
   }
@@ -145,12 +132,11 @@ const AddRepo = () => {
     path?: string
   }) => {
     try {
-      await RepositoryAPI.configureRepository({
-        id: selectedRepo!.id,
+      await RepositoryAPI.setupRepository({
         data: {
           branch: data.branch,
           path: data.path || '/',
-          fullName: selectedRepo!.fullName,
+          fullName: selectedRepo!,
         },
       })
       history.push('/')
@@ -217,6 +203,7 @@ const AddRepo = () => {
               }}
             ></Input>
           </InputGroup>
+
           <InstallationRepositories
             installations={installations}
             onSelectRepo={onSelectRepo}
@@ -262,7 +249,7 @@ const AddRepo = () => {
           <Flex>
             <RepoConfigForm
               branches={branches}
-              repoName={selectedRepo!.fullName}
+              repoName={selectedRepo!}
               onSubmit={onSubmitRepoConfig}
             />
           </Flex>

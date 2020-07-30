@@ -15,8 +15,10 @@ const ViewPullRequest = () => {
     `repositories/${id}/pull-requests`,
     {
       fetcher: () => getPullRequests(id),
+      refreshInterval: 3000,
     },
   )
+
   const { repository, updateScore } = useRepository()
 
   React.useEffect(() => {
@@ -25,6 +27,19 @@ const ViewPullRequest = () => {
 
   return (
     <>
+      <Box
+        bg="yellow.100"
+        padding={3}
+        rounded={10}
+        fontSize="sm"
+        color="yellow.800"
+      >
+        <span role="img" aria-label="WIP">
+          🚧
+        </span>{' '}
+        PR creation is experimental. It only supports Yarn packager (yarn.lock
+        file will be created even if there is a package-lock.json).
+      </Box>
       {data && data.length > 0 ? (
         <>
           <Box w="100%" py={4}>

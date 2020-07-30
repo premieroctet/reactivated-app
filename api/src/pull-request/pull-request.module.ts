@@ -2,7 +2,6 @@ import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PullRequest } from './pull-request.entity';
 import { PullRequestService } from './pull-request.service';
-import { PullRequestController } from './pull-request.controller';
 import { RepositoryModule } from '../repository/repository.module';
 
 @Module({
@@ -11,7 +10,7 @@ import { RepositoryModule } from '../repository/repository.module';
     forwardRef(() => RepositoryModule),
   ],
   providers: [PullRequestService],
-  exports: [PullRequestService],
-  controllers: [PullRequestController],
+  exports: [PullRequestService, TypeOrmModule],
+  controllers: [],
 })
 export class PullRequestModule {}
