@@ -128,10 +128,9 @@ export class RepositoryController implements CrudController<Repository> {
     let repository = null;
     const existingRepo = await this.service.findRepo({
       fullName: repo.fullName,
-      repoUrl: repo.repoUrl,
     });
     if (existingRepo) {
-      existingRepo.users.push(user);
+      existingRepo.users = [...existingRepo.users, user];
       repository = await this.service.updateRepo(
         existingRepo.id.toString(),
         existingRepo,
