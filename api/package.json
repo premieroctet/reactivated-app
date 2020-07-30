@@ -20,6 +20,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
+    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config src/ormconfig.ts",
     "dev": "ts-node-dev --ignore-watch node_modules ./src/main.ts",
     "postinstall": "yarn build"
   },
@@ -40,6 +41,7 @@
     "class-transformer": "^0.2.3",
     "class-validator": "^0.11.0",
     "crypto-js": "^3.1.9-1",
+    "dotenv": "^8.2.0",
     "mysql": "^2.17.1",
     "passport": "^0.4.0",
     "passport-github": "^1.1.0",
