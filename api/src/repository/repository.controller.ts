@@ -125,21 +125,33 @@ export class RepositoryController implements CrudController<Repository> {
       throw new NotFoundException();
     }
 
-    const newRepo = {
-      name: data.name,
-      author: data.owner.login,
-      repoImg: data.owner.avatar_url,
-      repoUrl: data.html_url,
-      fullName: data.full_name,
-      githubId: data.id,
-      branch: repo.branch,
-      path: repo.path,
-      createdAt: new Date(),
-      users: [user],
-      hasYarnLock,
-    };
-
-    const repository = await this.service.addRepo(newRepo);
+    let repository = null;
+    const existingRepo = await this.service.findRepo({
+      fullName: repo.fullName,
+      repoUrl: repo.repoUrl,
+    });
+    if (existingRepo) {
+      existingRepo.users.push(user);
+      repository = await this.service.updateRepo(
+        existingRepo.id.toString(),
+        existingRepo,
+      );
+    } else {
+      const newRepo = {
+        name: data.name,
+        author: data.owner.login,
+        repoImg: data.owner.avatar_url,
+        repoUrl: data.html_url,
+        fullName: data.full_name,
+        githubId: data.id,
+        branch: repo.branch,
+        path: repo.path,
+        createdAt: new Date(),
+        users: [user],
+        hasYarnLock,
+      };
+      repository = await this.service.addRepo(newRepo);
+    }
 
     await this.queue.add('compute_yarn_dependencies', {
       repositoryFullName: repository.fullName,
