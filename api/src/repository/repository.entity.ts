@@ -46,9 +46,10 @@ export class Repository {
   name: string;
 
   @ApiProperty({
+    description: "Author and repository's name",
     readOnly: true,
   })
-  @Column()
+  @Column({ unique: true })
   fullName: string;
 
   @ApiProperty({
@@ -92,7 +93,7 @@ export class Repository {
     description: 'URL of the repo',
     readOnly: true,
   })
-  @Column()
+  @Column({ unique: true })
   repoUrl: string;
 
   @ApiProperty()
