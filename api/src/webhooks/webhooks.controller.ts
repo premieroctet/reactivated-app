@@ -13,7 +13,6 @@ import { PullRequestService } from '../pull-request/pull-request.service';
 import { RepositoryService } from '../repository/repository.service';
 import { UsersService } from '../users/users.service';
 import { WebhookInterceptor } from './webhooks.interceptor';
-import { ConfigService } from '../config/config.service';
 
 @ApiTags('webhooks')
 @Controller('webhooks')
@@ -23,7 +22,6 @@ export class WebhooksController {
     private readonly repositoryService: RepositoryService,
     private readonly userService: UsersService,
     private readonly pullRequestService: PullRequestService,
-    private readonly configService: ConfigService,
     @InjectQueue('dependencies')
     private readonly dependenciesQueue: Queue,
   ) {}
